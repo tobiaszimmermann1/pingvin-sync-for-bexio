@@ -1,0 +1,34 @@
+/*
+COLORS:
+    loonity: 
+      bg: "#f0f4f8",
+      white: "#ffffff",
+      primary: "#09838f",
+      primaryDark: "#046064",
+      secondary: "#f0f3f5",
+      iconFont: "#fe7323",
+      iconBG: "#ffecb6",
+      fontPrimary: "#041321",
+      fontSecondary: "#5c6873",
+      border: "#bdccdc",
+      inputBorder: "#e4e7ea"
+*/
+
+.pv_loonity_connector_main {
+  width: 100%;
+  margin: 20px 0;
+  padding: 15px 25px;
+  background-color: #f0f4f8;
+}
+
+.pv_loonity_connector_title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.pv_loonity_connector_title_logo {
+  height: 50px;
+}
