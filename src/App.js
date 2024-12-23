@@ -28,7 +28,7 @@ function App() {
   return (
     <ChakraProvider theme={theme}>
       <Stack gap="3">
-        <Flex flexDirection="column" alignItems="center" justifyContent="flex-start" gap="2" className="pv_loonity_connector_main" borderRadius="base">
+        <Flex flexDirection="column" alignItems="center" justifyContent="flex-start" className="pv_bexio_connector_main">
           <SyncStatus enabled={enabled} />
           <SyncSettings setSettingsInterval={setEnabled} />
           <Settings />

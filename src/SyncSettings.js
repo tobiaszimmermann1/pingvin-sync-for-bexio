@@ -70,7 +70,7 @@ function SyncSettings({ setSettingsInterval }) {
   }, [interval, enabled, allProducts])
 
   return (
-    <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="loonity.border" width="100%" pb="25px" mb="25px">
+    <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
       <Stack>
         <Text fontSize="xl" mt="0" fontWeight="bold">
           {__("Settings", "pv_loonity_connector")}
@@ -82,7 +82,7 @@ function SyncSettings({ setSettingsInterval }) {
             </Text>
             <Switch
               size="md"
-              colorScheme="teal"
+              colorScheme="gray"
               isChecked={enabled}
               onChange={e => {
                 setEnabled(e.target.checked)
@@ -110,16 +110,16 @@ function SyncSettings({ setSettingsInterval }) {
               isDisabled={settingsLoading}
             >
               <Stack direction="row">
-                <Radio value="300" size="lg" colorScheme="teal" mr="2">
+                <Radio value="300" size="lg" colorScheme="gray" mr="2">
                   5min
                 </Radio>
-                <Radio value="3600" size="lg" colorScheme="teal" mr="2">
+                <Radio value="3600" size="lg" colorScheme="gray" mr="2">
                   60min
                 </Radio>
-                <Radio value="14400" size="lg" colorScheme="teal" mr="2">
+                <Radio value="14400" size="lg" colorScheme="gray" mr="2">
                   4h
                 </Radio>
-                <Radio value="86400" size="lg" colorScheme="teal" mr="2">
+                <Radio value="86400" size="lg" colorScheme="gray" mr="2">
                   24h
                 </Radio>
               </Stack>

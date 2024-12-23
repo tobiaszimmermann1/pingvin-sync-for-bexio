@@ -3,13 +3,13 @@ import { extendTheme } from "@chakra-ui/react"
 // example theme
 const theme = extendTheme({
   colors: {
-    loonity: {
-      bg: "#f0f4f8",
+    pingvin: {
+      bg: "#f9f9fa",
       white: "#ffffff",
-      primary: "#09838f",
-      primaryDark: "#046064",
-      secondary: "#f0f3f5",
-      iconFont: "#fe7323",
+      primary: "#9f5a58",
+      primaryDark: "#472626",
+      secondary: "#f4d4d3",
+      iconFont: "#9f5a58",
       iconBG: "#ffecb6",
       fontPrimary: "#041321",
       fontSecondary: "#5c6873",

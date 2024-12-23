@@ -3,9 +3,9 @@ import axios from "axios"
 const apiCall = async (method, endpoint, params = null) => {
   try {
     if (method === "GET") {
-      const response = await axios.get(`${pvLoonityAppLocalizer.loonityApiUrl}/${endpoint}`, {
+      const response = await axios.get(`${pvProductSyncAppLocalizer.bexioApiUrl}/${endpoint}`, {
         headers: {
-          "X-WP-Nonce": pvLoonityAppLocalizer.nonce
+          "X-WP-Nonce": pvProductSyncAppLocalizer.nonce
         }
       })
 
@@ -13,9 +13,9 @@ const apiCall = async (method, endpoint, params = null) => {
     }
 
     if (method === "POST") {
-      const response = await axios.post(`${pvLoonityAppLocalizer.loonityApiUrl}/${endpoint}`, params, {
+      const response = await axios.post(`${pvProductSyncAppLocalizer.bexioApiUrl}/${endpoint}`, params, {
         headers: {
-          "X-WP-Nonce": pvLoonityAppLocalizer.nonce
+          "X-WP-Nonce": pvProductSyncAppLocalizer.nonce
         }
       })
 

@@ -1,34 +1,24 @@
-/*
-COLORS:
-    loonity: 
-      bg: "#f0f4f8",
-      white: "#ffffff",
-      primary: "#09838f",
-      primaryDark: "#046064",
-      secondary: "#f0f3f5",
-      iconFont: "#fe7323",
-      iconBG: "#ffecb6",
-      fontPrimary: "#041321",
-      fontSecondary: "#5c6873",
-      border: "#bdccdc",
-      inputBorder: "#e4e7ea"
-*/
+#wpwrap {
+  background-color: #ffffff;
+}
 
-.pv_loonity_connector_main {
+.pv_bexio_connector_main {
+  box-sizing: border-box;
+  border-radius: 5px;
   width: 100%;
   margin: 20px 0;
   padding: 15px 25px;
-  background-color: #f0f4f8;
+  background-color: #f9f9fa;
 }
 
-.pv_loonity_connector_title {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+.form-table th,
+.form-table td {
+  vertical-align: top;
+  padding-top: 20px;
+  padding-top: 20px;
+  border-bottom: 1px solid #ccc;
 }
 
-.pv_loonity_connector_title_logo {
-  height: 50px;
+.form-table th {
+  padding-right: 25px;
 }

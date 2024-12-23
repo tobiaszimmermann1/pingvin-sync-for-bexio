@@ -13,7 +13,7 @@ function Settings() {
   const [loading, setLaoding] = useState(false)
 
   function testApi() {
-    apiCall("GET", "market").then(res => {
+    apiCall("GET", "article").then(res => {
       if (res.data.status === 200) {
         setResultConnection({
           type: "success",
@@ -21,20 +21,6 @@ function Settings() {
         })
       } else {
         setResultConnection({
-          type: "error",
-          data: res.data.status
-        })
-      }
-    })
-
-    apiCall("GET", `market/${pvLoonityAppLocalizer.settings.loonity_market_id}`).then(res => {
-      if (res.data.status === 200) {
-        setResultMarket({
-          type: "success",
-          data: res.data.result
-        })
-      } else {
-        setResultMarket({
           type: "error",
           data: res.data.status
         })
@@ -56,14 +42,14 @@ function Settings() {
         </Text>
         <Button
           width="350px"
-          color="loonity.white"
-          backgroundColor="loonity.primary"
+          color="pingvin.white"
+          backgroundColor="pingvin.primary"
           _hover={{
-            backgroundColor: "loonity.primaryDark"
+            backgroundColor: "pingvin.primaryDark"
           }}
           onClick={() => {
             testApi()
-            setLaoding(true)
+            //setLaoding(true)
           }}
           isDisabled={loading}
           className=""
@@ -79,17 +65,17 @@ function Settings() {
           <Stack direction="horizontal">
             {resultConnection && resultConnection.type === "success" && (
               <Box width="50%">
-                <Box p="0px 20px" color="loonity.fontPrimary" mt="4" bg="loonity.secondary" borderColor="loonity.border" borderWidth="1px" borderTopRadius="md">
+                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.secondary" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
                   <Text fontSize="lg" fontWeight="bold">
                     {__("Loonity WP API Connection", "pv_loonity_connector")}
                   </Text>
                 </Box>
-                <Box p="5px 20px" color="loonity.fontPrimary" mt="-1" bg="loonity.white" borderColor="loonity.border" borderWidth="1px" borderBottomRadius="md">
+                <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
                   <Text fontSize="lg" fontWeight="regular" color="success">
                     <CheckCircleIcon mr="10px" />
                     {__("Successfully connected to the Loonity WP API", "pv_loonity_connector")}
                   </Text>
-                  <Text fontSize="lg" fontWeight="regular" color="loonity.fontPrimary">
+                  <Text fontSize="lg" fontWeight="regular" color="pingvin.fontPrimary">
                     {__("This means that authentication works and WordPress can establish a connection to the Loonity WP API", "pv_loonity_connector")}
                   </Text>
                 </Box>
@@ -98,19 +84,19 @@ function Settings() {
 
             {resultConnection && resultConnection.type === "error" && (
               <Box width="50%">
-                <Box p="0px 20px" color="loonity.fontPrimary" mt="4" bg="loonity.secondary" borderColor="loonity.border" borderWidth="1px" borderTopRadius="md">
+                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.secondary" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
                   <Text fontSize="lg" fontWeight="bold">
                     {__("Loonity WP API Connection", "pv_loonity_connector")}
                   </Text>
                 </Box>
-                <Box p="5px 20px" color="loonity.fontPrimary" mt="-1" bg="loonity.white" borderColor="loonity.border" borderWidth="1px" borderBottomRadius="md">
+                <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
                   <Stack>
                     <Box>
                       <Text fontSize="lg" fontWeight="regular" color="error">
                         <WarningIcon mr="10px" color="error" />
                         {__("Unable to connect to the Loonity WP API", "pv_loonity_connector")}
                       </Text>
-                      <Text fontSize="lg" fontWeight="regular" color="loonity.fontPrimary">
+                      <Text fontSize="lg" fontWeight="regular" color="pingvin.fontPrimary">
                         {__("Check your authentication token in the settings.", "pv_loonity_connector")}
                       </Text>
                       <Text fontSize="sm">
@@ -126,12 +112,12 @@ function Settings() {
 
             {resultMarket && resultMarket.type === "success" && (
               <Box width="50%">
-                <Box p="0px 20px" color="loonity.fontPrimary" mt="4" bg="loonity.secondary" borderColor="loonity.border" borderWidth="1px" borderTopRadius="md">
+                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.secondary" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
                   <Text fontSize="lg" fontWeight="bold">
                     {__("Loonity Market Connection", "pv_loonity_connector")}
                   </Text>
                 </Box>
-                <Box p="5px 20px" color="loonity.fontPrimary" mt="-1" bg="loonity.white" borderColor="loonity.border" borderWidth="1px" borderBottomRadius="md">
+                <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
                   <Stack>
                     <Box>
                       <Text fontSize="lg" fontWeight="regular" color="success" mb="0">
@@ -176,19 +162,19 @@ function Settings() {
 
             {resultMarket && resultMarket.type === "error" && (
               <Box width="50%">
-                <Box p="0px 20px" color="loonity.fontPrimary" mt="4" bg="loonity.secondary" borderColor="loonity.border" borderWidth="1px" borderTopRadius="md">
+                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.secondary" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
                   <Text fontSize="lg" fontWeight="bold">
                     {__("Market Connection", "pv_loonity_connector")}
                   </Text>
                 </Box>
-                <Box p="5px 20px" color="loonity.fontPrimary" mt="-1" bg="loonity.white" borderColor="loonity.border" borderWidth="1px" borderBottomRadius="md">
+                <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
                   <Stack>
                     <Box>
                       <Text fontSize="lg" fontWeight="regular" color="error">
                         <WarningIcon mr="10px" color="error" />
                         {__("Unable to find the specified market", "pv_loonity_connector")}
                       </Text>
-                      <Text fontSize="lg" fontWeight="regular" color="loonity.fontPrimary">
+                      <Text fontSize="lg" fontWeight="regular" color="pingvin.fontPrimary">
                         {__("Check your market ID in the settings.", "pv_loonity_connector")}
                       </Text>
                       <Text fontSize="sm">
