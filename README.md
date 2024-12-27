@@ -1,4 +1,4 @@
-=== Pingvin Bexio Produkt Sync ===
+=== Pingvin Bexio Sync - Produkte ===
 Contributors: pingvindigital
 Tags: bexio, buchhaltung, schweiz, synchronisierung
 Requires at least: 6.7

@@ -10,4 +10,5 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'ParagonIE\\ConstantTime\\' => array($vendorDir . '/paragonie/constant_time_encoding/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
+    'Appsero\\' => array($vendorDir . '/appsero/client/src'),
 );

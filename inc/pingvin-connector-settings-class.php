@@ -138,6 +138,7 @@ class Pingvin_Bexio_ProductSync_Settings {
         ?>
         <p>Alles ist bereit, um WooCommerce mit Bexio zu verbinden.</p>
         <p><a href="?page=pingvin-bexio-sync&auth=true" class="button button-primary">Jetzt mit Bexio verbinden</a></p>
+        <p><a href="?page=pingvin-bexio-sync&change_token=true">Bexio Authentifizierungseinstellungen zurücksetzen</a> (Du musst dich neu mit Bexio verbinden)</p>
         <?php
       } ?>
       </div>
