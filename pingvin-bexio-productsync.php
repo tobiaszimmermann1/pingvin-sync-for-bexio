@@ -119,9 +119,13 @@ class Pingvin_Bexio_ProductSync {
    * Load admin styles.
    */
   public function admin_load_scripts($screen) {
-    if('pingvin_page_pingvin-bexio-product-sync' !== $screen) return;
+    if('pingvin_page_pingvin-bexio-sync' !== $screen) return;
     wp_register_style( 'pv_dashboard_style', PV_PLUGIN_URL . 'styles/styles.css?version=0.1.0', false, '0.1.0' );
     wp_enqueue_style( 'pv_dashboard_style' );
+
+    // Google Font
+    wp_enqueue_style('pv_google_font', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap', false);
+    wp_enqueue_style( 'pv_google_font' );
   }
 
   /**

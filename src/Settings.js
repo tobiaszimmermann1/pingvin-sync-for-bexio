@@ -72,7 +72,7 @@ function Settings() {
                     {__("Erfolgreiche Verbindung zur Bexio API", "pv_bexio_connector")}
                   </Text>
                   <Text fontSize="sm" fontWeight="regular" color="pingvin.fontPrimary">
-                    {__("Das heisst, dass die Authentifizierung funktioniert und WordPress eine Verbindung zur Bexio API herstellen kann.", "pv_bexio_connector")}
+                    {__("Das heisst, dass die Authentifizierung funktioniert und WooCommerce eine Verbindung zur Bexio API herstellen kann.", "pv_bexio_connector")}
                   </Text>
                 </Box>
               </Box>
@@ -93,7 +93,7 @@ function Settings() {
                         {__("Keine Verbindung zur Bexio API möglich", "pv_bexio_connector")}
                       </Text>
                       <Text fontSize="sm" fontWeight="regular" color="pingvin.fontPrimary">
-                        {__("Setze die Authentifizierungseinstellungen zurück und verbinde WordPress neu mit Bexio.", "pv_bexio_connector")}
+                        {__("Setze die Authentifizierungseinstellungen zurück und verbinde WooCommerce neu mit Bexio.", "pv_bexio_connector")}
                       </Text>
                       <Text fontSize="sm">
                         <i>

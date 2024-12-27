@@ -54,7 +54,7 @@ class Pingvin_Bexio_ProductSync_Auth {
     }
     try {
       $oidc = new OpenIDConnectClient("https://auth.bexio.com/realms/bexio",  $bexio_general_options['pv_bexio_client_id'] , $bexio_general_options['pv_bexio_client_secret'] );
-      $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-product-sync&auth=true'));
+      $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-sync&auth=true'));
       $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit"));
       
       // Check if there is an authorization code in the URL
@@ -166,7 +166,7 @@ class Pingvin_Bexio_ProductSync_Auth {
 
     try {
         $oidc = new OpenIDConnectClient("https://auth.bexio.com/realms/bexio", $bexio_general_options['pv_bexio_client_id'], $bexio_general_options['pv_bexio_client_secret']);
-        $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-product-sync&auth=true'));
+        $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-sync&auth=true'));
         $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit"));
         $oidc->refreshToken($refresh_token);
 

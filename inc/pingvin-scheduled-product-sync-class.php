@@ -100,7 +100,6 @@ class PvBexioProductsSync {
   }
   
   function pingvin_bexio_connector_sync_action_products_from_bexio() {
-
     // statistics for sync status:
     $interval = json_decode(get_option('pv_bexio_productsync_action_settings'))->interval;
     $time_locale = 'de_DE';
@@ -122,10 +121,12 @@ class PvBexioProductsSync {
     $bexio_tax_array = array();
     $standard_tax_rate = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_standard_bexio'];
     $reduced_tax_rate = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_reduced_bexio'];
+    $special_tax_rate = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_special_bexio'];
 
     foreach($bexio_taxes as $bexio_tax) {
       if ($bexio_tax->code === $standard_tax_rate) $bexio_tax_array[$bexio_tax->id] = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_standard_woo'];;
       if ($bexio_tax->code === $reduced_tax_rate) $bexio_tax_array[$bexio_tax->id] = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_reduced_woo'];
+      if ($bexio_tax->code === $special_tax_rate) $bexio_tax_array[$bexio_tax->id] = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_special_woo'];
     }
 
     // start syncing if there are >0 products pulled from bexio
@@ -262,6 +263,7 @@ class PvBexioProductsSync {
                 $woo_product_to_update->set_stock_status('outofstock');
               }
               $woo_product_to_update->set_stock_quantity($new_stock);
+              $woo_product_to_update->set_low_stock_amount($bexio_data['stock_min_nr']);
             } else {
               $woo_product_to_update->set_manage_stock(false);
               $woo_product_to_update->set_stock_status('instock');
@@ -366,6 +368,226 @@ class PvBexioProductsSync {
   }
 
   function pingvin_bexio_connector_sync_action_products_to_bexio() {
-    // to be implemented
+    // statistics for sync status:
+    $interval = json_decode(get_option('pv_bexio_productsync_action_settings'))->interval;
+    $time_locale = 'de_DE';
+    $formatter = new \IntlDateFormatter($time_locale, \IntlDateFormatter::LONG, \IntlDateFormatter::SHORT);
+    $now = new \DateTime();
+    $date_last = $formatter->format($now);
+    $date_next = $now->modify('+' . $interval . ' seconds');
+    $date_next = $formatter->format($date_next);
+    $products_count = 0;
+
+    // get products from Bexio
+    $res_products = pv_api_call('GET', '2.0/article/');
+    $products = $res_products['result'];
+
+    // get tax rates from Bexio and determine WC tax class per tax rate specified in plugin settings
+    $res_taxes = pv_api_call('GET', '3.0/taxes/');
+    $bexio_taxes = $res_taxes['result'];
+
+    // income tax rates
+    $bexio_tax_array = array();
+    $standard_tax_rate = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_standard_bexio'];
+    $reduced_tax_rate = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_reduced_bexio'];
+    $special_tax_rate = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_special_bexio'];
+    
+    foreach($bexio_taxes as $bexio_tax) {
+      if ($bexio_tax->code === $standard_tax_rate) $bexio_tax_array[get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_standard_woo']] = $bexio_tax->id;
+      if ($bexio_tax->code === $reduced_tax_rate) $bexio_tax_array[get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_reduced_woo']] = $bexio_tax->id;
+      if ($bexio_tax->code === $special_tax_rate) $bexio_tax_array[get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_special_woo']] = $bexio_tax->id;
+    }
+
+    // expense tax rates
+    $bexio_tax_array_expense = array();
+    $standard_tax_rate_expense = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_standard_bexio_expense'];
+    $reduced_tax_rate_expense = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_reduced_bexio_expense'];
+    $special_tax_rate_expense = get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_special_bexio_expense'];
+    
+    foreach($bexio_taxes as $bexio_tax) {
+      if ($bexio_tax->code === $standard_tax_rate_expense) $bexio_tax_array_expense[get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_standard_woo']] = $bexio_tax->id;
+      if ($bexio_tax->code === $reduced_tax_rate_expense) $bexio_tax_array_expense[get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_reduced_woo']] = $bexio_tax->id;
+      if ($bexio_tax->code === $special_tax_rate_expense) $bexio_tax_array_expense[get_option('pv_bexio_productsync_options')['pv_productsync_tax_rate_special_woo']] = $bexio_tax->id;
+    }
+
+    // get all WC products
+    $woo_products = wc_get_products(array(
+      'limit' => -1,
+    ));
+
+    // start syncing if there are >0 products pulled from WC
+    $prod_count = count($woo_products);
+    if ($prod_count> 0) {
+      PingvinLogger::log('info', '_____');
+      PingvinLogger::log('info', $date_last);
+      PingvinLogger::log('info', "Product Sync Action (to Bexio): Pulled $prod_count products from WooCommerce");
+
+      // get all available sku's from Bexio for matching with WC products
+      $comparison_array = array();
+      foreach($products as $product) {
+        $sku = $product->intern_code;
+        $comparison_array[$sku] = $product->id;
+      }
+
+      // Loop through WC products
+      $wc_sku_array = array();
+      foreach($woo_products as $woo_prod) {
+        $is_new = false;
+        $bexio_id_to_update = null;
+        $woo_sku = $woo_prod->get_sku();
+
+        if ($woo_sku !== '') {
+          // save WC sku into wc_sku_array for later use
+          array_push($wc_sku_array, $woo_sku);
+
+          // check the comparison array if there is already a Bexio product with the same sku
+          // if it exists, then update the product. If not, then create a new product
+          if (!array_key_exists($woo_sku, $comparison_array)) {
+            $is_new = true;
+          } else {
+            $bexio_id_to_update = $comparison_array[$woo_sku];
+          }
+        }
+
+        // prepare dimensions of product for payload
+        // weight
+        $wc_weight_unit = get_option('woocommerce_weight_unit');
+        $weight = null;
+        if ($wc_weight_unit === 'kg') {
+          $weight = floatval($woo_prod->get_weight()) * 1000;
+        } else if ($wc_weight_unit === 'g') {
+          $weight = floatval($woo_prod->get_weight());
+        } else if ($wc_weight_unit === 'lbs') {
+          $weight = floatval($woo_prod->get_weight()) / 0.453592;
+        } else if ($wc_weight_unit === 'oz') {
+          $weight = floatval($woo_prod->get_weight()) / 0.0283495;
+        }
+
+        // width, height
+        $wc_dimesion_unit = get_option('woocommerce_dimension_unit');
+        $height = null;
+        $width = null;
+        if ($wc_dimesion_unit === 'cm') {
+          $width = floatval($woo_prod->get_width()) * 10;
+          $height = floatval($woo_prod->get_height()) * 10;
+        } else if ($wc_dimesion_unit === 'mm') {
+          $width = floatval($woo_prod->get_width());
+          $height = floatval($woo_prod->get_height());
+        } else if ($wc_dimesion_unit === 'in') {
+          $width = floatval($woo_prod->get_width()) / 0.393701;
+          $height = floatval($woo_prod->get_height()) / 0.393701;
+        }
+
+        // prepare price and tax rate for payload
+        $bexio_tax_id = null;
+        if (get_option('woocommerce_calc_taxes') === 'yes' && $woo_prod->get_tax_status() === 'taxable' && count($bexio_tax_array) > 0 && $standard_tax_rate !== null && $reduced_tax_rate !== null) {
+          $wc_tax_class_of_product = $woo_prod->get_tax_class();
+          if ($wc_tax_class_of_product !== null) {
+            $bexio_tax_id = $bexio_tax_array[$wc_tax_class_of_product];
+          }
+        }
+
+        $bexio_tax_id_expense = null;
+        if (get_option('woocommerce_calc_taxes') === 'yes' && $woo_prod->get_tax_status() === 'taxable' && count($bexio_tax_array) > 0 && $standard_tax_rate !== null && $reduced_tax_rate !== null) {
+          $wc_tax_class_of_product = $woo_prod->get_tax_class();
+          if ($wc_tax_class_of_product !== null) {
+            $bexio_tax_id_expense = $bexio_tax_array_expense[$wc_tax_class_of_product];
+          }
+        }
+        
+        // payload for Bexio API
+        $bexio_data = [
+          "user_id" => ($user_id = $woo_prod->get_meta('_user_id')) !== '' ? $user_id : 1,
+          "contact_id" => ($contact_id = $woo_prod->get_meta('_contact_id')) !== '' ? $contact_id : null,
+          "deliverer_code" => ($deliverer_code = $woo_prod->get_meta('_deliverer_code')) !== '' ? $deliverer_code : null,
+          "deliverer_name" => ($deliverer_name = $woo_prod->get_meta('_deliverer_name')) !== '' ? $deliverer_name : null,
+          "deliverer_description" => ($deliverer_description = $woo_prod->get_meta('_deliverer_description')) !== '' ? $deliverer_description : null,
+          "intern_code" => $intern_code = $woo_prod->get_sku(),
+          "intern_name" => $woo_prod->get_name(),
+          "intern_description" => ($intern_description = $woo_prod->get_meta('_intern_description')) !== '' ? $intern_description : null,
+          "purchase_price" => ($purchase_price = $woo_prod->get_meta('_purchase_price')) !== '' ? $purchase_price : 0,
+          "sale_price" => $woo_prod->get_regular_price(),
+          "purchase_total" => ($purchase_total = $woo_prod->get_meta('_purchase_total')) !== '' ? $purchase_total : 0,
+          "sale_total" => ($sale_total = $woo_prod->get_meta('_sale_total')) !== '' ? $sale_total : 0,
+          "currency_id" => ($currency_id = $woo_prod->get_meta('_currency_id')) !== '' ? $currency_id : 1,
+          "tax_income_id" => $bexio_tax_id,
+          "tax_expense_id" => $bexio_tax_id_expense,
+          "unit_id" => ($unit_id = $woo_prod->get_meta('_unit_id')) !== '' ? $unit_id : null,
+          "is_stock" => $woo_prod->get_manage_stock(),
+          "stock_id" => ($stock_id = $woo_prod->get_meta('_stock_id')) !== '' ? $stock_id : null,
+          "stock_place_id" => ($stock_place_id = $woo_prod->get_meta('_stock_place_id')) !== '' ? $stock_place_id : null,
+          "stock_min_nr" => ($stock_min_nr = $woo_prod->get_low_stock_amount()) !== '' ? $woo_prod->get_low_stock_amount() : 0,
+          "width" => ($width_ = $width) !== '' ? $width_ : null,
+          "height" => ($height_ = $height) !== '' ? $height_ : null,
+          "weight" => ($weight_ = $weight) !== '' ? $weight_ : null,
+          "volume" => ($volume = $woo_prod->get_meta('_volume')) !== '' ? $volume : null,
+          "remarks" => ($remarks = $woo_prod->get_meta('_remarks')) !== '' ? $remarks : null,
+          "delivery_price" => ($delivery_price = $woo_prod->get_meta('_delivery_price')) !== '' ? $delivery_price : null,
+          "article_group_id" => ($article_group_id = $woo_prod->get_meta('_article_group_id')) !== '' ? $article_group_id : null,
+          "account_id" => ($account_id = $woo_prod->get_meta('_account_id')) !== '' ? $account_id : null,
+          "expense_account_id" => ($expense_account_id = $woo_prod->get_meta('_expense_account_id')) !== '' ? $expense_account_id : null,
+        ];
+
+        // if is_new is false, then update the product in Bexio
+        if ($is_new === false) {
+          $res = pv_api_call('POST', '2.0/article/'.$bexio_id_to_update.'/', json_encode($bexio_data));
+          if ($res['status'] === 200) {
+            $products_count++;
+            PingvinLogger::log('info', "Product updated in Bexio: ".$bexio_data['intern_name']);
+          } else {
+            PingvinLogger::log('error', "Could not update product in Bexio: ".$bexio_data['intern_name']);
+            PingvinLogger::log('error', $res['status'].': '.print_r($res['result']->errors[0], true));
+          }
+        }
+
+        // if is_new is true, then create a new product in Bexio
+        if ($is_new === true) {
+          $bexio_data['article_type_id'] = ($article_type_id = $woo_prod->get_meta('_article_type_id')) !== '' ? $article_type_id : 1;
+          $bexio_data['stock_nr'] = ($stock_nr = $woo_prod->get_stock_quantity()) !== null ? $stock_nr : 0;
+
+          $res = pv_api_call('POST', '2.0/article/', json_encode($bexio_data));
+          if ($res['status'] === 200) {
+            $products_count++;
+            PingvinLogger::log('info', "Product created in Bexio: ".$bexio_data['intern_name']);
+          } else {
+            PingvinLogger::log('error', "Could not create product in Bexio: ".$bexio_data['intern_name']);
+            PingvinLogger::log('error', $res['status'].': '.$res['errors']);
+          }
+        }       
+      }
+
+      // handle woo products that don't exist in Bexio
+      $keep_bexio_products = get_option('pv_bexio_productsync_options')['pv_productsync_missing_products'];
+      if ($keep_bexio_products === 'false') {
+        foreach ($products as $product) {
+          // if product sku is not in comparison array, delete it
+          if (!in_array($product->intern_code, $wc_sku_array) || $product->intern_code === '') {
+            $del_id = $product->id;
+
+            $res = pv_api_call('DELETE', '2.0/article/'.$del_id.'/');
+            if ($res['status'] === 200) {
+              PingvinLogger::log('info', "Deleted product in Bexio: ".$product->intern_name);
+            } else {
+              PingvinLogger::log('error', "Could not delete product in Bexio: ".$product->intern_name);
+              PingvinLogger::log('error', $res['status'].': '.$res['errors']);
+            }
+          }
+        }
+      }
+
+
+      // set wp transients for sync status display
+      set_transient('pv_bexio_connector_status', json_encode(array(
+        'date' => $date_last,
+        'products_count' => $products_count
+      )), 0);
+
+      set_transient('pv_bexio_connector_next', json_encode(array(
+        'date' => $date_next,
+      )), 0);
+
+      PingvinLogger::log('info', "*****");
+    }
   }
+
 }

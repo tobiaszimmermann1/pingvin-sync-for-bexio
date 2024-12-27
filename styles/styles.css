@@ -2,6 +2,31 @@
   background-color: #ffffff;
 }
 
+.pv_bexio_connector_title {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 15px 25px 0px 25px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.title-setup {
+  padding: 15px 0px 15px 0px;
+}
+
+.pv_bexio_connector_title h1 {
+  font-weight: bold;
+  font-family: "JetBrains Mono", serif;
+}
+
+.pv_bexio_connector_title img {
+  height: 50px;
+}
+
 .pv_bexio_connector_main {
   box-sizing: border-box;
   border-radius: 5px;
@@ -9,6 +34,41 @@
   margin: 20px 0;
   padding: 15px 25px;
   background-color: #f9f9fa;
+}
+
+.pv_bexio_connector_main h3 {
+  font-size: 1.1em;
+}
+
+.pv_manual_box {
+  margin-top: 20px;
+  padding: 5px 15px 15px 15px;
+  border-radius: 5px;
+  background-color: #f9f9fa;
+}
+
+.pv_bexio_connector_main ol {
+  margin-left: 20px;
+}
+
+.pv_bexio_connector_main li {
+  margin-bottom: 15px;
+}
+
+.mono {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  padding: 2px 5px;
+  margin-left: 5px;
+  background-color: #ccc;
+  display: inline-block;
+}
+
+.indent-left {
+  margin-left: 40px;
+}
+.bg-white {
+  background-color: #ffffff;
 }
 
 .form-table th,
@@ -21,4 +81,9 @@
 
 .form-table th {
   padding-right: 25px;
+}
+
+.no-border th,
+.no-border td {
+  border: none;
 }

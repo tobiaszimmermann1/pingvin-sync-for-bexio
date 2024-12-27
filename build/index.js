@@ -3042,7 +3042,7 @@ function Settings() {
               fontSize: "sm",
               fontWeight: "regular",
               color: "pingvin.fontPrimary",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Das heisst, dass die Authentifizierung funktioniert und WordPress eine Verbindung zur Bexio API herstellen kann.", "pv_bexio_connector")
+              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Das heisst, dass die Authentifizierung funktioniert und WooCommerce eine Verbindung zur Bexio API herstellen kann.", "pv_bexio_connector")
             })]
           })]
         }), resultConnection && resultConnection.type === "error" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
@@ -3082,7 +3082,7 @@ function Settings() {
                   fontSize: "sm",
                   fontWeight: "regular",
                   color: "pingvin.fontPrimary",
-                  children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Setze die Authentifizierungseinstellungen zurück und verbinde WordPress neu mit Bexio.", "pv_bexio_connector")
+                  children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Setze die Authentifizierungseinstellungen zurück und verbinde WooCommerce neu mit Bexio.", "pv_bexio_connector")
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
                   fontSize: "sm",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("i", {
