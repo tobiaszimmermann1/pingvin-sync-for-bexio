@@ -2940,10 +2940,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/button/dist/chunk-UVUR7MCU.mjs");
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/layout/dist/chunk-PULVB27S.mjs");
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/spinner/dist/chunk-5PH6ULNP.mjs");
-/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/table/dist/chunk-GEJVU65N.mjs");
-/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/table/dist/chunk-J4QO5GAJ.mjs");
-/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/table/dist/chunk-GIQFRSD6.mjs");
-/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/table/dist/chunk-T2WCTPDH.mjs");
 /* harmony import */ var _chakra_ui_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @chakra-ui/icons */ "./node_modules/@chakra-ui/icons/dist/chunk-IWV6Y2ZN.mjs");
 /* harmony import */ var _chakra_ui_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @chakra-ui/icons */ "./node_modules/@chakra-ui/icons/dist/chunk-TN2QQVDX.mjs");
 /* harmony import */ var _helpers_apiCall__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./helpers/apiCall */ "./src/helpers/apiCall.js");
@@ -2960,9 +2956,6 @@ __webpack_require__.r(__webpack_exports__);
 
 function Settings() {
   const [resultConnection, setResultConnection] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
-  const [resultMarket, setResultMarket] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
-  const [resultConnectionError, setResultConnectionError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
-  const [resultMarketError, setResultMarketError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
   const [loading, setLaoding] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   function testApi() {
     (0,_helpers_apiCall__WEBPACK_IMPORTED_MODULE_2__["default"])("GET", "article").then(res => {
@@ -2980,26 +2973,26 @@ function Settings() {
     });
   }
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    if (resultConnection !== null && resultMarket !== null) {
+    if (resultConnection !== null) {
       setLaoding(false);
     }
-  }, [resultConnection, resultMarket]);
+  }, [resultConnection]);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_5__.Flex, {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
     gap: "2",
     width: "100%",
-    pb: "25px",
+    pb: "0px",
     mb: "25px",
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
         fontSize: "xl",
         mt: "0",
         fontWeight: "bold",
-        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Test Connection", "pv_loonity_connector")
+        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Bexio API Verbindung prüfen", "pv_bexio_connector")
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Button, {
-        width: "350px",
+        width: "200px",
         color: "pingvin.white",
         backgroundColor: "pingvin.primary",
         _hover: {
@@ -3007,11 +3000,10 @@ function Settings() {
         },
         onClick: () => {
           testApi();
-          //setLaoding(true)
+          setLaoding(true);
         },
         isDisabled: loading,
-        className: "",
-        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Verify connection to Loonity WP API", "pv_loonity_connector")
+        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Verbindung prüfen", "pv_bexio_connector")
       }), loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_10__.Spinner, {})
       }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
@@ -3022,14 +3014,14 @@ function Settings() {
             p: "0px 20px",
             color: "pingvin.fontPrimary",
             mt: "4",
-            bg: "pingvin.secondary",
+            bg: "pingvin.border",
             borderColor: "pingvin.border",
             borderWidth: "1px",
             borderTopRadius: "md",
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
+              fontSize: "sm",
               fontWeight: "bold",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Loonity WP API Connection", "pv_loonity_connector")
+              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Bexio API Verbindung", "pv_bexio_connector")
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
             p: "5px 20px",
@@ -3040,17 +3032,17 @@ function Settings() {
             borderWidth: "1px",
             borderBottomRadius: "md",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
+              fontSize: "sm",
               fontWeight: "regular",
               color: "success",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_icons__WEBPACK_IMPORTED_MODULE_11__.CheckCircleIcon, {
                 mr: "10px"
-              }), (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Successfully connected to the Loonity WP API", "pv_loonity_connector")]
+              }), (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Erfolgreiche Verbindung zur Bexio API", "pv_bexio_connector")]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
+              fontSize: "sm",
               fontWeight: "regular",
               color: "pingvin.fontPrimary",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("This means that authentication works and WordPress can establish a connection to the Loonity WP API", "pv_loonity_connector")
+              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Das heisst, dass die Authentifizierung funktioniert und WordPress eine Verbindung zur Bexio API herstellen kann.", "pv_bexio_connector")
             })]
           })]
         }), resultConnection && resultConnection.type === "error" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
@@ -3059,14 +3051,14 @@ function Settings() {
             p: "0px 20px",
             color: "pingvin.fontPrimary",
             mt: "4",
-            bg: "pingvin.secondary",
+            bg: "pingvin.border",
             borderColor: "pingvin.border",
             borderWidth: "1px",
             borderTopRadius: "md",
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
+              fontSize: "sm",
               fontWeight: "bold",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Loonity WP API Connection", "pv_loonity_connector")
+              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Bexio API Verbindung", "pv_bexio_connector")
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
             p: "5px 20px",
@@ -3079,155 +3071,22 @@ function Settings() {
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                  fontSize: "lg",
+                  fontSize: "sm",
                   fontWeight: "regular",
                   color: "error",
                   children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_icons__WEBPACK_IMPORTED_MODULE_12__.WarningIcon, {
                     mr: "10px",
                     color: "error"
-                  }), (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Unable to connect to the Loonity WP API", "pv_loonity_connector")]
+                  }), (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Keine Verbindung zur Bexio API möglich", "pv_bexio_connector")]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                  fontSize: "lg",
+                  fontSize: "sm",
                   fontWeight: "regular",
                   color: "pingvin.fontPrimary",
-                  children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Check your authentication token in the settings.", "pv_loonity_connector")
+                  children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Setze die Authentifizierungseinstellungen zurück und verbinde WordPress neu mit Bexio.", "pv_bexio_connector")
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
                   fontSize: "sm",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("i", {
-                    children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Error message:", "pv_loonity_connector"), " ", resultConnection.data]
-                  })
-                })]
-              })
-            })
-          })]
-        }), resultMarket && resultMarket.type === "success" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
-          width: "50%",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
-            p: "0px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "4",
-            bg: "pingvin.secondary",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderTopRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
-              fontWeight: "bold",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Loonity Market Connection", "pv_loonity_connector")
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
-            p: "5px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "-1",
-            bg: "pingvin.white",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderBottomRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                  fontSize: "lg",
-                  fontWeight: "regular",
-                  color: "success",
-                  mb: "0",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_icons__WEBPACK_IMPORTED_MODULE_11__.CheckCircleIcon, {
-                    mr: "10px"
-                  }), (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Successfully found the market", "pv_loonity_connector")]
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Table, {
-                size: "sm",
-                mt: "2",
-                mb: "4",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Tbody, {
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_15__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_16__.Td, {
-                      border: "0",
-                      pl: "0",
-                      py: "0",
-                      children: [" ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Market name:", "pv_loonity_connector")
-                      })]
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_16__.Td, {
-                      border: "0",
-                      py: "0",
-                      children: [" ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "bold",
-                        m: "0",
-                        children: resultMarket.data.role.name
-                      })]
-                    })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_15__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_16__.Td, {
-                      border: "0",
-                      pl: "0",
-                      py: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Market ID:", "pv_loonity_connector")
-                      })
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_16__.Td, {
-                      border: "0",
-                      py: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "bold",
-                        m: "0",
-                        children: resultMarket.data.id
-                      })
-                    })]
-                  })]
-                })
-              })]
-            })
-          })]
-        }), resultMarket && resultMarket.type === "error" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
-          width: "50%",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
-            p: "0px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "4",
-            bg: "pingvin.secondary",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderTopRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
-              fontWeight: "bold",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Market Connection", "pv_loonity_connector")
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
-            p: "5px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "-1",
-            bg: "pingvin.white",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderBottomRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                  fontSize: "lg",
-                  fontWeight: "regular",
-                  color: "error",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_icons__WEBPACK_IMPORTED_MODULE_12__.WarningIcon, {
-                    mr: "10px",
-                    color: "error"
-                  }), (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Unable to find the specified market", "pv_loonity_connector")]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                  fontSize: "lg",
-                  fontWeight: "regular",
-                  color: "pingvin.fontPrimary",
-                  children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Check your market ID in the settings.", "pv_loonity_connector")
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                  fontSize: "sm",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("i", {
-                    children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Error message:", "pv_loonity_connector"), " ", resultMarket.data]
+                    children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Fehler:", "pv_bexio_connector"), " ", resultConnection.data]
                   })
                 })]
               })
@@ -3283,9 +3142,8 @@ function SyncSettings({
   const [loading, setLaoding] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const [settingsLoading, setSettingsLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
   const [userInputRegistered, setUserInputRegistered] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  const [interval, setInterval] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("300");
+  const [interval, setInterval] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
   const [enabled, setEnabled] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  const [allProducts, setAllProducts] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const toast = (0,_chakra_ui_react__WEBPACK_IMPORTED_MODULE_5__.useToast)();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     let isGetOptions = true;
@@ -3294,7 +3152,6 @@ function SyncSettings({
         let optionsData = JSON.parse(res.data);
         setInterval(optionsData?.interval);
         setEnabled(optionsData?.enabled);
-        setAllProducts(optionsData?.allProducts);
       }
       setSettingsLoading(false);
     });
@@ -3307,13 +3164,12 @@ function SyncSettings({
     if (userInputRegistered === true) {
       let optionsObject = {
         interval: interval,
-        enabled: enabled,
-        allProducts: allProducts
+        enabled: enabled
       };
       (0,_helpers_apiCall__WEBPACK_IMPORTED_MODULE_2__["default"])("POST", "syncSettings", optionsObject).then(res => {
         if (res.status === 200) {
           toast({
-            title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Settings successfully updated.", "pv_loonity_connector"),
+            title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Settings successfully updated.", "pv_bexio_connector"),
             status: "success",
             duration: 5000,
             isClosable: true,
@@ -3321,7 +3177,7 @@ function SyncSettings({
           });
         } else {
           toast({
-            title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("An error occured", "pv_loonity_connector"),
+            title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("An error occured", "pv_bexio_connector"),
             description: res.response.data.message,
             status: "error",
             duration: 5000,
@@ -3334,7 +3190,7 @@ function SyncSettings({
     return () => {
       isSaveOptions = false;
     };
-  }, [interval, enabled, allProducts]);
+  }, [interval, enabled]);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Flex, {
     flexDirection: "row",
     alignItems: "center",
@@ -3350,7 +3206,7 @@ function SyncSettings({
         fontSize: "xl",
         mt: "0",
         fontWeight: "bold",
-        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Settings", "pv_loonity_connector")
+        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Synchronisierung", "pv_bexio_connector")
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Stack, {
         direction: "column",
         gap: "4",
@@ -3362,8 +3218,7 @@ function SyncSettings({
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Text, {
             fontSize: "lg",
             mt: "0",
-            fontWeight: "bold",
-            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Enable synchronization:", "pv_loonity_connector")
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Synchronisierung aktivieren:", "pv_bexio_connector")
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_10__.Switch, {
             size: "md",
             colorScheme: "gray",
@@ -3379,7 +3234,7 @@ function SyncSettings({
           fontSize: "sm",
           mt: "-4",
           fontStyle: "italic",
-          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("If disabled, all scheduled synchronizations will be cancelled.", "pv_loonity_connector")
+          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Wenn du die Synchronisierung deaktivierst, werden alle geplanten Synchronisierungen abgebrochen.", "pv_bexio_connector")
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.FormControl, {
           display: "flex",
           flexDirection: "row",
@@ -3388,8 +3243,7 @@ function SyncSettings({
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Text, {
             fontSize: "lg",
             mt: "0",
-            fontWeight: "bold",
-            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Synchronization interval:", "pv_loonity_connector")
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Synchronisierungs-Intervall:", "pv_bexio_connector")
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__.RadioGroup, {
             onChange: e => {
               setInterval(e);
@@ -3430,7 +3284,7 @@ function SyncSettings({
           fontSize: "sm",
           mt: "-4",
           fontStyle: "italic",
-          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("If you change the interval, the next synchronization will be cancelled and rescheduled according to the chosen interval.", "pv_loonity_connector")
+          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Wenn du das Intervall änderst, wird die nächste Synchronisierung abgebrochen und entsprechend dem gewählten Intervall neu geplant.", "pv_bexio_connector")
         })]
       })]
     })
@@ -3458,9 +3312,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/layout/dist/chunk-KRPLQIP4.mjs");
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/layout/dist/chunk-ZHMYA64R.mjs");
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/layout/dist/chunk-2OOHT3W5.mjs");
-/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/layout/dist/chunk-PULVB27S.mjs");
-/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/spinner/dist/chunk-5PH6ULNP.mjs");
-/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/layout/dist/chunk-Z6RXEUPO.mjs");
+/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/layout/dist/chunk-Z6RXEUPO.mjs");
+/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/layout/dist/chunk-PULVB27S.mjs");
+/* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/spinner/dist/chunk-5PH6ULNP.mjs");
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/table/dist/chunk-GEJVU65N.mjs");
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/table/dist/chunk-J4QO5GAJ.mjs");
 /* harmony import */ var _chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @chakra-ui/react */ "./node_modules/@chakra-ui/table/dist/chunk-GIQFRSD6.mjs");
@@ -3489,7 +3343,6 @@ function SyncStatus({
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     let isGetStatus = true;
     (0,_helpers_apiCall__WEBPACK_IMPORTED_MODULE_2__["default"])("GET", `transient`).then(res => {
-      console.log(res.data);
       if (res.data) {
         setStatus(JSON.parse(res.data.status));
         setNext(JSON.parse(res.data.next));
@@ -3530,308 +3383,184 @@ function SyncStatus({
     borderBottom: "1px",
     borderColor: "pingvin.border",
     width: "100%",
-    pb: "40px",
+    pb: "25px",
     mb: "25px",
-    children: loading ? noData ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
       direction: "column",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-        fontSize: "xl",
-        mt: "0",
-        fontWeight: "bold",
-        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Status", "pv_bexio_connector")
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-        fontSize: "sm",
-        mt: "-4",
-        fontStyle: "italic",
-        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Keine Synchronisierungsdaten.", "pv_bexio_connector")
-      })]
-    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Spinner, {})
-    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
         direction: "row",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
           fontSize: "xl",
           mt: "0",
           fontWeight: "bold",
-          children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Status", "pv_bexio_connector"), enabled ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_10__.Badge, {
+          children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Status", "pv_bexio_connector"), enabled ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Badge, {
             variant: "solid",
             colorScheme: "green",
             ml: "3",
-            children: "SYNC ON"
-          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_10__.Badge, {
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("SYNC EIN", "pv_bexio_connector")
+          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Badge, {
             variant: "solid",
             colorScheme: "red",
             ml: "3",
-            children: "SYNC OFF"
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("SYNC AUS", "pv_bexio_connector")
           })]
         })
-      }), status || next ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
-        direction: "row",
-        gap: "10",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-            p: "0px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "0",
-            bg: "pingvin.secondary",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderTopRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
-              fontWeight: "bold",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Last synchronization", "pv_bexio_connector")
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-            p: "5px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "-1",
-            bg: "pingvin.white",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderBottomRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__.Table, {
-                size: "sm",
-                mt: "0",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_12__.Tbody, {
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Time:", "pv_bexio_connector")
-                      })
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        m: "0",
-                        children: status.date
-                      })
-                    })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Market ID:", "pv_bexio_connector")
-                      })
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        m: "0",
-                        children: status.market_id
-                      })
-                    })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("# Products:", "pv_bexio_connector")
-                      })
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        m: "0",
-                        children: status.products_count
-                      })
-                    })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Locale:", "pv_bexio_connector")
-                      })
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        m: "0",
-                        children: status.locale
-                      })
-                    })]
-                  })]
-                })
+      }), loading ? noData ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+        fontSize: "sm",
+        mt: "-4",
+        fontStyle: "italic",
+        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Keine Synchronisierungsdaten.", "pv_bexio_connector")
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_10__.Spinner, {})
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
+        children: status || next ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
+          direction: "row",
+          gap: "10",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+              p: "0px 20px",
+              color: "pingvin.fontPrimary",
+              mt: "0",
+              bg: "pingvin.border",
+              borderColor: "pingvin.border",
+              borderWidth: "1px",
+              borderTopRadius: "md",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                fontSize: "sm",
+                fontWeight: "bold",
+                children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Letzte Synchronisierung", "pv_bexio_connector")
               })
-            })
-          })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-            p: "0px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "0",
-            bg: "pingvin.secondary",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderTopRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
-              fontWeight: "bold",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Next scheduled synchronisation", "pv_bexio_connector")
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-            p: "5px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "-1",
-            bg: "pingvin.white",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderBottomRadius: "md",
-            children: next ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__.Table, {
-                size: "sm",
-                mt: "0",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_12__.Tbody, {
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Time:", "pv_bexio_connector")
-                      })
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        m: "0",
-                        children: next.date
-                      })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+              p: "5px 20px",
+              color: "pingvin.fontPrimary",
+              mt: "-1",
+              bg: "pingvin.white",
+              borderColor: "pingvin.border",
+              borderWidth: "1px",
+              borderBottomRadius: "md",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__.Table, {
+                  size: "sm",
+                  mt: "0",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_12__.Tbody, {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
+                        border: "0",
+                        pl: "0",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                          fontSize: "sm",
+                          fontWeight: "regular",
+                          m: "0",
+                          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Zeit:", "pv_bexio_connector")
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
+                        border: "0",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                          fontSize: "sm",
+                          m: "0",
+                          children: status.date
+                        })
+                      })]
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
+                        border: "0",
+                        pl: "0",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                          fontSize: "sm",
+                          fontWeight: "regular",
+                          m: "0",
+                          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Produkte:", "pv_bexio_connector")
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
+                        border: "0",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                          fontSize: "sm",
+                          m: "0",
+                          children: status.products_count
+                        })
+                      })]
                     })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Market ID:", "pv_bexio_connector")
-                      })
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        m: "0",
-                        children: next.market_id
-                      })
-                    })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Locale:", "pv_bexio_connector")
-                      })
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        m: "0",
-                        children: next.locale
-                      })
-                    })]
-                  })]
-                })
-              })
-            }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__.Table, {
-                size: "sm",
-                mt: "0",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_12__.Tbody, {
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        fontWeight: "regular",
-                        m: "0",
-                        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("No scheduled synchronisations", "pv_bexio_connector")
-                      })
-                    })
                   })
                 })
               })
-            })
-          })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-            p: "0px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "0",
-            bg: "pingvin.secondary",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderTopRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-              fontSize: "lg",
-              fontWeight: "bold",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Synchronization Log", "pv_bexio_connector")
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-            p: "5px 20px",
-            color: "pingvin.fontPrimary",
-            mt: "-1",
-            bg: "pingvin.white",
-            borderColor: "pingvin.border",
-            borderWidth: "1px",
-            borderBottomRadius: "md",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__.Table, {
-                size: "sm",
-                mt: "0",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_12__.Tbody, {
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
-                      border: "0",
-                      pl: "0",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
-                        fontSize: "lg",
-                        m: "0",
-                        textDecoration: "underline",
-                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
-                          href: `${pvProductSyncAppLocalizer.homeUrl}/wp-content/pv-loonity-logger.log`,
-                          target: "_blank",
-                          children: "Download Log"
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+              p: "0px 20px",
+              color: "pingvin.fontPrimary",
+              mt: "0",
+              bg: "pingvin.border",
+              borderColor: "pingvin.border",
+              borderWidth: "1px",
+              borderTopRadius: "md",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                fontSize: "sm",
+                fontWeight: "bold",
+                children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Nächste Synchronisierung", "pv_bexio_connector")
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+              p: "5px 20px",
+              color: "pingvin.fontPrimary",
+              mt: "-1",
+              bg: "pingvin.white",
+              borderColor: "pingvin.border",
+              borderWidth: "1px",
+              borderBottomRadius: "md",
+              children: next ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__.Table, {
+                  size: "sm",
+                  mt: "0",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_12__.Tbody, {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
+                        border: "0",
+                        pl: "0",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                          fontSize: "sm",
+                          fontWeight: "regular",
+                          m: "0",
+                          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Zeit:", "pv_bexio_connector")
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
+                        border: "0",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                          fontSize: "sm",
+                          m: "0",
+                          children: next.date
+                        })
+                      })]
+                    })
+                  })
+                })
+              }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_6__.Stack, {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_11__.Table, {
+                  size: "sm",
+                  mt: "0",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_12__.Tbody, {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_13__.Tr, {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_14__.Td, {
+                        border: "0",
+                        pl: "0",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_7__.Text, {
+                          fontSize: "sm",
+                          fontWeight: "regular",
+                          m: "0",
+                          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Keine Synchronisierung geplant", "pv_bexio_connector")
                         })
                       })
                     })
                   })
                 })
               })
-            })
+            })]
           })]
-        })]
-      }) : !isEnabled ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Sync is not enabled.", "pv_bexio_connector")
-      }) : !status ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("No status data to display", "pv_bexio_connector")
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_8__.Box, {
-        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("No data found.", "pv_bexio_connector")
+        }) : !isEnabled ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Synchronisierung ist nicht aktiviert", "pv_bexio_connector")
+        }) : !status ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Keine Daten", "pv_bexio_connector")
+        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_chakra_ui_react__WEBPACK_IMPORTED_MODULE_9__.Box, {
+          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Keine Daten", "pv_bexio_connector")
+        })
       })]
     })
   });
@@ -3907,8 +3636,8 @@ const theme = (0,_chakra_ui_react__WEBPACK_IMPORTED_MODULE_0__.extendTheme)({
       iconBG: "#ffecb6",
       fontPrimary: "#041321",
       fontSecondary: "#5c6873",
-      border: "#bdccdc",
-      inputBorder: "#e4e7ea"
+      border: "#cccccc",
+      inputBorder: "#cccccc"
     },
     success: "#2e7d32",
     error: "#d32f2f",

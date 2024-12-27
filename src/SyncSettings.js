@@ -9,9 +9,8 @@ function SyncSettings({ setSettingsInterval }) {
   const [loading, setLaoding] = useState(false)
   const [settingsLoading, setSettingsLoading] = useState(true)
   const [userInputRegistered, setUserInputRegistered] = useState(false)
-  const [interval, setInterval] = useState("300")
+  const [interval, setInterval] = useState(null)
   const [enabled, setEnabled] = useState(false)
-  const [allProducts, setAllProducts] = useState(false)
 
   const toast = useToast()
 
@@ -22,7 +21,6 @@ function SyncSettings({ setSettingsInterval }) {
         let optionsData = JSON.parse(res.data)
         setInterval(optionsData?.interval)
         setEnabled(optionsData?.enabled)
-        setAllProducts(optionsData?.allProducts)
       }
       setSettingsLoading(false)
     })
@@ -38,14 +36,13 @@ function SyncSettings({ setSettingsInterval }) {
     if (userInputRegistered === true) {
       let optionsObject = {
         interval: interval,
-        enabled: enabled,
-        allProducts: allProducts
+        enabled: enabled
       }
 
       apiCall("POST", "syncSettings", optionsObject).then(res => {
         if (res.status === 200) {
           toast({
-            title: __("Settings successfully updated.", "pv_loonity_connector"),
+            title: __("Settings successfully updated.", "pv_bexio_connector"),
             status: "success",
             duration: 5000,
             isClosable: true,
@@ -53,7 +50,7 @@ function SyncSettings({ setSettingsInterval }) {
           })
         } else {
           toast({
-            title: __("An error occured", "pv_loonity_connector"),
+            title: __("An error occured", "pv_bexio_connector"),
             description: res.response.data.message,
             status: "error",
             duration: 5000,
@@ -67,18 +64,18 @@ function SyncSettings({ setSettingsInterval }) {
     return () => {
       isSaveOptions = false
     }
-  }, [interval, enabled, allProducts])
+  }, [interval, enabled])
 
   return (
     <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
       <Stack>
         <Text fontSize="xl" mt="0" fontWeight="bold">
-          {__("Settings", "pv_loonity_connector")}
+          {__("Synchronisierung", "pv_bexio_connector")}
         </Text>
         <Stack direction="column" gap="4">
           <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
-            <Text fontSize="lg" mt="0" fontWeight="bold">
-              {__("Enable synchronization:", "pv_loonity_connector")}
+            <Text fontSize="lg" mt="0">
+              {__("Synchronisierung aktivieren:", "pv_bexio_connector")}
             </Text>
             <Switch
               size="md"
@@ -94,12 +91,12 @@ function SyncSettings({ setSettingsInterval }) {
           </FormControl>
 
           <Text fontSize="sm" mt="-4" fontStyle="italic">
-            {__("If disabled, all scheduled synchronizations will be cancelled.", "pv_loonity_connector")}
+            {__("Wenn du die Synchronisierung deaktivierst, werden alle geplanten Synchronisierungen abgebrochen.", "pv_bexio_connector")}
           </Text>
 
           <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
-            <Text fontSize="lg" mt="0" fontWeight="bold">
-              {__("Synchronization interval:", "pv_loonity_connector")}
+            <Text fontSize="lg" mt="0">
+              {__("Synchronisierungs-Intervall:", "pv_bexio_connector")}
             </Text>
             <RadioGroup
               onChange={e => {
@@ -127,30 +124,8 @@ function SyncSettings({ setSettingsInterval }) {
           </FormControl>
 
           <Text fontSize="sm" mt="-4" fontStyle="italic">
-            {__("If you change the interval, the next synchronization will be cancelled and rescheduled according to the chosen interval.", "pv_loonity_connector")}
+            {__("Wenn du das Intervall änderst, wird die nächste Synchronisierung abgebrochen und entsprechend dem gewählten Intervall neu geplant.", "pv_bexio_connector")}
           </Text>
-
-          {/*
-          <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8" mb="0">
-            <Text fontSize="lg" mt="0">
-              {__("Delete all non-Loonity products:", "pv_loonity_connector")}
-            </Text>
-            <Switch
-              size="md"
-              colorScheme="teal"
-              isChecked={allProducts}
-              onChange={e => {
-                setAllProducts(e.target.checked)
-                setUserInputRegistered(true)
-              }}
-              isDisabled={settingsLoading}
-            />
-          </FormControl>
-          
-          <Text fontSize="sm" mt="-4" fontStyle="italic">
-            {__("If turned on, this will delete all products that don't exist in Loonity during the next synchronization.", "pv_loonity_connector")}
-          </Text>
-          */}
         </Stack>
       </Stack>
     </Flex>

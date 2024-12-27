@@ -93,7 +93,6 @@ class Pingvin_Bexio_ProductSync_Auth {
     error_log('Starting pv_authenticate');
     $tokens = $this->bexio_authenticate();
     
-    PingvinLogger::log('info', 'Tokens: ' . print_r($tokens, true));
     if ($tokens && isset($tokens['api_token']) && isset($tokens['refresh_token'])) {
       $expiry_time = time() + 3600;
       $update_result_api = update_option( 'pv_bexio_api_key', $tokens['api_token'] );

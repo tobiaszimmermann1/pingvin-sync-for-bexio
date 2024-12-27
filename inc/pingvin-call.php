@@ -9,7 +9,7 @@ function pv_api_call($method, $endpoint) {
   $auth = Pingvin_Bexio_ProductSync_Auth::get_instance();
 
   $api_token = $auth->get_valid_api_token();
-  $url = 'https://api.bexio.com/2.0/' . ltrim($endpoint, '/');
+  $url = 'https://api.bexio.com/' . ltrim($endpoint, '/');
   $headers = [
     'Accept: application/json',
     "Authorization: Bearer ".$api_token,

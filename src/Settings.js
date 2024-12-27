@@ -7,9 +7,6 @@ import { __ } from "@wordpress/i18n"
 
 function Settings() {
   const [resultConnection, setResultConnection] = useState(null)
-  const [resultMarket, setResultMarket] = useState(null)
-  const [resultConnectionError, setResultConnectionError] = useState(null)
-  const [resultMarketError, setResultMarketError] = useState(null)
   const [loading, setLaoding] = useState(false)
 
   function testApi() {
@@ -29,19 +26,19 @@ function Settings() {
   }
 
   useEffect(() => {
-    if (resultConnection !== null && resultMarket !== null) {
+    if (resultConnection !== null) {
       setLaoding(false)
     }
-  }, [resultConnection, resultMarket])
+  }, [resultConnection])
 
   return (
-    <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" width="100%" pb="25px" mb="25px">
+    <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" width="100%" pb="0px" mb="25px">
       <Stack>
         <Text fontSize="xl" mt="0" fontWeight="bold">
-          {__("Test Connection", "pv_loonity_connector")}
+          {__("Bexio API Verbindung prüfen", "pv_bexio_connector")}
         </Text>
         <Button
-          width="350px"
+          width="200px"
           color="pingvin.white"
           backgroundColor="pingvin.primary"
           _hover={{
@@ -49,12 +46,11 @@ function Settings() {
           }}
           onClick={() => {
             testApi()
-            //setLaoding(true)
+            setLaoding(true)
           }}
           isDisabled={loading}
-          className=""
         >
-          {__("Verify connection to Loonity WP API", "pv_loonity_connector")}
+          {__("Verbindung prüfen", "pv_bexio_connector")}
         </Button>
 
         {loading ? (
@@ -65,18 +61,18 @@ function Settings() {
           <Stack direction="horizontal">
             {resultConnection && resultConnection.type === "success" && (
               <Box width="50%">
-                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.secondary" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
-                  <Text fontSize="lg" fontWeight="bold">
-                    {__("Loonity WP API Connection", "pv_loonity_connector")}
+                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.border" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
+                  <Text fontSize="sm" fontWeight="bold">
+                    {__("Bexio API Verbindung", "pv_bexio_connector")}
                   </Text>
                 </Box>
                 <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
-                  <Text fontSize="lg" fontWeight="regular" color="success">
+                  <Text fontSize="sm" fontWeight="regular" color="success">
                     <CheckCircleIcon mr="10px" />
-                    {__("Successfully connected to the Loonity WP API", "pv_loonity_connector")}
+                    {__("Erfolgreiche Verbindung zur Bexio API", "pv_bexio_connector")}
                   </Text>
-                  <Text fontSize="lg" fontWeight="regular" color="pingvin.fontPrimary">
-                    {__("This means that authentication works and WordPress can establish a connection to the Loonity WP API", "pv_loonity_connector")}
+                  <Text fontSize="sm" fontWeight="regular" color="pingvin.fontPrimary">
+                    {__("Das heisst, dass die Authentifizierung funktioniert und WordPress eine Verbindung zur Bexio API herstellen kann.", "pv_bexio_connector")}
                   </Text>
                 </Box>
               </Box>
@@ -84,102 +80,24 @@ function Settings() {
 
             {resultConnection && resultConnection.type === "error" && (
               <Box width="50%">
-                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.secondary" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
-                  <Text fontSize="lg" fontWeight="bold">
-                    {__("Loonity WP API Connection", "pv_loonity_connector")}
+                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.border" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
+                  <Text fontSize="sm" fontWeight="bold">
+                    {__("Bexio API Verbindung", "pv_bexio_connector")}
                   </Text>
                 </Box>
                 <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
                   <Stack>
                     <Box>
-                      <Text fontSize="lg" fontWeight="regular" color="error">
+                      <Text fontSize="sm" fontWeight="regular" color="error">
                         <WarningIcon mr="10px" color="error" />
-                        {__("Unable to connect to the Loonity WP API", "pv_loonity_connector")}
+                        {__("Keine Verbindung zur Bexio API möglich", "pv_bexio_connector")}
                       </Text>
-                      <Text fontSize="lg" fontWeight="regular" color="pingvin.fontPrimary">
-                        {__("Check your authentication token in the settings.", "pv_loonity_connector")}
+                      <Text fontSize="sm" fontWeight="regular" color="pingvin.fontPrimary">
+                        {__("Setze die Authentifizierungseinstellungen zurück und verbinde WordPress neu mit Bexio.", "pv_bexio_connector")}
                       </Text>
                       <Text fontSize="sm">
                         <i>
-                          {__("Error message:", "pv_loonity_connector")} {resultConnection.data}
-                        </i>
-                      </Text>
-                    </Box>
-                  </Stack>
-                </Box>
-              </Box>
-            )}
-
-            {resultMarket && resultMarket.type === "success" && (
-              <Box width="50%">
-                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.secondary" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
-                  <Text fontSize="lg" fontWeight="bold">
-                    {__("Loonity Market Connection", "pv_loonity_connector")}
-                  </Text>
-                </Box>
-                <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
-                  <Stack>
-                    <Box>
-                      <Text fontSize="lg" fontWeight="regular" color="success" mb="0">
-                        <CheckCircleIcon mr="10px" />
-                        {__("Successfully found the market", "pv_loonity_connector")}
-                      </Text>
-                    </Box>
-                    <Table size="sm" mt="2" mb="4">
-                      <Tbody>
-                        <Tr>
-                          <Td border="0" pl="0" py="0">
-                            {" "}
-                            <Text fontSize="lg" fontWeight="regular" m="0">
-                              {__("Market name:", "pv_loonity_connector")}
-                            </Text>
-                          </Td>
-                          <Td border="0" py="0">
-                            {" "}
-                            <Text fontSize="lg" fontWeight="bold" m="0">
-                              {resultMarket.data.role.name}
-                            </Text>
-                          </Td>
-                        </Tr>
-                        <Tr>
-                          <Td border="0" pl="0" py="0">
-                            <Text fontSize="lg" fontWeight="regular" m="0">
-                              {__("Market ID:", "pv_loonity_connector")}
-                            </Text>
-                          </Td>
-                          <Td border="0" py="0">
-                            <Text fontSize="lg" fontWeight="bold" m="0">
-                              {resultMarket.data.id}
-                            </Text>
-                          </Td>
-                        </Tr>
-                      </Tbody>
-                    </Table>
-                  </Stack>
-                </Box>
-              </Box>
-            )}
-
-            {resultMarket && resultMarket.type === "error" && (
-              <Box width="50%">
-                <Box p="0px 20px" color="pingvin.fontPrimary" mt="4" bg="pingvin.secondary" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
-                  <Text fontSize="lg" fontWeight="bold">
-                    {__("Market Connection", "pv_loonity_connector")}
-                  </Text>
-                </Box>
-                <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
-                  <Stack>
-                    <Box>
-                      <Text fontSize="lg" fontWeight="regular" color="error">
-                        <WarningIcon mr="10px" color="error" />
-                        {__("Unable to find the specified market", "pv_loonity_connector")}
-                      </Text>
-                      <Text fontSize="lg" fontWeight="regular" color="pingvin.fontPrimary">
-                        {__("Check your market ID in the settings.", "pv_loonity_connector")}
-                      </Text>
-                      <Text fontSize="sm">
-                        <i>
-                          {__("Error message:", "pv_loonity_connector")} {resultMarket.data}
+                          {__("Fehler:", "pv_bexio_connector")} {resultConnection.data}
                         </i>
                       </Text>
                     </Box>

@@ -13,8 +13,8 @@ const theme = extendTheme({
       iconBG: "#ffecb6",
       fontPrimary: "#041321",
       fontSecondary: "#5c6873",
-      border: "#bdccdc",
-      inputBorder: "#e4e7ea"
+      border: "#cccccc",
+      inputBorder: "#cccccc"
     },
     success: "#2e7d32",
     error: "#d32f2f",

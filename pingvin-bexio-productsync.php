@@ -71,7 +71,6 @@ class Pingvin_Bexio_ProductSync {
       'inc/pingvin-connector-settings-class.php',
       'inc/pingvin-scheduled-product-sync-class.php',
       'inc/pingvin-rest-routes.php',
-      'inc/pingvin-product-data-display.php',
       'inc/pingvin-auth-class.php',
     ];
 
@@ -119,16 +118,17 @@ class Pingvin_Bexio_ProductSync {
   /**
    * Load admin styles.
    */
-  public function admin_load_scripts() {
-      wp_register_style( 'pv_dashboard_style', PV_PLUGIN_URL . 'styles/styles.css?version=0.1.0', false, '0.1.0' );
-      wp_enqueue_style( 'pv_dashboard_style' );
+  public function admin_load_scripts($screen) {
+    if('pingvin_page_pingvin-bexio-product-sync' !== $screen) return;
+    wp_register_style( 'pv_dashboard_style', PV_PLUGIN_URL . 'styles/styles.css?version=0.1.0', false, '0.1.0' );
+    wp_enqueue_style( 'pv_dashboard_style' );
   }
 
   /**
    * Plugin initialization.
    */
   public function plugin_init() {
-      load_plugin_textdomain( 'pv_becio_connector', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+      load_plugin_textdomain( 'pv_bexio_connector', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
   }
 
   /**
@@ -136,9 +136,8 @@ class Pingvin_Bexio_ProductSync {
    */
   private function initialize_classes() {
       new Pingvin_Bexio_ProductSync_Settings();
-      new PvLoonitySync();
-      new PvLoonityRestRoutes();
-      new PvLoonityProductData();
+      new PvBexioProductsSync();
+      new PvBexioRestRoutes();
   }
 }
 
