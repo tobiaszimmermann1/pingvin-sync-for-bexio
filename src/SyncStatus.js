@@ -59,7 +59,7 @@ function SyncStatus({ enabled }) {
     <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
       <Stack direction="column">
         <Stack direction="row">
-          <Text fontSize="xl" mt="0" fontWeight="bold">
+          <Text fontSize="md" mt="0" fontWeight="bold">
             {__("Status", "pv_bexio_connector")}
             {enabled ? (
               <Badge variant="solid" colorScheme="green" ml="3">

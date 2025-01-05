@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2401c4df68e20c71ca3b0de1404f8aca",
+    "content-hash": "4f6898507eed312b0ce92948d830fb87",
     "packages": [
         {
             "name": "appsero/client",
@@ -59,6 +59,43 @@
                 "source": "https://github.com/Appsero/client/tree/v2.0.4"
             },
             "time": "2024-11-25T05:58:23+00:00"
+        },
+        {
+            "name": "appsero/updater",
+            "version": "v2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Appsero/updater.git",
+                "reference": "0e233fd177eba9cca67f94c5d65d8bb221384983"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Appsero/updater/zipball/0e233fd177eba9cca67f94c5d65d8bb221384983",
+                "reference": "0e233fd177eba9cca67f94c5d65d8bb221384983",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Appsero\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tareq Hasan",
+                    "email": "tareq@appsero.com"
+                }
+            ],
+            "description": "Appsero client updater module",
+            "support": {
+                "issues": "https://github.com/Appsero/updater/issues",
+                "source": "https://github.com/Appsero/updater/tree/v2.3.1"
+            },
+            "time": "2024-11-25T05:50:04+00:00"
         },
         {
             "name": "jumbojett/openid-connect-php",

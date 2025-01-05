@@ -146,6 +146,7 @@ class Pingvin_Bexio_ProductSync {
       // Initialize the plugin tracker
       $client = new \Appsero\Client( '1172fbed-e7cc-4a88-a91a-07151798c66f', 'Pingvin Bexio Sync - Produkte', __FILE__ );
       $client->insights()->init();
+      \Appsero\Updater::init($client);
   }
 }
 

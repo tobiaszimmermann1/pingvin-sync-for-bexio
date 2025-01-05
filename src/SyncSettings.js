@@ -69,12 +69,12 @@ function SyncSettings({ setSettingsInterval }) {
   return (
     <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
       <Stack>
-        <Text fontSize="xl" mt="0" fontWeight="bold">
+        <Text fontSize="md" mt="0" fontWeight="bold">
           {__("Synchronisierung", "pv_bexio_connector")}
         </Text>
         <Stack direction="column" gap="4">
           <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
-            <Text fontSize="lg" mt="0">
+            <Text fontSize="sm" mt="0" fontWeight={700}>
               {__("Synchronisierung aktivieren:", "pv_bexio_connector")}
             </Text>
             <Switch
@@ -95,7 +95,7 @@ function SyncSettings({ setSettingsInterval }) {
           </Text>
 
           <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
-            <Text fontSize="lg" mt="0">
+            <Text fontSize="sm" mt="0" fontWeight={700}>
               {__("Synchronisierungs-Intervall:", "pv_bexio_connector")}
             </Text>
             <RadioGroup
@@ -107,16 +107,16 @@ function SyncSettings({ setSettingsInterval }) {
               isDisabled={settingsLoading}
             >
               <Stack direction="row">
-                <Radio value="300" size="lg" colorScheme="gray" mr="2">
+                <Radio value="300" size="md" colorScheme="gray" mr="2">
                   5min
                 </Radio>
-                <Radio value="3600" size="lg" colorScheme="gray" mr="2">
+                <Radio value="3600" size="md" colorScheme="gray" mr="2">
                   60min
                 </Radio>
-                <Radio value="14400" size="lg" colorScheme="gray" mr="2">
+                <Radio value="14400" size="md" colorScheme="gray" mr="2">
                   4h
                 </Radio>
-                <Radio value="86400" size="lg" colorScheme="gray" mr="2">
+                <Radio value="86400" size="md" colorScheme="gray" mr="2">
                   24h
                 </Radio>
               </Stack>

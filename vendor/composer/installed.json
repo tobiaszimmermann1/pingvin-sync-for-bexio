@@ -58,6 +58,46 @@
             "install-path": "../appsero/client"
         },
         {
+            "name": "appsero/updater",
+            "version": "v2.3.1",
+            "version_normalized": "2.3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Appsero/updater.git",
+                "reference": "0e233fd177eba9cca67f94c5d65d8bb221384983"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Appsero/updater/zipball/0e233fd177eba9cca67f94c5d65d8bb221384983",
+                "reference": "0e233fd177eba9cca67f94c5d65d8bb221384983",
+                "shasum": ""
+            },
+            "time": "2024-11-25T05:50:04+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Appsero\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tareq Hasan",
+                    "email": "tareq@appsero.com"
+                }
+            ],
+            "description": "Appsero client updater module",
+            "support": {
+                "issues": "https://github.com/Appsero/updater/issues",
+                "source": "https://github.com/Appsero/updater/tree/v2.3.1"
+            },
+            "install-path": "../appsero/updater"
+        },
+        {
             "name": "jumbojett/openid-connect-php",
             "version": "v1.0.2",
             "version_normalized": "1.0.2.0",

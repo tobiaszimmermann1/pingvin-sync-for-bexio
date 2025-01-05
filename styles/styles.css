@@ -9,6 +9,7 @@
   padding: 15px 25px 0px 25px;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-start;
   align-items: center;
@@ -86,4 +87,8 @@
 .no-border th,
 .no-border td {
   border: none;
+}
+
+.updated {
+  width: 100%;
 }

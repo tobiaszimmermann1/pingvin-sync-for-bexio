@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'b23966760feaf76b03337da236bc73ae574f89c5',
+        'reference' => '4f3f532349e6f538eab052c600e7ed4f9fee8551',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'b23966760feaf76b03337da236bc73ae574f89c5',
+            'reference' => '4f3f532349e6f538eab052c600e7ed4f9fee8551',
             'dev_requirement' => false,
         ),
         'appsero/client' => array(
@@ -26,6 +26,15 @@
             'install_path' => __DIR__ . '/../appsero/client',
             'aliases' => array(),
             'reference' => '12ff65b9770286d21edf314e7acfcd26fdde3315',
+            'dev_requirement' => false,
+        ),
+        'appsero/updater' => array(
+            'pretty_version' => 'v2.3.1',
+            'version' => '2.3.1.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../appsero/updater',
+            'aliases' => array(),
+            'reference' => '0e233fd177eba9cca67f94c5d65d8bb221384983',
             'dev_requirement' => false,
         ),
         'jumbojett/openid-connect-php' => array(

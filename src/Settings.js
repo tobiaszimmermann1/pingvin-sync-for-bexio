@@ -34,7 +34,7 @@ function Settings() {
   return (
     <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" width="100%" pb="0px" mb="25px">
       <Stack>
-        <Text fontSize="xl" mt="0" fontWeight="bold">
+        <Text fontSize="md" mt="0" fontWeight="bold">
           {__("Bexio API Verbindung prüfen", "pv_bexio_connector")}
         </Text>
         <Button
@@ -49,15 +49,20 @@ function Settings() {
             setLaoding(true)
           }}
           isDisabled={loading}
+          size="sm"
         >
-          {__("Verbindung prüfen", "pv_bexio_connector")}
+          <>
+            {loading ? (
+              <Box>
+                <Spinner />
+              </Box>
+            ) : (
+              __("Verbindung prüfen", "pv_bexio_connector")
+            )}
+          </>
         </Button>
 
-        {loading ? (
-          <Box>
-            <Spinner />
-          </Box>
-        ) : (
+        {!loading && (
           <Stack direction="horizontal">
             {resultConnection && resultConnection.type === "success" && (
               <Box width="50%">
