@@ -8,7 +8,7 @@
  * Text Domain:     pv_bexio_connector
  * Domain Path:     /languages
  * Requires Plugins: woocommerce
- * Version:         0.1.0
+ * Version:         0.1.1
  *
  * @package         Pingvin Bexio Sync - Produkte
  */
