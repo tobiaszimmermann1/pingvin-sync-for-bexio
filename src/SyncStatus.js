@@ -60,14 +60,14 @@ function SyncStatus({ enabled }) {
       <Stack direction="column">
         <Stack direction="row">
           <Text fontSize="md" mt="0" fontWeight="bold">
-            {__("Status", "pv_bexio_connector")}
+            {__("Status", "pingvin-bexio-sync")}
             {enabled ? (
               <Badge variant="solid" colorScheme="green" ml="3">
-                {__("SYNC EIN", "pv_bexio_connector")}
+                {__("SYNC EIN", "pingvin-bexio-sync")}
               </Badge>
             ) : (
               <Badge variant="solid" colorScheme="red" ml="3">
-                {__("SYNC AUS", "pv_bexio_connector")}
+                {__("SYNC AUS", "pingvin-bexio-sync")}
               </Badge>
             )}
           </Text>
@@ -75,7 +75,7 @@ function SyncStatus({ enabled }) {
         {loading ? (
           noData ? (
             <Text fontSize="sm" mt="-4" fontStyle="italic">
-              {__("Keine Synchronisierungsdaten.", "pv_bexio_connector")}
+              {__("Keine Synchronisierungsdaten.", "pingvin-bexio-sync")}
             </Text>
           ) : (
             <Box>
@@ -89,7 +89,7 @@ function SyncStatus({ enabled }) {
                 <Box>
                   <Box p="0px 20px" color="pingvin.fontPrimary" mt="0" bg="pingvin.border" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
                     <Text fontSize="sm" fontWeight="bold">
-                      {__("Letzte Synchronisierung", "pv_bexio_connector")}
+                      {__("Letzte Synchronisierung", "pingvin-bexio-sync")}
                     </Text>
                   </Box>
                   <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
@@ -99,7 +99,7 @@ function SyncStatus({ enabled }) {
                           <Tr>
                             <Td border="0" pl="0">
                               <Text fontSize="sm" fontWeight="regular" m="0">
-                                {__("Zeit:", "pv_bexio_connector")}
+                                {__("Zeit:", "pingvin-bexio-sync")}
                               </Text>
                             </Td>
                             <Td border="0">
@@ -111,7 +111,7 @@ function SyncStatus({ enabled }) {
                           <Tr>
                             <Td border="0" pl="0">
                               <Text fontSize="sm" fontWeight="regular" m="0">
-                                {__("Produkte:", "pv_bexio_connector")}
+                                {__("Produkte:", "pingvin-bexio-sync")}
                               </Text>
                             </Td>
                             <Td border="0">
@@ -129,7 +129,7 @@ function SyncStatus({ enabled }) {
                 <Box>
                   <Box p="0px 20px" color="pingvin.fontPrimary" mt="0" bg="pingvin.border" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
                     <Text fontSize="sm" fontWeight="bold">
-                      {__("Nächste Synchronisierung", "pv_bexio_connector")}
+                      {__("Nächste Synchronisierung", "pingvin-bexio-sync")}
                     </Text>
                   </Box>
                   <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
@@ -140,7 +140,7 @@ function SyncStatus({ enabled }) {
                             <Tr>
                               <Td border="0" pl="0">
                                 <Text fontSize="sm" fontWeight="regular" m="0">
-                                  {__("Zeit:", "pv_bexio_connector")}
+                                  {__("Zeit:", "pingvin-bexio-sync")}
                                 </Text>
                               </Td>
                               <Td border="0">
@@ -159,7 +159,7 @@ function SyncStatus({ enabled }) {
                             <Tr>
                               <Td border="0" pl="0">
                                 <Text fontSize="sm" fontWeight="regular" m="0">
-                                  {__("Keine Synchronisierung geplant", "pv_bexio_connector")}
+                                  {__("Keine Synchronisierung geplant", "pingvin-bexio-sync")}
                                 </Text>
                               </Td>
                             </Tr>
@@ -171,11 +171,11 @@ function SyncStatus({ enabled }) {
                 </Box>
               </Stack>
             ) : !isEnabled ? (
-              <Box>{__("Synchronisierung ist nicht aktiviert", "pv_bexio_connector")}</Box>
+              <Box>{__("Synchronisierung ist nicht aktiviert", "pingvin-bexio-sync")}</Box>
             ) : !status ? (
-              <Box>{__("Keine Daten", "pv_bexio_connector")}</Box>
+              <Box>{__("Keine Daten", "pingvin-bexio-sync")}</Box>
             ) : (
-              <Box>{__("Keine Daten", "pv_bexio_connector")}</Box>
+              <Box>{__("Keine Daten", "pingvin-bexio-sync")}</Box>
             )}
           </Stack>
         )}

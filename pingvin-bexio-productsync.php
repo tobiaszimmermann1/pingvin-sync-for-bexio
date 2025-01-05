@@ -5,7 +5,7 @@
  * Description:     Connects WooCommerce to Bexio and syncs products
  * Author:          Tobias Zimmermann
  * Author URI:      https://pingvin.digital/pingvin-bexio-sync
- * Text Domain:     pv_bexio_connector
+ * Text Domain:     pingvin-bexio-sync
  * Domain Path:     /languages
  * Requires Plugins: woocommerce
  * Version:         0.1.2
@@ -132,7 +132,7 @@ class Pingvin_Bexio_ProductSync {
    * Plugin initialization.
    */
   public function plugin_init() {
-      load_plugin_textdomain( 'pv_bexio_connector', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+      load_plugin_textdomain( 'pingvin-bexio-sync', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
   }
 
   /**
@@ -166,14 +166,10 @@ if ( ! function_exists( 'pbs_fs' ) ) {
               'is_premium'          => false,
               'has_addons'          => false,
               'has_paid_plans'      => false,
-              'is_org_compliant'    => false,
               'menu'                => array(
                   'slug'           => 'pingvin-bexio-sync',
                   'contact'        => false,
                   'support'        => false,
-                  'parent'         => array(
-                      'slug' => 'pingvin',
-                  ),
               ),
           ) );
       }

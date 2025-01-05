@@ -42,7 +42,7 @@ function SyncSettings({ setSettingsInterval }) {
       apiCall("POST", "syncSettings", optionsObject).then(res => {
         if (res.status === 200) {
           toast({
-            title: __("Settings successfully updated.", "pv_bexio_connector"),
+            title: __("Settings successfully updated.", "pingvin-bexio-sync"),
             status: "success",
             duration: 5000,
             isClosable: true,
@@ -50,7 +50,7 @@ function SyncSettings({ setSettingsInterval }) {
           })
         } else {
           toast({
-            title: __("An error occured", "pv_bexio_connector"),
+            title: __("An error occured", "pingvin-bexio-sync"),
             description: res.response.data.message,
             status: "error",
             duration: 5000,
@@ -70,12 +70,12 @@ function SyncSettings({ setSettingsInterval }) {
     <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
       <Stack>
         <Text fontSize="md" mt="0" fontWeight="bold">
-          {__("Synchronisierung", "pv_bexio_connector")}
+          {__("Synchronisierung", "pingvin-bexio-sync")}
         </Text>
         <Stack direction="column" gap="4">
           <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
             <Text fontSize="sm" mt="0" fontWeight={700}>
-              {__("Synchronisierung aktivieren:", "pv_bexio_connector")}
+              {__("Synchronisierung aktivieren:", "pingvin-bexio-sync")}
             </Text>
             <Switch
               size="md"
@@ -91,12 +91,12 @@ function SyncSettings({ setSettingsInterval }) {
           </FormControl>
 
           <Text fontSize="sm" mt="-4" fontStyle="italic">
-            {__("Wenn du die Synchronisierung deaktivierst, werden alle geplanten Synchronisierungen abgebrochen.", "pv_bexio_connector")}
+            {__("Wenn du die Synchronisierung deaktivierst, werden alle geplanten Synchronisierungen abgebrochen.", "pingvin-bexio-sync")}
           </Text>
 
           <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
             <Text fontSize="sm" mt="0" fontWeight={700}>
-              {__("Synchronisierungs-Intervall:", "pv_bexio_connector")}
+              {__("Synchronisierungs-Intervall:", "pingvin-bexio-sync")}
             </Text>
             <RadioGroup
               onChange={e => {
@@ -124,7 +124,7 @@ function SyncSettings({ setSettingsInterval }) {
           </FormControl>
 
           <Text fontSize="sm" mt="-4" fontStyle="italic">
-            {__("Wenn du das Intervall änderst, wird die nächste Synchronisierung abgebrochen und entsprechend dem gewählten Intervall neu geplant.", "pv_bexio_connector")}
+            {__("Wenn du das Intervall änderst, wird die nächste Synchronisierung abgebrochen und entsprechend dem gewählten Intervall neu geplant.", "pingvin-bexio-sync")}
           </Text>
         </Stack>
       </Stack>

@@ -95,18 +95,18 @@ class Pingvin_Bexio_ProductSync_Settings {
           <h1>Pingvin Bexio Sync</h1>
         </div>
         <div class="pv_bexio_connector_main bg-white">
-          <h2>Verbinde WooCommerce mit deinem Bexio Konto</h2>
+          <h2><?php echo __("Verbinde WooCommerce mit deinem Bexio Konto","pingvin-bexio-sync"); ?></h2>
       <?php 
 
       if (!$auth->has_bexio_app()) {
         ?>
-        <p>Pingvin Bexio Sync verwendet verwendet die Bexio API, um WooCommerce direkt mit deinem Bexio Konto zu verbinden. <strong>Es wird kein Server dazwischen geschalten und du brauchst keine weiteren Accounts oder Abos.</strong> Dies benötigt einmalig etwas Aufwand und einige Einstellungen in deinem Bexio Konto.</p>
+        <p><?php echo __("Pingvin Bexio Sync verwendet verwendet die Bexio API, um WooCommerce direkt mit deinem Bexio Konto zu verbinden.","pingvin-bexio-sync"); ?> <strong><?php echo __("Es wird kein Server dazwischen geschalten und du brauchst keine weiteren Accounts oder Abos.","pingvin-bexio-sync"); ?></strong> <?php echo __("Dies benötigt einmalig etwas Aufwand und einige Einstellungen in deinem Bexio Konto.","pingvin-bexio-sync"); ?></p>
 
         <div class="pv_manual_box">
           <h3>Anleitung:</h3>
           <ol>
-            <li>Logge dich mit deinem Bexio Konto beim Bexio Developer Portal ein: <a href="https://developer.bexio.com/" target="_blank">Bexio Developer Portal</a></li>
-            <li>Erstelle eine neue Bexio App und konfiguriere sie mit den folgenden Einstellungen.</li>
+            <li><?php echo __("Logge dich mit deinem Bexio Konto beim Bexio Developer Portal ein:","pingvin-bexio-sync"); ?> <a href="https://developer.bexio.com/" target="_blank">Bexio Developer Portal</a></li>
+            <li><?php echo __("Erstelle eine neue Bexio App und konfiguriere sie mit den folgenden Einstellungen.","pingvin-bexio-sync"); ?></li>
             <p class="indent-left">
               <ol>
                 <li><strong>Name of the app:</strong> <span class="mono"><?php echo home_url(); ?></span></li>
@@ -116,28 +116,28 @@ class Pingvin_Bexio_ProductSync_Settings {
                 <li><strong>Allowed redirect URL:</strong> <span class="mono"><?php echo admin_url('admin.php?page=pingvin-bexio-sync&auth=true'); ?></span></li>
               </ol>
             </p>
-            <li>Kopiere die <strong>Client ID</strong> und das <strong>Client Secret</strong> (zu finden unter "App Details") in die vorgesehenen Felder unten</li>
-            <li>Klicke auf "Einstellungen speichern"</li>
+            <li><?php echo __("Kopiere die","pingvin-bexio-sync"); ?> <strong>Client ID</strong> <?php echo __("und das","pingvin-bexio-sync"); ?> <strong>>Client Secret</strong> <?php echo __('(zu finden unter "App Details") in die vorgesehenen Felder unten',"pingvin-bexio-sync"); ?></li>
+            <li><?php echo __('Klicke auf "Einstellungen speichern"',"pingvin-bexio-sync"); ?></li>
           </ol>
         </div>
 
         <form method="post" action="options.php" class="pv_manual_box no-border">
-          <h3>Bexio App Einstellungen:</h3>
+          <h3><?php echo __("Bexio App Einstellungen:","pingvin-bexio-sync"); ?></h3>
           <?php
             settings_fields( 'pv_bexio_option_group' );
             do_settings_sections( 'pv_bexio_general_admin' );
             submit_button("Einstellungen speichern");
           ?>
         </form>
-        <h2>Funktioniert es nicht?</h2>
-        <p>Hier findest du Hilfe: <a href="https://pingvin.digital/pingvin-bexio-sync" target="_blank">Dokumentation & Support</a></p>
+        <h2><?php echo __("Funktioniert es nicht?","pingvin-bexio-sync"); ?></h2>
+        <p><?php echo __("Hier findest du Hilfe:","pingvin-bexio-sync"); ?> <a href="https://pingvin.digital/pingvin-bexio-sync" target="_blank"><?php echo __("Dokumentation & Support","pingvin-bexio-sync"); ?></a></p>
 
         <?php
       } else { 
         ?>
-        <p>Alles ist bereit, um WooCommerce mit Bexio zu verbinden.</p>
-        <p><a href="?page=pingvin-bexio-sync&auth=true" class="button button-primary">Jetzt mit Bexio verbinden</a></p>
-        <p><a href="?page=pingvin-bexio-sync&change_token=true">Bexio Authentifizierungseinstellungen zurücksetzen</a> (Du musst dich neu mit Bexio verbinden)</p>
+        <p><?php echo __("Alles ist bereit, um WooCommerce mit Bexio zu verbinden.","pingvin-bexio-sync"); ?></p>
+        <p><a href="?page=pingvin-bexio-sync&auth=true" class="button button-primary"><?php echo __("Jetzt mit Bexio verbinden","pingvin-bexio-sync"); ?></a></p>
+        <p><a href="?page=pingvin-bexio-sync&change_token=true"><?php echo __("Bexio Authentifizierungseinstellungen zurücksetzen","pingvin-bexio-sync"); ?></a></p>
         <?php
       } ?>
       </div>
@@ -161,10 +161,10 @@ class Pingvin_Bexio_ProductSync_Settings {
         ?>
   
         <h2 class="nav-tab-wrapper">
-          <a href="?page=pingvin-bexio-sync&tab=sync" class="nav-tab <?php echo $active_tab == 'sync' || $active_tab == null ? 'nav-tab-active' : ''; ?>">Produkte</a>
-          <a href="?page=pingvin-bexio-sync&tab=contacts" class="nav-tab <?php echo $active_tab == 'contacts' || $active_tab == null ? 'nav-tab-active' : ''; ?>">Kontakte</a>
-          <a href="?page=pingvin-bexio-sync&tab=orders" class="nav-tab <?php echo $active_tab == 'orders' || $active_tab == null ? 'nav-tab-active' : ''; ?>">Bestellungen</a>
-          <a href="?page=pingvin-bexio-sync&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>">Einstellungen</a>
+          <a href="?page=pingvin-bexio-sync&tab=sync" class="nav-tab <?php echo $active_tab == 'sync' || $active_tab == null ? 'nav-tab-active' : ''; ?>"><?php echo __("Produkte","pingvin-bexio-sync"); ?></a>
+          <a href="?page=pingvin-bexio-sync&tab=contacts" class="nav-tab <?php echo $active_tab == 'contacts' ? 'nav-tab-active' : ''; ?>"><?php echo __("Kontakte","pingvin-bexio-sync"); ?></a>
+          <a href="?page=pingvin-bexio-sync&tab=orders" class="nav-tab <?php echo $active_tab == 'orders' ? 'nav-tab-active' : ''; ?>"><?php echo __("Bestellungen","pingvin-bexio-sync"); ?></a>
+          <a href="?page=pingvin-bexio-sync&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php echo __("Einstellungen","pingvin-bexio-sync"); ?></a>
         </h2>
   
         <?php
@@ -172,21 +172,28 @@ class Pingvin_Bexio_ProductSync_Settings {
             <div id="pv_sync"></div> <?php
           } elseif ( $active_tab == 'settings' ) { ?>
             <div class="pv_bexio_connector_main">
-              <h2>Produkte Synchronisierung</h2>
+              <h2><?php echo __("Produkte-Synchronisierung","pingvin-bexio-sync"); ?></h2>
               <form method="post" action="options.php" class="">
                 <?php
                   settings_fields( 'pv_productsync_option_group' );
                   do_settings_sections( 'pv_productsync_admin' );
                   submit_button();
                 ?>
-                <p><a href="?page=pingvin-bexio-sync&change_token=true">Bexio Authentifizierungseinstellungen zurücksetzen</a> (Du musst dich neu mit Bexio verbinden)</p>
+                <p><a href="?page=pingvin-bexio-sync&change_token=true"><?php echo __("Bexio Authentifizierungseinstellungen zurücksetzen","pingvin-bexio-sync"); ?></a></p>
               </form>
-              <p><a href="/wp-content/pv-bexio.log">Log Datei herunterladen</a></p>
+              <p><a href="/wp-content/pv-bexio.log"><?php echo __("Log Datei herunterladen","pingvin-bexio-sync"); ?></a></p>
+            </div> <?php
+          } elseif ( $active_tab == 'contacts' ) { ?>
+            <div class="pv_bexio_connector_main">
+              <h2><?php echo __("Kontakte-Synchronisierung","pingvin-bexio-sync"); ?></h2>
+              <p><?php echo __("Die Kontaktsynchronisierung ist nur in der PRO Version von Pingvin Bexio Sync erhältlich.","pingvin-bexio-sync"); ?></p>
+            </div> <?php
+          } elseif ( $active_tab == 'orders' ) { ?>
+            <div class="pv_bexio_connector_main">
+              <h2><?php echo __("Bestellungs-Synchronisierung","pingvin-bexio-sync"); ?></h2>
+              <p><?php echo __("Die Bestellungssynchronisierung ist nur in der PRO Version von Pingvin Bexio Sync erhältlich.","pingvin-bexio-sync"); ?></p>
             </div> <?php
           }
-          
-        ?>
-      <?php 
     }
   }
 
@@ -219,7 +226,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_bexio_client_id',
-      'Client ID deiner Bexio App',
+      __('Client ID deiner Bexio App','pingvin-bexio-sync'),
       array( $this, 'pv_bexio_client_id_callback' ),
       'pv_bexio_general_admin',
       'pv_bexio_general_setting_section'
@@ -227,7 +234,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_bexio_client_secret',
-      'Client Secret deiner Bexio App',
+      __('Client Secret deiner Bexio App','pingvin-bexio-sync'),
       array( $this, 'pv_bexio_client_secret_callback' ),
       'pv_bexio_general_admin',
       'pv_bexio_general_setting_section'
@@ -235,7 +242,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_sync_direction',
-      'Synchronisierungs-Richtung <p><small style="font-weight:400;">Wähle die Quelle und das Ziel der Synchronisierung.</small></p>',
+      __('Synchronisierungs-Richtung <p><small style="font-weight:400;">Wähle die Quelle und das Ziel der Synchronisierung.</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_sync_direction_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -243,7 +250,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_missing_products',
-      'Fehlende Produkte Workflow <p><small style="font-weight:400;">Was soll mit Produkten getan werden, die im Ziel vorhanden sind, aber in der Quelle fehlen?</small></p>',
+      __('Fehlende Produkte Workflow <p><small style="font-weight:400;">Was soll mit Produkten getan werden, die im Ziel vorhanden sind, aber in der Quelle fehlen?</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_missing_products_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -253,7 +260,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_tax_rate_standard_bexio',
-      'Normalsteuersatz in Bexio <p><small style="font-weight:400;">MWST Code</small></p>',
+      __('Normalsteuersatz in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_standard_bexio_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -261,7 +268,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_tax_rate_standard_bexio_expense',
-      'Normalsteuersatz Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>',
+      __('Normalsteuersatz Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_standard_bexio_expense_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -269,7 +276,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_tax_rate_standard_woo',
-      'Normalsteuersatz in WooCommerce <p><small style="font-weight:400;">Steuerklasse</small></p>',
+      __('Normalsteuersatz in WooCommerce <p><small style="font-weight:400;">Steuerklasse</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_standard_woo_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -279,7 +286,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_tax_rate_reduced_bexio',
-      'Reduzierter Steuersatz in Bexio <p><small style="font-weight:400;">MWST Code</small></p>',
+      __('Reduzierter Steuersatz in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_reduced_bexio_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -287,7 +294,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_tax_rate_reduced_bexio_expense',
-      'Reduzierter Steuersatz Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>',
+      __('Reduzierter Steuersatz Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_reduced_bexio_expense_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -295,7 +302,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_tax_rate_reduced_bexio_woo',
-      'Reduzierter Steuersatz in WooCommerce <p><small style="font-weight:400;">Steuerklasse</small></p>',
+      __('Reduzierter Steuersatz in WooCommerce <p><small style="font-weight:400;">Steuerklasse</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_reduced_woo_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -305,7 +312,7 @@ class Pingvin_Bexio_ProductSync_Settings {
     
     add_settings_field(
       'pv_productsync_tax_rate_special_bexio',
-      'Sondersatz für Beherbergung in Bexio <p><small style="font-weight:400;">MWST Code</small></p>',
+      __('Sondersatz für Beherbergung in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_special_bexio_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -313,7 +320,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_tax_rate_special_bexio_expense',
-      'Sondersatz für Beherbergung Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>',
+      __('Sondersatz für Beherbergung Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_special_bexio_expense_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -321,7 +328,7 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     add_settings_field(
       'pv_productsync_tax_rate_special_bexio_woo',
-      'Sondersatz für Beherbergung in WooCommerce <p><small style="font-weight:400;">Steuerklasse</small></p>',
+      __('Sondersatz für Beherbergung in WooCommerce <p><small style="font-weight:400;">Steuerklasse</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_special_woo_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
@@ -425,9 +432,9 @@ class Pingvin_Bexio_ProductSync_Settings {
     
 
     echo '<select name="pv_bexio_productsync_options[pv_productsync_missing_products]" id="pv_bexio_productsync_options[pv_productsync_missing_products]">';
-    echo '<option value="0" '.$select.'>Wähle eine Option</option>';
-    echo '<option value="true" '.$keep.'>Behalte die Produkte im Ziel</option>';
-    echo '<option value="false" '.$delete.'>Lösche die Produkte im Ziel</option>';
+    echo '<option value="0" '.$select.'>'.__("Wähle eine Option", "pingvin-bexio-sync").'</option>';
+    echo '<option value="true" '.$keep.'>'.__("Behalte die Produkte im Ziel", "pingvin-bexio-sync").'</option>';
+    echo '<option value="false" '.$delete.'>'.__("Lösche die Produkte im Ziel", "pingvin-bexio-sync").'</option>';
     echo '</select>';
   }
 
@@ -444,9 +451,9 @@ class Pingvin_Bexio_ProductSync_Settings {
     
 
     echo '<select name="pv_bexio_productsync_options[pv_productsync_sync_direction]" id="pv_bexio_productsync_options[pv_productsync_sync_direction]">';
-    echo '<option value="0" '.$select.'>Wähle eine Option</option>';
-    echo '<option value="from_bexio" '.$from_bexio.'>Von Bexio (Quelle) zu WooCommerce (Ziel)</option>';
-    echo '<option value="to_bexio" '.$to_bexio.'>Von WooCommerce (Quelle) zu Bexio (Ziel)</option>';
+    echo '<option value="0" '.$select.'>'.__("Wähle eine Option", "pingvin-bexio-sync").'</option>';
+    echo '<option value="from_bexio" '.$from_bexio.'>'.__("Von Bexio (Quelle) zu WooCommerce (Ziel)", "pingvin-bexio-sync").'</option>';
+    echo '<option value="to_bexio" '.$to_bexio.'>'.__("Von WooCommerce (Quelle) zu Bexio (Ziel)", "pingvin-bexio-sync").'</option>';
     echo '</select>';
   }
 
@@ -503,7 +510,7 @@ class Pingvin_Bexio_ProductSync_Settings {
     if ($value == null) $select = 'selected';
 
     echo '<select name="pv_bexio_productsync_options[pv_productsync_tax_rate_reduced_woo]" id="pv_bexio_productsync_options[pv_productsync_tax_rate_reduced_woo]">';
-    echo '<option value="0" '.$select.'>Wähle eine Option</option>';
+    echo '<option value="0" '.$select.'>'.__("Wähle eine Option", "pingvin-bexio-sync").'</option>';
     foreach ($tax_classes as $slug => $name) {
       echo '<option value="'.$slug.'" '.($value == $slug ? 'selected' : '').'>'.$name.'</option>';
     }
@@ -533,7 +540,7 @@ class Pingvin_Bexio_ProductSync_Settings {
     if ($value == null) $select = 'selected';
 
     echo '<select name="pv_bexio_productsync_options[pv_productsync_tax_rate_special_woo]" id="pv_bexio_productsync_options[pv_productsync_tax_rate_special_woo]">';
-    echo '<option value="0" '.$select.'>Wähle eine Option</option>';
+    echo '<option value="0" '.$select.'>'.__("Wähle eine Option", "pingvin-bexio-sync").'</option>';
     foreach ($tax_classes as $slug => $name) {
       echo '<option value="'.$slug.'" '.($value == $slug ? 'selected' : '').'>'.$name.'</option>';
     }
