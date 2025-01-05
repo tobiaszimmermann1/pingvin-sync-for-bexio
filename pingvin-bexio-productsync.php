@@ -119,7 +119,7 @@ class Pingvin_Bexio_ProductSync {
    * Load admin styles.
    */
   public function admin_load_scripts($screen) {
-    if('pingvin_page_pingvin-bexio-sync' !== $screen) return;
+    if("toplevel_page_pingvin-bexio-sync" !== $screen) return;
     wp_register_style( 'pv_dashboard_style', PV_PLUGIN_URL . 'styles/styles.css?version=0.1.0', false, '0.1.0' );
     wp_enqueue_style( 'pv_dashboard_style' );
 
