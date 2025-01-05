@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:     Pingvin Bexio Sync - Produkte
+ * Plugin Name:     Pingvin Bexio Sync
  * Plugin URI:      https://pingvin.digital/pingvin-bexio-sync
  * Description:     Connects WooCommerce to Bexio and syncs products
  * Author:          Tobias Zimmermann
@@ -8,9 +8,9 @@
  * Text Domain:     pv_bexio_connector
  * Domain Path:     /languages
  * Requires Plugins: woocommerce
- * Version:         0.1.1
+ * Version:         0.1.2
  *
- * @package         Pingvin Bexio Sync - Produkte
+ * @package         Pingvin Bexio Sync
  */
 
 namespace Pingvin;
@@ -142,13 +142,47 @@ class Pingvin_Bexio_ProductSync {
       new Pingvin_Bexio_ProductSync_Settings();
       new PvBexioProductsSync();
       new PvBexioRestRoutes();
-
-      // Initialize the plugin tracker
-      $client = new \Appsero\Client( '1172fbed-e7cc-4a88-a91a-07151798c66f', 'Pingvin Bexio Sync - Produkte', __FILE__ );
-      $client->insights()->init();
-      \Appsero\Updater::init($client);
   }
 }
 
 // Initialize the plugin.
 Pingvin_Bexio_ProductSync::get_instance();
+
+// Freemius integration
+if ( ! function_exists( 'pbs_fs' ) ) {
+  // Create a helper function for easy SDK access.
+  function pbs_fs() {
+      global $pbs_fs;
+
+      if ( ! isset( $pbs_fs ) ) {
+          // Include Freemius SDK.
+          require_once dirname(__FILE__) . '/freemius/start.php';
+
+          $pbs_fs = fs_dynamic_init( array(
+              'id'                  => '17516',
+              'slug'                => 'pingvin-bexio-sync',
+              'type'                => 'plugin',
+              'public_key'          => 'pk_c416996f4ed85c1a1f8b334a1b580',
+              'is_premium'          => false,
+              'has_addons'          => false,
+              'has_paid_plans'      => false,
+              'is_org_compliant'    => false,
+              'menu'                => array(
+                  'slug'           => 'pingvin-bexio-sync',
+                  'contact'        => false,
+                  'support'        => false,
+                  'parent'         => array(
+                      'slug' => 'pingvin',
+                  ),
+              ),
+          ) );
+      }
+
+      return $pbs_fs;
+  }
+
+  // Init Freemius.
+  pbs_fs();
+  // Signal that SDK was initiated.
+  do_action( 'pbs_fs_loaded' );
+}
