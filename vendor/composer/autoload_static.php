@@ -30,18 +30,22 @@ class ComposerStaticInite159e1ec7d27ef80a440d358d0a5cbbf
         'phpseclib3\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
+            1 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
         ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
+            1 => __DIR__ . '/..' . '/psr/log/src',
         ),
         'ParagonIE\\ConstantTime\\' => 
         array (
             0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
+            1 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
         ),
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+            1 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
     );
 

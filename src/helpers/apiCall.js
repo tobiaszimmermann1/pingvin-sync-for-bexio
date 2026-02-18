@@ -6,7 +6,8 @@ const apiCall = async (method, endpoint, params = null) => {
       const response = await axios.get(`${pvProductSyncAppLocalizer.bexioApiUrl}/${endpoint}`, {
         headers: {
           "X-WP-Nonce": pvProductSyncAppLocalizer.nonce
-        }
+        },
+        params: params || undefined
       })
 
       return response

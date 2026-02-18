@@ -14,7 +14,8 @@ const theme = extendTheme({
       fontPrimary: "#041321",
       fontSecondary: "#5c6873",
       border: "#cccccc",
-      inputBorder: "#cccccc"
+      inputBorder: "#cccccc",
+      red: "#d32f2f"
     },
     success: "#2e7d32",
     error: "#d32f2f",
@@ -23,7 +24,7 @@ const theme = extendTheme({
   },
   fonts: {
     body: "system-ui, sans-serif",
-    heading: "Georgia, serif",
+    heading: "system-ui, sans-serif",
     mono: "Menlo, monospace"
   },
   fontSizes: {

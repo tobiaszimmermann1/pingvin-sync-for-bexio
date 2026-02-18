@@ -69,7 +69,12 @@ class Pingvin_Bexio_ProductSync {
       'inc/pingvin-call.php',
       'inc/pingvin-logger-class.php',
       'inc/pingvin-connector-settings-class.php',
-      'inc/pingvin-scheduled-product-sync-class.php',
+      //'inc/pingvin-scheduled-product-sync-class.php',
+      'inc/pingvin-sync-engine-class.php',
+      'inc/products/product-engine.php',
+      'inc/products/product-worker.php',
+      'inc/contacts/contact-engine.php',
+      'inc/contacts/contact-worker.php',
       'inc/pingvin-rest-routes.php',
       'inc/pingvin-auth-class.php',
     ];
@@ -140,7 +145,11 @@ class Pingvin_Bexio_ProductSync {
    */
   private function initialize_classes() {
       new Pingvin_Bexio_ProductSync_Settings();
-      new PvBexioProductsSync();
+      //new PvBexioProductsSync();
+      new PvProductSyncEngine();
+      new PvProductSyncWorker();
+      new PvContactSyncEngine();
+      new PvContactSyncWorker();
       new PvBexioRestRoutes();
   }
 }

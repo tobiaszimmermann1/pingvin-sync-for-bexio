@@ -55,7 +55,7 @@ class Pingvin_Bexio_ProductSync_Auth {
     try {
       $oidc = new OpenIDConnectClient("https://auth.bexio.com/realms/bexio",  $bexio_general_options['pv_bexio_client_id'] , $bexio_general_options['pv_bexio_client_secret'] );
       $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-sync&auth=true'));
-      $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit"));
+      $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit", "kb_order_show", "kb_order_edit", "kb_delivery_show", "kb_delivery_edit", "kb_invoice_show", "kb_invoice_edit", "contact_show", "contact_edit"));
       
       // Check if there is an authorization code in the URL
       if (isset($_GET['code'])) {
@@ -131,18 +131,38 @@ class Pingvin_Bexio_ProductSync_Auth {
    * Checks if the API token is still valid
    */
   public function get_valid_api_token() {
-    $api_token = get_option('pv_bexio_api_key');
+    $api_token    = get_option('pv_bexio_api_key');
     $refresh_token = get_option('pv_bexio_refresh_token');
-    $token_expiry = get_option('pv_bexio_token_expiry');
+    $token_expiry  = get_option('pv_bexio_token_expiry');
 
     if (time() >= $token_expiry || !$api_token || !$refresh_token || !$token_expiry) {
+
+      // --- Mutex: prevent concurrent refreshes burning the single-use refresh token ---
+      // If another AS worker already holds the lock, wait up to 15s for it to finish
+      // and then re-read the freshly stored token instead of refreshing again.
+      if ( get_transient( 'pv_token_refresh_lock' ) ) {
+        PingvinLogger::log( 'info', 'Token refresh already in progress by another worker — waiting.' );
+        $waited = 0;
+        while ( get_transient( 'pv_token_refresh_lock' ) && $waited < 15 ) {
+          sleep( 1 );
+          $waited++;
+        }
+        // Return whatever token the other worker stored — should be fresh now.
+        return get_option( 'pv_bexio_api_key' );
+      }
+
+      set_transient( 'pv_token_refresh_lock', 1, 30 ); // hold for max 30s
+
       PingvinLogger::log('info', 'Invalid or expired tokens, attempting to use refresh token to get new tokens');
       $new_tokens = $this->refresh_api_token($refresh_token);
+
+      delete_transient( 'pv_token_refresh_lock' );
+
       if ($new_tokens && isset($new_tokens['api_token'])) {
         $api_token = $new_tokens['api_token'];
       } else {
-        return null;
         PingvinLogger::log('error', 'Failed to refresh token');
+        return null;
       }
     }
 
@@ -167,7 +187,7 @@ class Pingvin_Bexio_ProductSync_Auth {
     try {
         $oidc = new OpenIDConnectClient("https://auth.bexio.com/realms/bexio", $bexio_general_options['pv_bexio_client_id'], $bexio_general_options['pv_bexio_client_secret']);
         $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-sync&auth=true'));
-        $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit"));
+        $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit", "kb_order_show", "kb_order_edit", "kb_delivery_show", "kb_delivery_edit", "kb_invoice_show", "kb_invoice_edit", "contact_show", "contact_edit"));
         $oidc->refreshToken($refresh_token);
 
         $new_api_token = $oidc->getAccessToken();

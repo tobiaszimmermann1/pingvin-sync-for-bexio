@@ -1,33 +1,58 @@
-<?php 
+<?php
 namespace Pingvin;
+
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Formatter\JsonFormatter;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly.
+    exit;
 }
 
 class PingvinLogger {
-    private static $logger = null;
 
-    // Prevent direct instantiation
+    /** Number of daily log files to retain before the oldest is deleted. */
+    const MAX_FILES = 14;
+
+    private static ?Logger $logger = null;
+
     private function __construct() {}
     private function __clone() {}
 
-    // Get the logger instance
-    public static function getLogger() {
-        if (self::$logger === null) {
-            self::$logger = new Logger('pv-bexio'); 
-            $logPath = WP_CONTENT_DIR . '/pv-bexio.log';
-            self::$logger->pushHandler(new StreamHandler($logPath, Logger::DEBUG)); 
+    public static function getLogger(): Logger {
+        if ( self::$logger === null ) {
+            self::$logger = new Logger( 'pv-bexio' );
+
+            // One file per day, kept for MAX_FILES days.
+            // Files are named: uploads/pv-bexio/pv-bexio-2026-02-18.log
+            $upload_dir = wp_upload_dir();
+            $log_dir    = trailingslashit( $upload_dir['basedir'] ) . 'pv-bexio';
+
+            // Create the directory if it doesn't exist, and drop an index.php
+            // guard so the folder contents are not directly web-browsable.
+            if ( ! is_dir( $log_dir ) ) {
+                wp_mkdir_p( $log_dir );
+                file_put_contents( $log_dir . '/index.php', '<?php // Silence is golden.' );
+            }
+
+            $log_path = $log_dir . '/pv-bexio.log';
+            $handler  = new RotatingFileHandler( $log_path, self::MAX_FILES, Logger::DEBUG );
+
+            // Each line is a JSON object — easy to parse in the admin UI.
+            $handler->setFormatter( new JsonFormatter() );
+
+            self::$logger->pushHandler( $handler );
         }
+
         return self::$logger;
     }
 
-    public static function log($level, $message, array $context = []) {
-        $logger = self::getLogger();
-        $logger->$level($message);
+    /**
+     * @param string $level   Monolog level name: 'debug', 'info', 'warning', 'error', 'critical'
+     * @param string $message Log message.
+     * @param array  $context Optional key→value context data.
+     */
+    public static function log( string $level, string $message, array $context = [] ): void {
+        self::getLogger()->$level( $message, $context );
     }
 }
-
-?>

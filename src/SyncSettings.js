@@ -1,134 +1,177 @@
-import React, { useState, useEffect, useRef } from "react"
-import _ from "lodash"
-import { Flex, Switch, FormControl, useToast, FormLabel, Spinner, Text, Radio, RadioGroup, Stack, Box, TabPanel, Grid, GridItem, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer } from "@chakra-ui/react"
-import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons"
+import React, { useState, useEffect } from "react"
+import { Flex, Switch, FormControl, useToast, Text, Radio, RadioGroup, Stack } from "@chakra-ui/react"
 import apiCall from "./helpers/apiCall"
 import { __ } from "@wordpress/i18n"
 
+const INTERVALS = [
+  { value: "60", label: "1min" },
+  { value: "120", label: "2min" },
+  { value: "300", label: "5min" },
+  { value: "3600", label: "60min" },
+  { value: "14400", label: "4h" },
+  { value: "86400", label: "24h" }
+]
+
 function SyncSettings({ setSettingsInterval }) {
-  const [loading, setLaoding] = useState(false)
   const [settingsLoading, setSettingsLoading] = useState(true)
-  const [userInputRegistered, setUserInputRegistered] = useState(false)
-  const [interval, setInterval] = useState(null)
-  const [enabled, setEnabled] = useState(false)
+
+  // Product sync
+  const [productEnabled, setProductEnabled] = useState(false)
+  const [productInterval, setProductInterval] = useState(null)
+
+  // Contact sync
+  const [contactEnabled, setContactEnabled] = useState(false)
+  const [contactInterval, setContactInterval] = useState(null)
 
   const toast = useToast()
 
+  // Load both on mount in parallel
   useEffect(() => {
-    let isGetOptions = true
-    apiCall("GET", "syncSettings").then(res => {
-      if (res.data) {
-        let optionsData = JSON.parse(res.data)
-        setInterval(optionsData?.interval)
-        setEnabled(optionsData?.enabled)
+    Promise.all([apiCall("GET", "syncSettings", { type: "products" }), apiCall("GET", "syncSettings", { type: "contacts" })]).then(([prodRes, contRes]) => {
+      if (prodRes.data) {
+        setProductEnabled(prodRes.data?.enabled ?? false)
+        setProductInterval(String(prodRes.data?.interval ?? ""))
+      }
+      if (contRes.data) {
+        setContactEnabled(contRes.data?.enabled ?? false)
+        setContactInterval(String(contRes.data?.interval ?? ""))
       }
       setSettingsLoading(false)
     })
-
-    return () => {
-      isGetOptions = false
-    }
   }, [])
 
-  useEffect(() => {
-    let isSaveOptions = true
+  const showToast = (success, message) => {
+    toast({
+      title: success ? __("Settings successfully updated.", "pingvin-bexio-sync") : __("An error occurred", "pingvin-bexio-sync"),
+      description: !success ? message : undefined,
+      status: success ? "success" : "error",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom-right"
+    })
+  }
 
-    if (userInputRegistered === true) {
-      let optionsObject = {
-        interval: interval,
-        enabled: enabled
-      }
+  const saveSettings = (type, enabled, interval) => {
+    apiCall("POST", "syncSettings", { type, enabled, interval }).then(res => {
+      showToast(res.status === 200, res.response?.data?.message)
+    })
+  }
 
-      apiCall("POST", "syncSettings", optionsObject).then(res => {
-        if (res.status === 200) {
-          toast({
-            title: __("Settings successfully updated.", "pingvin-bexio-sync"),
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-            position: "bottom-right"
-          })
-        } else {
-          toast({
-            title: __("An error occured", "pingvin-bexio-sync"),
-            description: res.response.data.message,
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-            position: "bottom-right"
-          })
-        }
-      })
-    }
-
-    return () => {
-      isSaveOptions = false
-    }
-  }, [interval, enabled])
+  const intervalRadios = (
+    <Stack direction="row">
+      {INTERVALS.map(({ value, label }) => (
+        <Radio key={value} value={value} size="md" colorScheme="gray" mr="2">
+          {label}
+        </Radio>
+      ))}
+    </Stack>
+  )
 
   return (
-    <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
-      <Stack>
-        <Text fontSize="md" mt="0" fontWeight="bold">
-          {__("Synchronisierung", "pingvin-bexio-sync")}
-        </Text>
-        <Stack direction="column" gap="4">
-          <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
-            <Text fontSize="sm" mt="0" fontWeight={700}>
-              {__("Synchronisierung aktivieren:", "pingvin-bexio-sync")}
-            </Text>
-            <Switch
-              size="md"
-              colorScheme="gray"
-              isChecked={enabled}
-              onChange={e => {
-                setEnabled(e.target.checked)
-                setUserInputRegistered(true)
-                setSettingsInterval(e.target.checked)
-              }}
-              isDisabled={settingsLoading}
-            />
-          </FormControl>
-
-          <Text fontSize="sm" mt="-4" fontStyle="italic">
-            {__("Wenn du die Synchronisierung deaktivierst, werden alle geplanten Synchronisierungen abgebrochen.", "pingvin-bexio-sync")}
+    <>
+      {/* ── Product sync ────────────────────────────────────────── */}
+      <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
+        <Stack>
+          <Text fontSize="md" mt="0" fontWeight="bold">
+            {__("Produkte", "pingvin-bexio-sync")}
           </Text>
+          <Stack direction="column" gap="4">
+            <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
+              <Text fontSize="sm" mt="0" fontWeight={700}>
+                {__("Synchronisierung aktivieren:", "pingvin-bexio-sync")}
+              </Text>
+              <Switch
+                size="md"
+                colorScheme="gray"
+                isChecked={productEnabled}
+                onChange={e => {
+                  const val = e.target.checked
+                  setProductEnabled(val)
+                  setSettingsInterval(val)
+                  saveSettings("products", val, productInterval)
+                }}
+                isDisabled={settingsLoading}
+              />
+            </FormControl>
 
-          <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
-            <Text fontSize="sm" mt="0" fontWeight={700}>
-              {__("Synchronisierungs-Intervall:", "pingvin-bexio-sync")}
+            <Text fontSize="sm" mt="-4" fontStyle="italic">
+              {__("Wenn du die Synchronisierung deaktivierst, werden alle geplanten Synchronisierungen abgebrochen.", "pingvin-bexio-sync")}
             </Text>
-            <RadioGroup
-              onChange={e => {
-                setInterval(e)
-                setUserInputRegistered(true)
-              }}
-              value={interval}
-              isDisabled={settingsLoading}
-            >
-              <Stack direction="row">
-                <Radio value="300" size="md" colorScheme="gray" mr="2">
-                  5min
-                </Radio>
-                <Radio value="3600" size="md" colorScheme="gray" mr="2">
-                  60min
-                </Radio>
-                <Radio value="14400" size="md" colorScheme="gray" mr="2">
-                  4h
-                </Radio>
-                <Radio value="86400" size="md" colorScheme="gray" mr="2">
-                  24h
-                </Radio>
-              </Stack>
-            </RadioGroup>{" "}
-          </FormControl>
 
-          <Text fontSize="sm" mt="-4" fontStyle="italic">
-            {__("Wenn du das Intervall änderst, wird die nächste Synchronisierung abgebrochen und entsprechend dem gewählten Intervall neu geplant.", "pingvin-bexio-sync")}
-          </Text>
+            <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
+              <Text fontSize="sm" mt="0" fontWeight={700}>
+                {__("Synchronisierungs-Intervall:", "pingvin-bexio-sync")}
+              </Text>
+              <RadioGroup
+                onChange={e => {
+                  setProductInterval(e)
+                  saveSettings("products", productEnabled, e)
+                }}
+                value={productInterval}
+                isDisabled={settingsLoading}
+              >
+                {intervalRadios}
+              </RadioGroup>
+            </FormControl>
+
+            <Text fontSize="sm" mt="-4" fontStyle="italic">
+              {__("Wenn du das Intervall änderst, wird die nächste Synchronisierung abgebrochen und entsprechend dem gewählten Intervall neu geplant.", "pingvin-bexio-sync")}
+            </Text>
+          </Stack>
         </Stack>
-      </Stack>
-    </Flex>
+      </Flex>
+
+      {/* ── Contact sync ────────────────────────────────────────── */}
+      <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
+        <Stack>
+          <Text fontSize="md" mt="0" fontWeight="bold">
+            {__("Kontakte", "pingvin-bexio-sync")}
+          </Text>
+          <Stack direction="column" gap="4">
+            <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
+              <Text fontSize="sm" mt="0" fontWeight={700}>
+                {__("Synchronisierung aktivieren:", "pingvin-bexio-sync")}
+              </Text>
+              <Switch
+                size="md"
+                colorScheme="gray"
+                isChecked={contactEnabled}
+                onChange={e => {
+                  const val = e.target.checked
+                  setContactEnabled(val)
+                  saveSettings("contacts", val, contactInterval)
+                }}
+                isDisabled={settingsLoading}
+              />
+            </FormControl>
+
+            <Text fontSize="sm" mt="-4" fontStyle="italic">
+              {__("Wenn du die Synchronisierung deaktivierst, werden alle geplanten Synchronisierungen abgebrochen.", "pingvin-bexio-sync")}
+            </Text>
+
+            <FormControl display="flex" flexDirection="row" alignItems="flex-start" gap="8">
+              <Text fontSize="sm" mt="0" fontWeight={700}>
+                {__("Synchronisierungs-Intervall:", "pingvin-bexio-sync")}
+              </Text>
+              <RadioGroup
+                onChange={e => {
+                  setContactInterval(e)
+                  saveSettings("contacts", contactEnabled, e)
+                }}
+                value={contactInterval}
+                isDisabled={settingsLoading}
+              >
+                {intervalRadios}
+              </RadioGroup>
+            </FormControl>
+
+            <Text fontSize="sm" mt="-4" fontStyle="italic">
+              {__("Wenn du das Intervall änderst, wird die nächste Synchronisierung abgebrochen und entsprechend dem gewählten Intervall neu geplant.", "pingvin-bexio-sync")}
+            </Text>
+          </Stack>
+        </Stack>
+      </Flex>
+    </>
   )
 }
 

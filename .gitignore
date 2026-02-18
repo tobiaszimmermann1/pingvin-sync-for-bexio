@@ -1,4 +1,3 @@
 node_modules/
-package.json
-composer.json
 vendor/
+build/

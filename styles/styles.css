@@ -92,3 +92,24 @@
 .updated {
   width: 100%;
 }
+
+.pv_bexio_connector_main ul li {
+  margin-left: 30px !important;
+  list-style-type: disc;
+}
+
+.pv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pv-table-container {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+}
+
+.pv_bexio_connector_main select {
+  background-image: none !important;
+  background: #fff !important;
+}

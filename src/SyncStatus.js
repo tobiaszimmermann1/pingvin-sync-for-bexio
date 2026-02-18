@@ -1,182 +1,157 @@
-import React, { useState, useEffect, useRef } from "react"
-import _ from "lodash"
-import { Flex, Badge, useToast, Switch, FormControl, FormLabel, Spinner, Text, Radio, RadioGroup, Stack, Box, TabPanel, Grid, GridItem, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer } from "@chakra-ui/react"
-import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons"
+import React, { useState, useEffect } from "react"
+import { SkeletonCircle, Flex, Badge, Spinner, Text, Stack, Box, Table, Tbody, Tr, Td } from "@chakra-ui/react"
 import apiCall from "./helpers/apiCall"
 import { __ } from "@wordpress/i18n"
 
-function SyncStatus({ enabled }) {
+const STATUS_COLOR = { idle: "green", running: "blue", error: "red" }
+const STATUS_LABEL = {
+  idle: __("Abgeschlossen", "pingvin-bexio-sync"),
+  running: __("Läuft", "pingvin-bexio-sync"),
+  error: __("Fehler", "pingvin-bexio-sync")
+}
+
+/** Reusable state table for one sync type */
+function StateBox({ title, state }) {
+  return (
+    <Box>
+      <Box p="0px 20px" color="pingvin.fontPrimary" bg="pingvin.border" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
+        <Text fontSize="sm" fontWeight="bold">
+          {title}
+        </Text>
+      </Box>
+      <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
+        {!state ? (
+          <Text fontSize="sm" fontStyle="italic">
+            {__("Keine Daten", "pingvin-bexio-sync")}
+          </Text>
+        ) : (
+          <Table size="sm">
+            <Tbody>
+              <Tr>
+                <Td border="0" pl="0">
+                  <Text fontSize="sm" my="0">
+                    {__("Status:", "pingvin-bexio-sync")}
+                  </Text>
+                </Td>
+                <Td border="0">
+                  <Badge colorScheme={STATUS_COLOR[state.status] || "gray"}>{STATUS_LABEL[state.status] || state.status}</Badge>
+                  {state.status === "running" && <Spinner size="xs" ml="2" />}
+                </Td>
+              </Tr>
+              <Tr>
+                <Td border="0" pl="0">
+                  <Text fontSize="sm" my="0">
+                    {__("Abgeschlossen:", "pingvin-bexio-sync")}
+                  </Text>
+                </Td>
+                <Td border="0">
+                  <Text fontSize="sm" my="0">
+                    {state.last_completed_at_fmt || "—"}
+                  </Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td border="0" pl="0">
+                  <Text fontSize="sm" my="0">
+                    {__("Aktualisiert:", "pingvin-bexio-sync")}
+                  </Text>
+                </Td>
+                <Td border="0">
+                  <Text fontSize="sm" my="0">
+                    {state.total_processed ?? "—"}
+                  </Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td border="0" pl="0">
+                  <Text fontSize="sm" my="0">
+                    {__("Übersprungen:", "pingvin-bexio-sync")}
+                  </Text>
+                </Td>
+                <Td border="0">
+                  <Text fontSize="sm" my="0">
+                    {state.skipped_count ?? "—"}
+                  </Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td border="0" pl="0">
+                  <Text fontSize="sm" my="0">
+                    {__("Fehler:", "pingvin-bexio-sync")}
+                  </Text>
+                </Td>
+                <Td border="0">
+                  <Text fontSize="sm" my="0" color={state.failed_count > 0 ? "red.500" : "inherit"}>
+                    {state.failed_count ?? "—"}
+                  </Text>
+                </Td>
+              </Tr>
+              {state.last_error && (
+                <Tr>
+                  <Td border="0" pl="0">
+                    <Text fontSize="sm" my="0">
+                      {__("Meldung:", "pingvin-bexio-sync")}
+                    </Text>
+                  </Td>
+                  <Td border="0">
+                    <Text fontSize="sm" my="0" color="red.500">
+                      {state.last_error}
+                    </Text>
+                  </Td>
+                </Tr>
+              )}
+            </Tbody>
+          </Table>
+        )}
+      </Box>
+    </Box>
+  )
+}
+
+function SyncStatus({ enabled, contactEnabled }) {
   const [loading, setLoading] = useState(true)
-  const [loadingNext, setLoadingNext] = useState(true)
-  const [status, setStatus] = useState(null)
-  const [next, setNext] = useState(null)
-  const [isEnabled, setIsEnabled] = useState(enabled)
-  const [noData, setNoData] = useState(false)
+  const [fetching, setFetching] = useState(false)
+  const [productState, setProductState] = useState(null)
+  const [contactState, setContactState] = useState(null)
+
+  function fetchState() {
+    setFetching(true)
+    Promise.all([apiCall("GET", "syncState", { type: "products" }), apiCall("GET", "syncState", { type: "contacts" })]).then(([productRes, contactRes]) => {
+      setProductState(productRes?.data || null)
+      setContactState(contactRes?.data || null)
+      setLoading(false)
+      setFetching(false)
+    })
+  }
 
   useEffect(() => {
-    let isGetStatus = true
-
-    apiCall("GET", `transient`).then(res => {
-      if (res.data) {
-        setStatus(JSON.parse(res.data.status))
-        setNext(JSON.parse(res.data.next))
-        setLoading(false)
-      } else {
-        setNoData(true)
-      }
-    })
-
-    return () => {
-      isGetStatus = false
-    }
+    fetchState()
   }, [])
 
   useEffect(() => {
-    let statusInterval
-    if (enabled) {
-      statusInterval = setInterval(() => {
-        let isGetStatus = true
-
-        apiCall("GET", `transient`).then(res => {
-          if (res.data) {
-            setStatus(JSON.parse(res.data.status))
-            setNext(JSON.parse(res.data.next))
-          }
-        })
-
-        return () => {
-          isGetStatus = false
-        }
-      }, 5000)
-    }
-
-    return () => {
-      clearInterval(statusInterval)
-    }
-  }, [enabled])
+    if (!enabled && !contactEnabled) return
+    const interval = setInterval(fetchState, 5000)
+    return () => clearInterval(interval)
+  }, [enabled, contactEnabled])
 
   return (
     <Flex flexDirection="row" alignItems="center" justifyContent="flex-start" gap="2" borderBottom="1px" borderColor="pingvin.border" width="100%" pb="25px" mb="25px">
-      <Stack direction="column">
-        <Stack direction="row">
+      <Stack direction="column" width="100%">
+        <Stack direction="row" width="100%" justifyContent="space-between">
           <Text fontSize="md" mt="0" fontWeight="bold">
             {__("Status", "pingvin-bexio-sync")}
-            {enabled ? (
-              <Badge variant="solid" colorScheme="green" ml="3">
-                {__("SYNC EIN", "pingvin-bexio-sync")}
-              </Badge>
-            ) : (
-              <Badge variant="solid" colorScheme="red" ml="3">
-                {__("SYNC AUS", "pingvin-bexio-sync")}
-              </Badge>
-            )}
           </Text>
+          {fetching && <SkeletonCircle size="3" startColor="green.500" endColor="green.200" fadeDuration={1} />}
         </Stack>
-        {loading ? (
-          noData ? (
-            <Text fontSize="sm" mt="-4" fontStyle="italic">
-              {__("Keine Synchronisierungsdaten.", "pingvin-bexio-sync")}
-            </Text>
-          ) : (
-            <Box>
-              <Spinner />
-            </Box>
-          )
-        ) : (
-          <Stack>
-            {status || next ? (
-              <Stack direction="row" gap="10">
-                <Box>
-                  <Box p="0px 20px" color="pingvin.fontPrimary" mt="0" bg="pingvin.border" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
-                    <Text fontSize="sm" fontWeight="bold">
-                      {__("Letzte Synchronisierung", "pingvin-bexio-sync")}
-                    </Text>
-                  </Box>
-                  <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
-                    <Stack>
-                      <Table size="sm" mt="0">
-                        <Tbody>
-                          <Tr>
-                            <Td border="0" pl="0">
-                              <Text fontSize="sm" fontWeight="regular" m="0">
-                                {__("Zeit:", "pingvin-bexio-sync")}
-                              </Text>
-                            </Td>
-                            <Td border="0">
-                              <Text fontSize="sm" m="0">
-                                {status.date}
-                              </Text>
-                            </Td>
-                          </Tr>
-                          <Tr>
-                            <Td border="0" pl="0">
-                              <Text fontSize="sm" fontWeight="regular" m="0">
-                                {__("Produkte:", "pingvin-bexio-sync")}
-                              </Text>
-                            </Td>
-                            <Td border="0">
-                              <Text fontSize="sm" m="0">
-                                {status.products_count}
-                              </Text>
-                            </Td>
-                          </Tr>
-                        </Tbody>
-                      </Table>
-                    </Stack>
-                  </Box>
-                </Box>
 
-                <Box>
-                  <Box p="0px 20px" color="pingvin.fontPrimary" mt="0" bg="pingvin.border" borderColor="pingvin.border" borderWidth="1px" borderTopRadius="md">
-                    <Text fontSize="sm" fontWeight="bold">
-                      {__("Nächste Synchronisierung", "pingvin-bexio-sync")}
-                    </Text>
-                  </Box>
-                  <Box p="5px 20px" color="pingvin.fontPrimary" mt="-1" bg="pingvin.white" borderColor="pingvin.border" borderWidth="1px" borderBottomRadius="md">
-                    {next ? (
-                      <Stack>
-                        <Table size="sm" mt="0">
-                          <Tbody>
-                            <Tr>
-                              <Td border="0" pl="0">
-                                <Text fontSize="sm" fontWeight="regular" m="0">
-                                  {__("Zeit:", "pingvin-bexio-sync")}
-                                </Text>
-                              </Td>
-                              <Td border="0">
-                                <Text fontSize="sm" m="0">
-                                  {next.date}
-                                </Text>
-                              </Td>
-                            </Tr>
-                          </Tbody>
-                        </Table>
-                      </Stack>
-                    ) : (
-                      <Stack>
-                        <Table size="sm" mt="0">
-                          <Tbody>
-                            <Tr>
-                              <Td border="0" pl="0">
-                                <Text fontSize="sm" fontWeight="regular" m="0">
-                                  {__("Keine Synchronisierung geplant", "pingvin-bexio-sync")}
-                                </Text>
-                              </Td>
-                            </Tr>
-                          </Tbody>
-                        </Table>
-                      </Stack>
-                    )}
-                  </Box>
-                </Box>
-              </Stack>
-            ) : !isEnabled ? (
-              <Box>{__("Synchronisierung ist nicht aktiviert", "pingvin-bexio-sync")}</Box>
-            ) : !status ? (
-              <Box>{__("Keine Daten", "pingvin-bexio-sync")}</Box>
-            ) : (
-              <Box>{__("Keine Daten", "pingvin-bexio-sync")}</Box>
-            )}
+        {loading ? (
+          <Box>
+            <Spinner />
+          </Box>
+        ) : (
+          <Stack direction="row" gap="10" flexWrap="wrap">
+            <StateBox title={__("Produkte — Letzte Synchronisierung", "pingvin-bexio-sync")} state={productState} />
+            <StateBox title={__("Kontakte — Letzte Synchronisierung", "pingvin-bexio-sync")} state={contactState} />
           </Stack>
         )}
       </Stack>

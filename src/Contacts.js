@@ -5,31 +5,35 @@ import Settings from "./Settings"
 import SyncSettings from "./SyncSettings"
 import SyncStatus from "./SyncStatus"
 import apiCall from "./helpers/apiCall"
-
 import theme from "./helpers/theme"
+import ContactsTable from "./contacts/ContactsTable"
 
-function App() {
+function Contacts() {
   const [enabled, setEnabled] = useState(null)
-  const [contactEnabled, setContactEnabled] = useState(null)
 
   useEffect(() => {
-    Promise.all([apiCall("GET", "syncSettings", { type: "products" }), apiCall("GET", "syncSettings", { type: "contacts" })]).then(([productRes, contactRes]) => {
-      if (productRes?.data) setEnabled(productRes.data.enabled)
-      if (contactRes?.data) setContactEnabled(contactRes.data.enabled)
+    let isGetOptions = true
+
+    apiCall("GET", `syncSettings`).then(res => {
+      if (res.data) {
+        setEnabled(JSON.parse(res.data).enabled)
+      }
     })
+
+    return () => {
+      isGetOptions = false
+    }
   }, [])
 
   return (
     <ChakraProvider theme={theme}>
       <Stack gap="3">
-        <Flex flexDirection="column" alignItems="center" justifyContent="flex-start" className="pv_bexio_connector_main">
-          <SyncStatus enabled={enabled} contactEnabled={contactEnabled} />
-          <SyncSettings setSettingsInterval={setEnabled} />
-          <Settings />
+        <Flex flexDirection="column" alignItems="center" justifyContent="flex-start" className="" mt="2">
+          <ContactsTable />
         </Flex>
       </Stack>
     </ChakraProvider>
   )
 }
 
-export default App
+export default Contacts
