@@ -109,7 +109,6 @@
   border-collapse: collapse;
 }
 
-.pv_bexio_connector_main select {
-  background-image: none !important;
-  background: #fff !important;
+.chakra-select__icon-wrapper {
+  display: none !important;
 }

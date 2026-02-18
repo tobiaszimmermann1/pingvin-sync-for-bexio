@@ -69,12 +69,14 @@ class Pingvin_Bexio_ProductSync {
       'inc/pingvin-call.php',
       'inc/pingvin-logger-class.php',
       'inc/pingvin-connector-settings-class.php',
-      //'inc/pingvin-scheduled-product-sync-class.php',
       'inc/pingvin-sync-engine-class.php',
       'inc/products/product-engine.php',
       'inc/products/product-worker.php',
       'inc/contacts/contact-engine.php',
       'inc/contacts/contact-worker.php',
+      'inc/bexio-reference-data.php',
+      'inc/orders/contact-push-helper.php',
+      'inc/orders/order-push-worker.php',
       'inc/pingvin-rest-routes.php',
       'inc/pingvin-auth-class.php',
     ];
@@ -97,6 +99,9 @@ class Pingvin_Bexio_ProductSync {
     register_deactivation_hook( __FILE__, [ $this, 'on_deactivation' ] );
     add_action( 'admin_enqueue_scripts', [ $this, 'admin_load_scripts' ] );
     add_action( 'init', [ $this, 'plugin_init' ] );
+    add_action( 'woocommerce_checkout_order_created', function( $order ) {
+      PvOrderPushWorker::enqueue( $order->get_id() );
+    } );
 
     // Initialize other classes.
     $this->initialize_classes();
@@ -150,6 +155,8 @@ class Pingvin_Bexio_ProductSync {
       new PvProductSyncWorker();
       new PvContactSyncEngine();
       new PvContactSyncWorker();
+      new PvBexioReferenceData();
+      new PvOrderPushWorker();
       new PvBexioRestRoutes();
   }
 }

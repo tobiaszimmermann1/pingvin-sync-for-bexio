@@ -104,6 +104,33 @@ class PvBexioRestRoutes {
       }
     ));
 
+    // reference data: Bexio taxes cache
+    register_rest_route( 'pingvin/v1', '/bexioTaxes', array(
+      'methods' => 'GET',
+      'callback' => array($this, 'bexio_taxes'),
+      'permission_callback' => function() {
+        return current_user_can( 'edit_others_posts' );
+      }
+    ));
+
+    // reference data: Bexio users cache
+    register_rest_route( 'pingvin/v1', '/bexioUsers', array(
+      'methods' => 'GET',
+      'callback' => array($this, 'bexio_users'),
+      'permission_callback' => function() {
+        return current_user_can( 'edit_others_posts' );
+      }
+    ));
+
+    // trigger manual refresh of reference data
+    register_rest_route( 'pingvin/v1', '/refreshReferenceData', array(
+      'methods' => 'POST',
+      'callback' => array($this, 'refresh_reference_data'),
+      'permission_callback' => function() {
+        return current_user_can( 'edit_others_posts' );
+      }
+    ));
+
   }
 
   /*************************************
@@ -303,11 +330,24 @@ class PvBexioRestRoutes {
       $all_orders = wc_get_orders(array('limit' => -1));
       $total = count($all_orders);
 
+      // bexio order status map
+      $bexio_order_status_map = [
+        5 => 'pending',
+        15 => 'partial',
+        6 => 'done',
+        21 => 'cancelled',
+      ];
+
       // build items array and include the `pv_bexio_sync` user meta
       $items = array();
       if (!empty($orders)) {
         foreach ($orders as $o) {
           $meta = $o->get_meta('pv_bexio_sync');
+          $bexio_order_nr = $o->get_meta('_bexio_order_nr', true);
+          $bexio_order_id = $o->get_meta('_bexio_order_id', true);
+          $bexio_order_status_raw = $o->get_meta('_bexio_order_status', true);
+          $bexio_order_status = $bexio_order_status_map[ (int) $bexio_order_status_raw ] ?? 'unknown';
+          
           $items[] = array(
             'ID' => $o->get_id(),
             'date' => $o->get_date_created()->date('Y-m-d H:i:s'),
@@ -315,6 +355,9 @@ class PvBexioRestRoutes {
             'price' => $o->get_total(),
             'status' => $o->get_status(),
             'pv_bexio_sync' => $meta,
+            'bexio_order_nr' => $bexio_order_nr,
+            'bexio_order_id' => $bexio_order_id,
+            'bexio_order_status' => $bexio_order_status,
           );
         }
       }
@@ -386,6 +429,38 @@ class PvBexioRestRoutes {
       return [];
     }
     return array_slice( $all, -$n );
+  }
+
+  /*************************************
+   * Reference data routes
+   *////////////////////////////////////
+
+  function bexio_taxes( $request ) {
+    $data  = PvBexioReferenceData::get_taxes();
+    $stale = (bool) get_option( 'pv_bexio_taxes_stale', false );
+    return new \WP_REST_Response( [
+      'data'      => $data,
+      'stale'     => $stale,
+      'scheduled' => PvBexioReferenceData::is_scheduled(),
+    ], 200 );
+  }
+
+  function bexio_users( $request ) {
+    $data  = PvBexioReferenceData::get_users();
+    $stale = (bool) get_option( 'pv_bexio_users_stale', false );
+    return new \WP_REST_Response( [
+      'data'      => $data,
+      'stale'     => $stale,
+      'scheduled' => PvBexioReferenceData::is_scheduled(),
+    ], 200 );
+  }
+
+  function refresh_reference_data( $request ) {
+    $result = ( new PvBexioReferenceData() )->refresh();
+    return new \WP_REST_Response( [
+      'taxes_updated' => $result['taxes'],
+      'users_updated' => $result['users'],
+    ], 200 );
   }
 
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import _ from "lodash"
-import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons"
-import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Badge, Flex, ChakraProvider, extendTheme, Button, Spinner, Alert, AlertIcon, AlertTitle, AlertDescription, Stack, Box, List, ListItem, ListIcon, OrderedList, UnorderedList, Text, Tabs, TabList, TabPanels, Tab, TabPanel, Grid, GridItem } from "@chakra-ui/react"
+import { WarningIcon, CheckCircleIcon, ExternalLinkIcon, TimeIcon } from "@chakra-ui/icons"
+import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Badge, Flex, ChakraProvider, extendTheme, Button, Spinner, Alert, AlertIcon, AlertTitle, AlertDescription, Stack, Box, List, ListItem, ListIcon, OrderedList, UnorderedList, Text, Tabs, TabList, TabPanels, Tab, TabPanel, Grid, GridItem, Link } from "@chakra-ui/react"
 import apiCall from "./helpers/apiCall"
 import { __ } from "@wordpress/i18n"
 import theme from "./helpers/theme"
@@ -100,7 +100,36 @@ function Orders() {
                             <Td>{order.customer}</Td>
                             <Td>{order.price}</Td>
                             <Td>{order.status}</Td>
-                            <Td>{order.pv_bexio_sync ? <CheckCircleIcon color="pingvin.primary" /> : <WarningIcon color="pingvin.red" />}</Td>
+                            <Td>
+                              {order.pv_bexio_sync ? (
+                                <Stack gap="1">
+                                  <Flex flexDirection="row" alignItems="center" gap="1" justifyContent="flex-start">
+                                    <CheckCircleIcon color="green" />
+                                    <Text fontSize="xs" mt="0" mb="0">
+                                      {__("Zuletzt synchronisiert am", "pingvin-bexio-sync")} {order.pv_bexio_sync && order.pv_bexio_sync.last_sync ? new Date(order.pv_bexio_sync.last_sync).toLocaleString() : __("Unbekannt", "pingvin-bexio-sync")}
+                                    </Text>
+                                  </Flex>
+                                  <Link href={`https://office.bexio.com/index.php/kb_order/show/id/${order.bexio_order_id}`} isExternal>
+                                    <Flex flexDirection="row" alignItems="center" gap="1" justifyContent="flex-start">
+                                      <ExternalLinkIcon color="pingvin.primary" />
+                                      <Text fontSize="xs" mt="0" mb="0">
+                                        {order.bexio_order_nr ? `${__("Bexio Auftrag:", "pingvin-bexio-sync")} ${order.bexio_order_nr}` : __("Kein Bexio Auftrag", "pingvin-bexio-sync")}
+                                      </Text>
+                                    </Flex>
+                                  </Link>
+                                  {/*}
+                                  <Flex flexDirection="row" alignItems="center" gap="1" justifyContent="flex-start">
+                                    <TimeIcon color="pingvin.primary" />
+                                    <Text fontSize="xs" mt="0" mb="0">
+                                      {order.bexio_order_status ? `${__("Bexio Status:", "pingvin-bexio-sync")} ${order.bexio_order_status}` : __("Kein Bexio Status", "pingvin-bexio-sync")}
+                                    </Text>
+                                  </Flex>
+                                  */}
+                                </Stack>
+                              ) : (
+                                <WarningIcon color="pingvin.red" />
+                              )}
+                            </Td>
                           </Tr>
                         )
                       })}

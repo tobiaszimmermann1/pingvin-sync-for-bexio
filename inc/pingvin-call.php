@@ -14,6 +14,10 @@ function pv_api_call($method, $endpoint, $payload = null) {
     'Accept: application/json',
     "Authorization: Bearer ".$api_token,
   ];
+
+  if ( $method === 'POST' && $payload !== null ) {
+    $headers[] = 'Content-Type: application/json';
+  }
   
   ob_start();  
   $out = fopen('php://output', 'w');

@@ -144,7 +144,14 @@ class Pingvin_Bexio_ProductSync_Settings {
       <?php
 
     } else {
-      $this->pv_bexio_productsync_options = get_option( 'pv_bexio_productsync_options' ); 
+      $this->pv_bexio_productsync_options = get_option( 'pv_bexio_productsync_options' );
+
+      // Handle immediate reference data refresh triggered by the warning notice button.
+      if ( isset( $_GET['pv_refresh_ref'] ) && check_admin_referer( 'pv_refresh_ref' ) ) {
+        ( new PvBexioReferenceData() )->refresh();
+        wp_redirect( admin_url( 'admin.php?page=pingvin-bexio-sync&tab=settings&pv_refreshed=1' ) );
+        exit;
+      }
       ?>
   
       <div class="wrap">
@@ -172,6 +179,39 @@ class Pingvin_Bexio_ProductSync_Settings {
           if ( $active_tab == 'sync' || $active_tab == null ) { ?>
             <div id="pv_sync"></div> <?php
           } elseif ( $active_tab == 'settings' ) { ?>
+            <?php
+              $ref_taxes_ok  = PvBexioReferenceData::get_taxes() !== null;
+              $ref_users_ok  = PvBexioReferenceData::get_users() !== null;
+              $taxes_stale   = (bool) get_option( 'pv_bexio_taxes_stale' );
+              $users_stale   = (bool) get_option( 'pv_bexio_users_stale' );
+              $show_warning  = ! $ref_taxes_ok || ! $ref_users_ok || $taxes_stale || $users_stale;
+              $show_success  = isset( $_GET['pv_refreshed'] ) && $_GET['pv_refreshed'] === '1';
+
+              if ( $show_success ) { ?>
+                <div class="notice notice-success inline" style="margin-bottom:16px;">
+                  <p><?php esc_html_e( 'Referenzdaten wurden erfolgreich aktualisiert.', 'pingvin-bexio-sync' ); ?></p>
+                </div>
+              <?php }
+
+              if ( $show_warning ) {
+                $parts = [];
+                if ( ! $ref_taxes_ok || ! $ref_users_ok ) $parts[] = __( 'Referenzdaten fehlen', 'pingvin-bexio-sync' );
+                if ( $taxes_stale ) $parts[] = __( 'Steuerliste hat sich geändert', 'pingvin-bexio-sync' );
+                if ( $users_stale ) $parts[] = __( 'Benutzerliste hat sich geändert', 'pingvin-bexio-sync' );
+                $refresh_url = wp_nonce_url(
+                  admin_url( 'admin.php?page=pingvin-bexio-sync&tab=settings&pv_refresh_ref=1' ),
+                  'pv_refresh_ref'
+                );
+                ?>
+                <div class="notice notice-warning inline" style="display:flex;align-items:center;gap:16px;margin-bottom:16px;margin-top:16px;">
+                  <p style="margin:0;"><strong><?php esc_html_e( 'Achtung:', 'pingvin-bexio-sync' ); ?></strong>
+                    <?php echo esc_html( implode( ', ', $parts ) ); ?>.
+                  </p>
+                  <a href="<?php echo esc_url( $refresh_url ); ?>" class="margin-left:10px;" style="white-space:nowrap;flex-shrink:0;">
+                    <?php esc_html_e( 'Jetzt aktualisieren', 'pingvin-bexio-sync' ); ?>
+                  </a>
+                </div>
+            <?php } ?>
             <div class="pv_bexio_connector_main">
               <form method="post" action="options.php" class="">
                 <?php
@@ -179,9 +219,8 @@ class Pingvin_Bexio_ProductSync_Settings {
                   do_settings_sections( 'pv_productsync_admin' );
                   submit_button();
                 ?>
-                <p><a href="?page=pingvin-bexio-sync&change_token=true"><?php echo __("Bexio Authentifizierungseinstellungen zurücksetzen","pingvin-bexio-sync"); ?></a></p>
+                <p><a href="?page=pingvin-bexio-sync&change_token=true"><?php echo __('Bexio Authentifizierungseinstellungen zurücksetzen','pingvin-bexio-sync'); ?></a></p>
               </form>
-              <p><a href="/wp-content/pv-bexio.log"><?php echo __("Log Datei herunterladen","pingvin-bexio-sync"); ?></a></p>
             </div> <?php
           }  elseif ( $active_tab == 'products' ) { ?>
             <div id="pv_products"></div>
@@ -316,6 +355,7 @@ class Pingvin_Bexio_ProductSync_Settings {
       'pv_productsync_setting_section'
     );
 
+    /*
     add_settings_field(
       'pv_productsync_tax_rate_standard_bexio_expense',
       __('Normalsteuersatz Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
@@ -323,6 +363,7 @@ class Pingvin_Bexio_ProductSync_Settings {
       'pv_productsync_admin',
       'pv_productsync_setting_section'
     );
+    */
 
     add_settings_field(
       'pv_productsync_tax_rate_standard_woo',
@@ -342,6 +383,7 @@ class Pingvin_Bexio_ProductSync_Settings {
       'pv_productsync_setting_section'
     );
 
+    /*
     add_settings_field(
       'pv_productsync_tax_rate_reduced_bexio_expense',
       __('Reduzierter Steuersatz Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
@@ -349,6 +391,7 @@ class Pingvin_Bexio_ProductSync_Settings {
       'pv_productsync_admin',
       'pv_productsync_setting_section'
     );
+    */
 
     add_settings_field(
       'pv_productsync_tax_rate_reduced_bexio_woo',
@@ -368,6 +411,7 @@ class Pingvin_Bexio_ProductSync_Settings {
       'pv_productsync_setting_section'
     );
 
+    /*
     add_settings_field(
       'pv_productsync_tax_rate_special_bexio_expense',
       __('Sondersatz für Beherbergung Vorsteuer in Bexio <p><small style="font-weight:400;">MWST Code</small></p>','pingvin-bexio-sync'),
@@ -375,11 +419,21 @@ class Pingvin_Bexio_ProductSync_Settings {
       'pv_productsync_admin',
       'pv_productsync_setting_section'
     );
+    */
 
     add_settings_field(
       'pv_productsync_tax_rate_special_bexio_woo',
       __('Sondersatz für Beherbergung in WooCommerce <p><small style="font-weight:400;">Steuerklasse</small></p>','pingvin-bexio-sync'),
       array( $this, 'pv_productsync_tax_rate_special_woo_callback' ),
+      'pv_productsync_admin',
+      'pv_productsync_setting_section'
+    );
+
+    // Default Bexio user for order creation
+    add_settings_field(
+      'pv_bexio_default_user_id',
+      __('Standard Bexio Benutzer <p><small style="font-weight:400;">Wird für neue Bestellungen in Bexio verwendet.</small></p>', 'pingvin-bexio-sync'),
+      array( $this, 'pv_bexio_default_user_callback' ),
       'pv_productsync_admin',
       'pv_productsync_setting_section'
     );
@@ -430,6 +484,10 @@ class Pingvin_Bexio_ProductSync_Settings {
 
     if ( isset( $input['pv_productsync_tax_rate_special_woo'] ) ) {
       $sanitary_values['pv_productsync_tax_rate_special_woo'] = sanitize_text_field( $input['pv_productsync_tax_rate_special_woo'] );
+    }
+
+    if ( isset( $input['pv_bexio_default_user_id'] ) ) {
+      $sanitary_values['pv_bexio_default_user_id'] = absint( $input['pv_bexio_default_user_id'] );
     }
 
     return $sanitary_values;
@@ -529,17 +587,13 @@ class Pingvin_Bexio_ProductSync_Settings {
   }
 
   public function pv_productsync_tax_rate_standard_bexio_callback() {
-    printf(
-      '<input class="medium-text" type="text" name="pv_bexio_productsync_options[pv_productsync_tax_rate_standard_bexio]" id="pv_productsync_tax_rate_standard_bexio" value="%s">',
-      isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_standard_bexio'] ) ? esc_attr( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_standard_bexio']) : ''
-    );
+    $saved = isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_standard_bexio'] ) ? (string) $this->pv_bexio_productsync_options['pv_productsync_tax_rate_standard_bexio'] : '';
+    $this->render_bexio_tax_select( 'pv_productsync_tax_rate_standard_bexio', $saved );
   }
 
   public function pv_productsync_tax_rate_standard_bexio_expense_callback() {
-    printf(
-      '<input class="medium-text" type="text" name="pv_bexio_productsync_options[pv_productsync_tax_rate_standard_bexio_expense]" id="pv_productsync_tax_rate_standard_bexio_expense" value="%s">',
-      isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_standard_bexio_expense'] ) ? esc_attr( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_standard_bexio_expense']) : ''
-    );
+    $saved = isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_standard_bexio_expense'] ) ? (string) $this->pv_bexio_productsync_options['pv_productsync_tax_rate_standard_bexio_expense'] : '';
+    $this->render_bexio_tax_select( 'pv_productsync_tax_rate_standard_bexio_expense', $saved );
   }
 
   public function pv_productsync_tax_rate_standard_woo_callback() {
@@ -559,17 +613,13 @@ class Pingvin_Bexio_ProductSync_Settings {
   }
 
   public function pv_productsync_tax_rate_reduced_bexio_callback() {
-    printf(
-      '<input class="medium-text" type="text" name="pv_bexio_productsync_options[pv_productsync_tax_rate_reduced_bexio]" id="pv_productsync_tax_rate_reduced_bexio" value="%s">',
-      isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_reduced_bexio'] ) ? esc_attr( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_reduced_bexio']) : ''
-    );
+    $saved = isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_reduced_bexio'] ) ? (string) $this->pv_bexio_productsync_options['pv_productsync_tax_rate_reduced_bexio'] : '';
+    $this->render_bexio_tax_select( 'pv_productsync_tax_rate_reduced_bexio', $saved );
   }
 
   public function pv_productsync_tax_rate_reduced_bexio_expense_callback() {
-    printf(
-      '<input class="medium-text" type="text" name="pv_bexio_productsync_options[pv_productsync_tax_rate_reduced_bexio_expense]" id="pv_productsync_tax_rate_reduced_bexio_expense" value="%s">',
-      isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_reduced_bexio_expense'] ) ? esc_attr( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_reduced_bexio_expense']) : ''
-    );
+    $saved = isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_reduced_bexio_expense'] ) ? (string) $this->pv_bexio_productsync_options['pv_productsync_tax_rate_reduced_bexio_expense'] : '';
+    $this->render_bexio_tax_select( 'pv_productsync_tax_rate_reduced_bexio_expense', $saved );
   }
 
   public function pv_productsync_tax_rate_reduced_woo_callback() {
@@ -589,17 +639,13 @@ class Pingvin_Bexio_ProductSync_Settings {
   }
 
   public function pv_productsync_tax_rate_special_bexio_callback() {
-    printf(
-      '<input class="medium-text" type="text" name="pv_bexio_productsync_options[pv_productsync_tax_rate_special_bexio]" id="pv_productsync_tax_rate_special_bexio" value="%s">',
-      isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_special_bexio'] ) ? esc_attr( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_special_bexio']) : ''
-    );
+    $saved = isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_special_bexio'] ) ? (string) $this->pv_bexio_productsync_options['pv_productsync_tax_rate_special_bexio'] : '';
+    $this->render_bexio_tax_select( 'pv_productsync_tax_rate_special_bexio', $saved );
   }
 
   public function pv_productsync_tax_rate_special_bexio_expense_callback() {
-    printf(
-      '<input class="medium-text" type="text" name="pv_bexio_productsync_options[pv_productsync_tax_rate_special_bexio_expense]" id="pv_productsync_tax_rate_special_bexio_expense" value="%s">',
-      isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_special_bexio_expense'] ) ? esc_attr( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_special_bexio_expense']) : ''
-    );
+    $saved = isset( $this->pv_bexio_productsync_options['pv_productsync_tax_rate_special_bexio_expense'] ) ? (string) $this->pv_bexio_productsync_options['pv_productsync_tax_rate_special_bexio_expense'] : '';
+    $this->render_bexio_tax_select( 'pv_productsync_tax_rate_special_bexio_expense', $saved );
   }
 
   public function pv_productsync_tax_rate_special_woo_callback() {
@@ -617,4 +663,56 @@ class Pingvin_Bexio_ProductSync_Settings {
     }
     echo '</select>';
   }
-}
+  // ---------------------------------------------------------------
+  // Bexio reference data helpers
+  // ---------------------------------------------------------------
+
+  /**
+   * Renders a <select> populated from the cached Bexio tax list.
+   * Stores the Bexio tax ID as the option value.
+   * Shows a disabled placeholder when the cache is empty.
+   */
+  private function render_bexio_tax_select( string $field_key, string $saved_value ): void {
+    $taxes = PvBexioReferenceData::get_taxes();
+    $name  = 'pv_bexio_productsync_options[' . $field_key . ']';
+    echo '<select name="' . esc_attr( $name ) . '" id="' . esc_attr( $field_key ) . '">';
+    echo '<option value="">' . esc_html__( 'Wähle eine Option', 'pingvin-bexio-sync' ) . '</option>';
+    if ( is_array( $taxes ) ) {
+      foreach ( $taxes as $tax ) {
+        $id    = (string) ( $tax['id'] ?? '' );
+        $label = ! empty( $tax['display_name'] )
+          ? $tax['display_name']
+          : ( ( $tax['code'] ?? '' ) . ' (' . ( $tax['value'] ?? '' ) . '%)' );
+        echo '<option value="' . esc_attr( $id ) . '" ' . selected( $id, $saved_value, false ) . '>' . esc_html( $label ) . '</option>';
+      }
+    } else {
+      echo '<option value="" disabled>' . esc_html__( 'Keine Daten – zuerst Referenzdaten laden', 'pingvin-bexio-sync' ) . '</option>';
+    }
+    echo '</select>';
+  }
+
+  /**
+   * Renders a <select> populated from the cached Bexio users list.
+   * Stores the Bexio user ID as the option value.
+   */
+  public function pv_bexio_default_user_callback(): void {
+    $saved = isset( $this->pv_bexio_productsync_options['pv_bexio_default_user_id'] )
+      ? (int) $this->pv_bexio_productsync_options['pv_bexio_default_user_id']
+      : 0;
+    $users = PvBexioReferenceData::get_users();
+    echo '<select name="pv_bexio_productsync_options[pv_bexio_default_user_id]" id="pv_bexio_default_user_id">';
+    echo '<option value="0">' . esc_html__( 'Wähle einen Benutzer', 'pingvin-bexio-sync' ) . '</option>';
+    if ( is_array( $users ) ) {
+      foreach ( $users as $user ) {
+        $id   = (int) ( $user['id'] ?? 0 );
+        $name = trim( ( $user['firstname'] ?? '' ) . ' ' . ( $user['lastname'] ?? '' ) );
+        if ( ! empty( $user['email'] ) ) {
+          $name .= ' (' . $user['email'] . ')';
+        }
+        echo '<option value="' . esc_attr( (string) $id ) . '" ' . selected( $id, $saved, false ) . '>' . esc_html( $name ) . '</option>';
+      }
+    } else {
+      echo '<option value="" disabled>' . esc_html__( 'Keine Daten – zuerst Referenzdaten laden', 'pingvin-bexio-sync' ) . '</option>';
+    }
+    echo '</select>';
+  }}

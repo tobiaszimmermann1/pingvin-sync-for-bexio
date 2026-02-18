@@ -298,9 +298,10 @@ class PvProductSyncWorker {
 
     $map = [];
     foreach ( $res['result'] as $tax ) {
-      if ( $tax->code === $standard_bexio ) $map[ $tax->id ] = $standard_woo;
-      if ( $tax->code === $reduced_bexio  ) $map[ $tax->id ] = $reduced_woo;
-      if ( $tax->code === $special_bexio  ) $map[ $tax->id ] = $special_woo;
+      // Settings now store the Bexio tax ID (integer), not the code string.
+      if ( (string) $tax->id === (string) $standard_bexio ) $map[ $tax->id ] = $standard_woo;
+      if ( (string) $tax->id === (string) $reduced_bexio  ) $map[ $tax->id ] = $reduced_woo;
+      if ( (string) $tax->id === (string) $special_bexio  ) $map[ $tax->id ] = $special_woo;
     }
 
     return $map;
