@@ -49,10 +49,6 @@ class PvOrderPushWorker {
     }
   }
 
-  // ---------------------------------------------------------------
-  // Main entry point (called by Action Scheduler)
-  // ---------------------------------------------------------------
-
   /**
    * @param int $order_id  WooCommerce order ID.
    */
@@ -65,7 +61,6 @@ class PvOrderPushWorker {
       return;
     }
 
-    // --- a. Idempotency guard ----------------------------------------
     if ( $order->get_meta( '_bexio_order_id', true ) ) {
       PingvinLogger::log(
         'info',
@@ -75,7 +70,6 @@ class PvOrderPushWorker {
       return;
     }
 
-    // --- b. Settings guard -------------------------------------------
     $opts         = get_option( 'pv_bexio_productsync_options', [] );
     $default_user = (int) ( $opts['pv_bexio_default_user_id'] ?? 0 );
 
@@ -85,13 +79,11 @@ class PvOrderPushWorker {
         self::LOG_PREFIX . " No default Bexio user configured — cannot push order #{$order_id}. "
         . 'Set a default user in the plugin settings.'
       );
-      // Throw so AS marks the action as failed (visible in AS admin UI).
-      throw new \RuntimeException(
-        self::LOG_PREFIX . " Aborted: default_user_id not configured (order #{$order_id})."
-      );
+      $order->update_meta_data( '_bexio_push_status', 'failed' );
+      $order->save_meta_data();
+      return; // Config error — no point retrying until settings are fixed.
     }
 
-    // --- c. Contact resolution ---------------------------------------
     $contact_id = PvContactPushHelper::ensure_bexio_contact( $order );
 
     if ( $contact_id === null ) {
@@ -100,11 +92,10 @@ class PvOrderPushWorker {
         self::LOG_PREFIX . " Could not resolve Bexio contact for order #{$order_id} — aborting."
       );
       throw new \RuntimeException(
-        self::LOG_PREFIX . " Aborted: contact resolution failed (order #{$order_id})."
+        esc_html( self::LOG_PREFIX . " Aborted: contact resolution failed (order #{$order_id})." )
       );
     }
 
-    // --- d. Build tax ID map (WC tax class → Bexio tax ID) -----------
     $tax_id_map = $this->build_tax_id_map( $opts );
 
     if ( ! isset( $tax_id_map[''] ) ) {
@@ -113,15 +104,13 @@ class PvOrderPushWorker {
         self::LOG_PREFIX . " No standard Bexio tax rate configured — cannot push order #{$order_id}. "
         . 'Map the standard WC tax rate in the plugin settings.'
       );
-      throw new \RuntimeException(
-        self::LOG_PREFIX . " Aborted: standard tax rate not configured (order #{$order_id})."
-      );
+      $order->update_meta_data( '_bexio_push_status', 'failed' );
+      $order->save_meta_data();
+      return; // Config error — no point retrying until settings are fixed.
     }
 
-    // --- e. Map WC line items → Bexio positions ----------------------
     $positions = $this->build_positions( $order, $tax_id_map );
 
-    // --- f. Build and send the kb_order payload ----------------------
     // mwst_type:
     //   0 = taxes apply  (use when WC tax is enabled)
     //   2 = exempt        (use when WC tax is globally disabled)
@@ -142,12 +131,13 @@ class PvOrderPushWorker {
 
     if ( empty( $res ) || (int) ( $res['status'] ?? 0 ) !== 201 ) {
       $http = $res['status'] ?? '?';
+      $body = ! empty( $res['result'] ) ? wp_json_encode( $res['result'] ) : '(empty)';
       PingvinLogger::log(
         'error',
-        self::LOG_PREFIX . " POST 2.0/kb_order failed (HTTP {$http}) for order #{$order_id}."
+        self::LOG_PREFIX . " POST 2.0/kb_order failed (HTTP {$http}) for order #{$order_id}. Body: {$body}"
       );
       throw new \RuntimeException(
-        self::LOG_PREFIX . " kb_order POST returned HTTP {$http} for order #{$order_id}."
+        esc_html( self::LOG_PREFIX . " kb_order POST returned HTTP {$http} for order #{$order_id}." )
       );
     }
 
@@ -155,13 +145,13 @@ class PvOrderPushWorker {
 
     if ( empty( $bexio_order->id ) ) {
       PingvinLogger::log( 'error', self::LOG_PREFIX . " Bexio returned no order ID for order #{$order_id}." );
-      throw new \RuntimeException( self::LOG_PREFIX . " No ID in Bexio response (order #{$order_id})." );
+      throw new \RuntimeException( esc_html( self::LOG_PREFIX . " No ID in Bexio response (order #{$order_id})." ) );
     }
 
-    // --- g. Save Bexio IDs to WC order meta -------------------------
     $order->update_meta_data( '_bexio_order_id', (int) $bexio_order->id );
     $order->update_meta_data( '_bexio_order_nr', (string) ( $bexio_order->document_nr ?? '' ) );
     $order->update_meta_data( '_bexio_order_status', (string) ( $bexio_order->kb_item_status_id ?? '' ) );
+    $order->update_meta_data( '_bexio_push_status', 'success' );
     $order->update_meta_data( 'pv_bexio_sync', [ 'last_sync' => current_time( 'Y-m-d H:i:s' ) ] );
     $order->save_meta_data();
 
@@ -171,10 +161,6 @@ class PvOrderPushWorker {
       . " bexio_id={$bexio_order->id} bexio_nr=" . ( $bexio_order->document_nr ?? '?' ) . '.'
     );
   }
-
-  // ---------------------------------------------------------------
-  // Position builder
-  // ---------------------------------------------------------------
 
   /**
    * Maps WC order line items to Bexio kb_order positions.
@@ -192,33 +178,47 @@ class PvOrderPushWorker {
 
     foreach ( $order->get_items() as $item ) {
       /** @var \WC_Order_Item_Product $item */
-      $product    = $item->get_product();
-      $qty        = (float) $item->get_quantity();
+      $product = $item->get_product();
+      $qty     = (float) $item->get_quantity();
+      $name    = $item->get_name();
+
+      // Skip zero-qty items — semantically invalid and Bexio may reject them.
+      if ( $qty <= 0 ) {
+        PingvinLogger::log(
+          'warning',
+          self::LOG_PREFIX . " Skipping line item '{$name}' with qty {$qty} on order #{$order->get_id()}."
+        );
+        continue;
+      }
+
       // Use the actual line total ÷ qty to get the effective unit price
       // (already includes any per-item discounts).
-      $unit_price = $qty > 0 ? round( (float) $item->get_total() / $qty, 4 ) : 0.0;
-      $name       = $item->get_name();
+      $unit_price = round( (float) $item->get_total() / $qty, 4 );
 
       // Resolve tax class → Bexio tax ID.
       // Read from the order item (recorded at purchase time), not the current
       // product — the product's tax class could have changed since the order
       // was placed. WC stores the standard rate as '' on items.
       $wc_tax_class = $item->get_tax_class();
-      // 'standard' can appear in some WC versions as the string literal;
-      // normalise it to '' so it matches our map key.
       if ( $wc_tax_class === 'standard' ) {
         $wc_tax_class = '';
       }
       
-      // Fall back to the standard rate if the specific class has no mapping.
-      $tax_id = $tax_id_map[ $wc_tax_class ] ?? $tax_id_map[''];
+      if ( isset( $tax_id_map[ $wc_tax_class ] ) ) {
+        $tax_id = $tax_id_map[ $wc_tax_class ];
+      } else {
+        PingvinLogger::log(
+          'warning',
+          self::LOG_PREFIX . " No Bexio tax mapping for WC class '{$wc_tax_class}' (item: '{$name}', order #{$order->get_id()}) — falling back to standard rate."
+        );
+        $tax_id = $tax_id_map[''];
+      }
 
       $bexio_product_id = $product
         ? (int) $product->get_meta( '_bexio_id', true )
         : 0;
 
       if ( $bexio_product_id > 0 ) {
-        // Known Bexio article.
         $pos = [
           'type'       => 'KbPositionArticle',
           'article_id' => $bexio_product_id,
@@ -228,7 +228,6 @@ class PvOrderPushWorker {
           'text'       => $name,
         ];
       } else {
-        // Custom / unmapped line.
         $pos = [
           'type'       => 'KbPositionCustom',
           'amount'     => $qty,
@@ -241,28 +240,38 @@ class PvOrderPushWorker {
       $positions[] = $pos;
     }
 
-    // Shipping as a custom position (if any).
+    foreach ( $order->get_items( 'fee' ) as $fee ) {
+      /** @var \WC_Order_Item_Fee $fee */
+      $fee_total = (float) $fee->get_total();
+      if ( $fee_total == 0.0 ) {
+        continue;
+      }
+      $fee_tax_class = $fee->get_tax_class();
+      if ( $fee_tax_class === 'standard' ) {
+        $fee_tax_class = '';
+      }
+      $positions[] = [
+        'type'       => 'KbPositionCustom',
+        'amount'     => 1,
+        'unit_price' => $fee_total,
+        'tax_id'     => $tax_id_map[ $fee_tax_class ] ?? $tax_id_map[''],
+        'text'       => $fee->get_name() ?: __( 'Gebühr', 'pingvin-bexio-sync' ),
+      ];
+    }
+
     $shipping_total = (float) $order->get_shipping_total();
     if ( $shipping_total > 0 ) {
-      $pos = [
+      $positions[] = [
         'type'       => 'KbPositionCustom',
         'amount'     => 1,
         'unit_price' => $shipping_total,
+        'tax_id'     => $tax_id_map[''], // Standard rate; guard already passed above.
         'text'       => (string) ( $order->get_shipping_method() ?: __( 'Versand', 'pingvin-bexio-sync' ) ),
       ];
-      // Use the standard tax mapping for shipping if available.
-      if ( isset( $tax_id_map[''] ) ) {
-        $pos['tax_id'] = $tax_id_map[''];
-      }
-      $positions[] = $pos;
     }
 
     return $positions;
   }
-
-  // ---------------------------------------------------------------
-  // Tax map builder
-  // ---------------------------------------------------------------
 
   /**
    * Builds a map of [ wc_tax_class => bexio_tax_id (int) ] from plugin settings.
@@ -279,9 +288,6 @@ class PvOrderPushWorker {
   private function build_tax_id_map( array $opts ): array {
     $map = [];
 
-    // Both the WC tax class slug and the Bexio tax ID come from settings,
-    // so we never hardcode WC slugs like 'reduced-rate' — the shop may use
-    // any slug (e.g. 'reduzierter-preis').
     $pairs = [
       // [ wc_class_option_key,                     bexio_tax_id_option_key                  ]
       [ 'pv_productsync_tax_rate_standard_woo',  'pv_productsync_tax_rate_standard_bexio' ],
@@ -305,10 +311,6 @@ class PvOrderPushWorker {
     return $map;
   }
 
-  // ---------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------
-
   /**
    * Builds a human-readable title for the Bexio order document.
    * Format: "Bestellung #{order_number}" or falls back to the order ID.
@@ -318,10 +320,6 @@ class PvOrderPushWorker {
     return __( 'Bestellung', 'pingvin-bexio-sync' ) . ' #' . ( $nr ?: $order->get_id() );
   }
 
-  // ---------------------------------------------------------------
-  // Static enqueueing helper (called from main plugin hook)
-  // ---------------------------------------------------------------
-
   /**
    * Schedules a single push action for the given order.
    * Called from the `woocommerce_checkout_order_created` hook.
@@ -329,6 +327,20 @@ class PvOrderPushWorker {
    * @param int $order_id
    */
   public static function enqueue( int $order_id ): void {
+    if ( \as_has_scheduled_action( self::AS_HOOK, [ 'order_id' => $order_id ], 'pv_sync' ) ) {
+      PingvinLogger::log(
+        'info',
+        self::LOG_PREFIX . " Push already queued for order #{$order_id} — skipping duplicate."
+      );
+      return;
+    }
+
+    $order = wc_get_order( $order_id );
+    if ( $order ) {
+      $order->update_meta_data( '_bexio_push_status', 'pending' );
+      $order->save_meta_data();
+    }
+
     $action_id = \as_schedule_single_action(
       time(),
       self::AS_HOOK,

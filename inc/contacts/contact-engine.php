@@ -9,9 +9,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * PvContactSyncEngine
  *
  * Concrete engine for the Bexio → WooCommerce contact sync.
- * All coordinator / watchdog / state-machine logic lives in PvAbstractSyncEngine.
- * This class only supplies the six required constants and the two abstract
- * worker-coupling methods.
  */
 class PvContactSyncEngine extends PvAbstractSyncEngine {
 

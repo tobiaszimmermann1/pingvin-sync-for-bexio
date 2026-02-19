@@ -5,7 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit; // Exit if accessed directly.
 }
 
-// import API calling helper function
 require_once 'pingvin-call.php';
 
 class PvBexioRestRoutes {
@@ -15,11 +14,6 @@ class PvBexioRestRoutes {
   }
 
   function rest_routes() {
-    /*************************************
-     * Bexio specific routes
-     *////////////////////////////////////
-
-    // get products 
     register_rest_route( 'pingvin/v1', '/article', array(
       'methods' => 'GET',
       'callback' => array($this, 'get_articles'), 
@@ -28,11 +22,6 @@ class PvBexioRestRoutes {
       }
     ));
 
-    /*************************************
-     * Plugin specific routes
-     *////////////////////////////////////
-    
-    // get sync settings
     register_rest_route( 'pingvin/v1', '/syncSettings', array(
       'methods' => 'GET',
       'callback' => array($this, 'sync_settings'), 
@@ -41,7 +30,6 @@ class PvBexioRestRoutes {
       }
     ));
     
-    // get transient
     register_rest_route( 'pingvin/v1', '/transient', array(
       'methods' => 'GET',
       'callback' => array($this, 'transient'), 
@@ -50,7 +38,6 @@ class PvBexioRestRoutes {
       }
     ));
 
-    // get product sync state
     register_rest_route( 'pingvin/v1', '/syncState', array(
       'methods' => 'GET',
       'callback' => array($this, 'sync_state'), 
@@ -59,7 +46,6 @@ class PvBexioRestRoutes {
       }
     ));
     
-    // save sync settings
     register_rest_route( 'pingvin/v1', '/syncSettings', array(
       'methods' => 'POST',
       'callback' => array($this, 'sync_settings'), 
@@ -68,7 +54,6 @@ class PvBexioRestRoutes {
       }
     ));
     
-    // get users
     register_rest_route( 'pingvin/v1', '/users', array(
       'methods' => 'GET',
       'callback' => array($this, 'users'), 
@@ -77,7 +62,6 @@ class PvBexioRestRoutes {
       }
     ));
     
-    // get products
     register_rest_route( 'pingvin/v1', '/products', array(
       'methods' => 'GET',
       'callback' => array($this, 'products'), 
@@ -86,7 +70,6 @@ class PvBexioRestRoutes {
       }
     ));
     
-    // get orders
     register_rest_route( 'pingvin/v1', '/orders', array(
       'methods' => 'GET',
       'callback' => array($this, 'orders'), 
@@ -95,7 +78,6 @@ class PvBexioRestRoutes {
       }
     ));
 
-    // get log files / log lines
     register_rest_route( 'pingvin/v1', '/logs', array(
       'methods' => 'GET',
       'callback' => array($this, 'logs'), 
@@ -104,7 +86,6 @@ class PvBexioRestRoutes {
       }
     ));
 
-    // reference data: Bexio taxes cache
     register_rest_route( 'pingvin/v1', '/bexioTaxes', array(
       'methods' => 'GET',
       'callback' => array($this, 'bexio_taxes'),
@@ -113,7 +94,6 @@ class PvBexioRestRoutes {
       }
     ));
 
-    // reference data: Bexio users cache
     register_rest_route( 'pingvin/v1', '/bexioUsers', array(
       'methods' => 'GET',
       'callback' => array($this, 'bexio_users'),
@@ -122,7 +102,6 @@ class PvBexioRestRoutes {
       }
     ));
 
-    // trigger manual refresh of reference data
     register_rest_route( 'pingvin/v1', '/refreshReferenceData', array(
       'methods' => 'POST',
       'callback' => array($this, 'refresh_reference_data'),
@@ -132,10 +111,6 @@ class PvBexioRestRoutes {
     ));
 
   }
-
-  /*************************************
-   * Callback functions
-   *////////////////////////////////////
 
   function get_articles($request) {
     $result = pv_api_call('GET', '2.0/article');
@@ -240,7 +215,6 @@ class PvBexioRestRoutes {
       $users = $query->get_results();
       $total = $query->get_total();
 
-      // build items array and include the `pv_bexio_sync` user meta
       $items = array();
       if (!empty($users)) {
         foreach ($users as $u) {
@@ -285,7 +259,6 @@ class PvBexioRestRoutes {
       $all_products = wc_get_products(array('limit' => -1));
       $total = count($all_products);
 
-      // build items array and include the `pv_bexio_sync` user meta
       $items = array();
       if (!empty($products)) {
         foreach ($products as $p) {
@@ -330,7 +303,6 @@ class PvBexioRestRoutes {
       $all_orders = wc_get_orders(array('limit' => -1));
       $total = count($all_orders);
 
-      // bexio order status map
       $bexio_order_status_map = [
         5 => 'pending',
         15 => 'partial',
@@ -338,7 +310,6 @@ class PvBexioRestRoutes {
         21 => 'cancelled',
       ];
 
-      // build items array and include the `pv_bexio_sync` user meta
       $items = array();
       if (!empty($orders)) {
         foreach ($orders as $o) {
@@ -410,7 +381,6 @@ class PvBexioRestRoutes {
       ], 200 );
     }
 
-    // No file param → return list of available log files, newest first.
     if ( ! is_dir( $log_dir ) ) {
       return new \WP_REST_Response( ['files' => []], 200 );
     }
@@ -430,10 +400,6 @@ class PvBexioRestRoutes {
     }
     return array_slice( $all, -$n );
   }
-
-  /*************************************
-   * Reference data routes
-   *////////////////////////////////////
 
   function bexio_taxes( $request ) {
     $data  = PvBexioReferenceData::get_taxes();

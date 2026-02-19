@@ -25,16 +25,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 abstract class PvAbstractSyncEngine {
 
-  // ---------------------------------------------------------------
-  // Shared constant
-  // ---------------------------------------------------------------
-
   /** Seconds after which any "running" cycle is considered globally stale. */
   const MAX_STALE_SECONDS = 1800; // 30 minutes
-
-  // ---------------------------------------------------------------
-  // Bootstrap
-  // ---------------------------------------------------------------
 
   /**
    * Per-class hook guard keyed by concrete class name so each engine subclass
@@ -61,10 +53,6 @@ abstract class PvAbstractSyncEngine {
     self::$hooked[ $class ] = true;
   }
 
-  // ---------------------------------------------------------------
-  // Abstract interface — subclasses supply the worker coupling
-  // ---------------------------------------------------------------
-
   /**
    * Enqueue the first worker (offset 0) for this sync type.
    * Called at the start of each new cycle.
@@ -79,10 +67,6 @@ abstract class PvAbstractSyncEngine {
    * @param bool $unique  Pass true only from the watchdog.
    */
   abstract protected function enqueue_worker( int $offset, bool $unique = false ): void;
-
-  // ---------------------------------------------------------------
-  // Settings handler  (enable / disable coordinator)
-  // ---------------------------------------------------------------
 
   /**
    * Fires when the engine's SETTINGS_KEY option is updated.
@@ -110,10 +94,6 @@ abstract class PvAbstractSyncEngine {
       $this->unschedule_coordinator();
     }
   }
-
-  // ---------------------------------------------------------------
-  // Coordinator scheduling helpers
-  // ---------------------------------------------------------------
 
   /**
    * (Re-)schedules the coordinator at the given interval.
@@ -161,10 +141,6 @@ abstract class PvAbstractSyncEngine {
     $this->reset_state();
   }
 
-  // ---------------------------------------------------------------
-  // Coordinator (the heartbeat)
-  // ---------------------------------------------------------------
-
   /**
    * Main coordinator callback — runs on every tick of the recurring action.
    *
@@ -199,9 +175,7 @@ abstract class PvAbstractSyncEngine {
           'status'     => 'error',
           'last_error' => "Stale cycle detected after {$age}s.",
         ] );
-        // Fall through to start a new cycle.
       } else {
-        // Healthy cycle — run worker-chain watchdog.
         $worker_age         = time() - (int) $state['last_worker_at'];
         $tick_interval      = isset( $settings['interval'] ) ? (int) $settings['interval'] : 900;
         $watchdog_threshold = $tick_interval * 3;
@@ -222,7 +196,6 @@ abstract class PvAbstractSyncEngine {
       }
     }
 
-    // Start a new cycle — purge any leftover workers first.
     as_unschedule_all_actions( static::WORKER_HOOK );
 
     PingvinLogger::log( 'info', static::LOG_PREFIX . ' Starting new sync cycle.' );
@@ -242,10 +215,6 @@ abstract class PvAbstractSyncEngine {
     $this->enqueue_first_worker();
     PingvinLogger::log( 'info', static::LOG_PREFIX . ' First worker enqueued. Coordinator done for this tick.' );
   }
-
-  // ---------------------------------------------------------------
-  // Sync state helpers
-  // ---------------------------------------------------------------
 
   /**
    * Returns the current sync state array.
@@ -296,10 +265,6 @@ abstract class PvAbstractSyncEngine {
       'last_error'        => null,
     ];
   }
-
-  // ---------------------------------------------------------------
-  // Utility helpers
-  // ---------------------------------------------------------------
 
   /**
    * Updates the NEXT_TRANSIENT used by the UI to show the next scheduled run.

@@ -42,7 +42,6 @@ class Pingvin_Bexio_ProductSync_Auth {
    * @return string|null
    */
   public function bexio_authenticate() {
-    error_log('Starting Bexio authentication');
     $bexio_general_options = get_option( 'pv_bexio_general_options' );
     if (!$bexio_general_options) {
       PingvinLogger::log('error', 'Bexio general options not found');
@@ -57,8 +56,8 @@ class Pingvin_Bexio_ProductSync_Auth {
       $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-sync&auth=true'));
       $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit", "kb_order_show", "kb_order_edit", "kb_delivery_show", "kb_delivery_edit", "kb_invoice_show", "kb_invoice_edit", "contact_show", "contact_edit"));
       
-      // Check if there is an authorization code in the URL
-      if (isset($_GET['code'])) {
+      // Check if there is an authorization code in the URL.
+      if ( isset( $_GET['code'] ) ) {
         PingvinLogger::log('info', 'Authorization code found in URL');
         $oidc->authenticate();
         $api_token = $oidc->getAccessToken();
@@ -90,7 +89,6 @@ class Pingvin_Bexio_ProductSync_Auth {
    * @return bool
    */
   public function pv_authenticate() {
-    error_log('Starting pv_authenticate');
     $tokens = $this->bexio_authenticate();
     
     if ($tokens && isset($tokens['api_token']) && isset($tokens['refresh_token'])) {

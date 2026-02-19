@@ -26,10 +26,6 @@ class PvContactPushHelper {
 
   const LOG_PREFIX = '[ContactPush]';
 
-  // ---------------------------------------------------------------
-  // Public API
-  // ---------------------------------------------------------------
-
   /**
    * Resolves (or creates) a Bexio contact for the given WC order.
    *
@@ -40,7 +36,6 @@ class PvContactPushHelper {
     $user_id       = (int) $order->get_user_id();
     $billing_email = trim( (string) $order->get_billing_email() );
 
-    // 1. Logged-in user already linked → return immediately.
     if ( $user_id > 0 ) {
       $cached = get_user_meta( $user_id, '_bexio_contact_id', true );
       if ( ! empty( $cached ) ) {
@@ -60,13 +55,22 @@ class PvContactPushHelper {
       return null;
     }
 
-    // 2. Search Bexio for an existing contact with this email.
     $found_id = self::search_by_email( $billing_email );
+
+    if ( $found_id === false ) {
+      PingvinLogger::log(
+        'error',
+        self::LOG_PREFIX . " Contact search API error for {$billing_email} — aborting to avoid duplicate."
+      );
+      return null;
+    }
 
     if ( $found_id !== null ) {
       if ( $user_id > 0 ) {
         update_user_meta( $user_id, '_bexio_contact_id', $found_id );
       }
+      $order->update_meta_data( '_bexio_contact_id', $found_id );
+      $order->save_meta_data();
       PingvinLogger::log(
         'info',
         self::LOG_PREFIX . " Found existing Bexio contact id={$found_id} for email {$billing_email}."
@@ -74,13 +78,14 @@ class PvContactPushHelper {
       return $found_id;
     }
 
-    // 3. Create a new contact in Bexio from the order billing data.
     $created_id = self::create_from_order( $order );
 
     if ( $created_id !== null ) {
       if ( $user_id > 0 ) {
         update_user_meta( $user_id, '_bexio_contact_id', $created_id );
       }
+      $order->update_meta_data( '_bexio_contact_id', $created_id );
+      $order->save_meta_data();
       PingvinLogger::log(
         'info',
         self::LOG_PREFIX . " Created Bexio contact id={$created_id} for email {$billing_email} (order #{$order->get_id()})."
@@ -96,17 +101,12 @@ class PvContactPushHelper {
     return null;
   }
 
-  // ---------------------------------------------------------------
-  // Private helpers
-  // ---------------------------------------------------------------
-
   /**
-   * Searches Bexio for a contact with the given email.
-   *
-   * Returns the first matching Bexio contact ID, or null if not found
-   * or if the API call fails.
+   * @return int   Bexio contact ID (found).
+   * @return null  No contact with this email exists in Bexio.
+   * @return false API/network error — caller MUST abort, not fall through to create.
    */
-  private static function search_by_email( string $email ): ?int {
+  private static function search_by_email( string $email ): int|null|false {
     $payload = wp_json_encode( [
       [ 'field' => 'mail', 'value' => $email, 'criteria' => '=' ],
     ] );
@@ -114,12 +114,13 @@ class PvContactPushHelper {
     $res = pv_api_call( 'POST', '2.0/contact/search', $payload );
 
     if ( empty( $res ) || (int) ( $res['status'] ?? 0 ) !== 200 ) {
+      $http = $res['status'] ?? '?';
+      $body = ! empty( $res['result'] ) ? wp_json_encode( $res['result'] ) : '(empty)';
       PingvinLogger::log(
-        'warning',
-        self::LOG_PREFIX . ' Contact search request failed (HTTP '
-        . ( $res['status'] ?? '?' ) . ") for email {$email}."
+        'error',
+        self::LOG_PREFIX . " Contact search failed (HTTP {$http}) for email {$email}. Body: {$body}"
       );
-      return null;
+      return false; // Distinct from "not found" — caller must not create a contact.
     }
 
     // 200 with an empty array means no match found — not an error.
@@ -165,10 +166,14 @@ class PvContactPushHelper {
 
     $contact = [
       'contact_type_id' => $is_company ? 1 : 2,
-      'name_1'          => $is_company ? $company    : ( $last_name ?: $email ),
-      'name_2'          => $is_company ? $first_name : $first_name,
+      'name_1'          => $is_company ? $company : ( $last_name ?: $email ),
       'mail'            => $email,
     ];
+    // For person contacts name_2 = first name.
+    // For company contacts name_2 is a subtitle/division field in Bexio — do not populate it with a person name.
+    if ( ! $is_company && $first_name !== '' ) {
+      $contact['name_2'] = $first_name;
+    }
 
     if ( $default_user > 0 ) {
       $contact['user_id']  = $default_user;
@@ -193,7 +198,6 @@ class PvContactPushHelper {
 
     $res = pv_api_call( 'POST', '2.0/contact', wp_json_encode( $contact ) );
 
-    // Bexio returns 201 Created on success.
     if ( empty( $res ) || (int) ( $res['status'] ?? 0 ) !== 201 ) {
       PingvinLogger::log(
         'error',

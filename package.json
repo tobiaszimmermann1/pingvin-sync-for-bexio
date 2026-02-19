@@ -1,38 +1,40 @@
 {
-  "name": "pingvin-bexio-connector",
-  "version": "0.0.1",
-  "description": "A connector between WordPress and Bexio using Chakra UI.",
-  "main": "build/index.js",
-  "scripts": {
-    "start": "wp-scripts start",
-    "build": "wp-scripts build",
-    "format": "wp-scripts format",
-    "lint:js": "wp-scripts lint-js",
-    "lint:css": "wp-scripts lint-style",
-    "packages-update": "wp-scripts packages-update",
-    "test:interactive": "wp-scripts test-unit-js --watch",
-    "test:unit": "wp-scripts test-unit-js"
-  },
-  "keywords": [
-    "wordpress",
-    "bexio",
-    "chakra-ui"
-  ],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@chakra-ui/icons": "^2.1.1",
-    "@chakra-ui/react": "^2.8.2",
-    "@emotion/react": "^11.13.0",
-    "@emotion/styled": "^11.13.0",
-    "@wordpress/i18n": "^5.11.0",
-    "axios": "^1.2.1",
-    "bexio": "^3.1.1",
-    "date-fns": "^2.29.3",
-    "framer-motion": "^11.3.17",
-    "lodash": "^4.17.21"
-  },
-  "devDependencies": {
-    "@wordpress/scripts": "^28.6.0"
-  }
+	"name": "pingvin-bexio-connector",
+	"version": "0.5.0",
+	"description": "A connector between WordPress and Bexio using Chakra UI.",
+	"main": "build/index.js",
+	"scripts": {
+		"start": "wp-scripts start",
+		"build": "wp-scripts build",
+		"format": "wp-scripts format",
+		"lint:js": "wp-scripts lint-js",
+		"lint:css": "wp-scripts lint-style",
+		"packages-update": "wp-scripts packages-update",
+		"test:interactive": "wp-scripts test-unit-js --watch",
+		"test:unit": "wp-scripts test-unit-js"
+	},
+	"keywords": [
+		"wordpress",
+		"bexio",
+		"chakra-ui"
+	],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"react": "^18.0.0",
+		"react-dom": "^18.0.0",
+		"@chakra-ui/icons": "^2.1.1",
+		"@chakra-ui/react": "^2.8.2",
+		"@emotion/react": "^11.13.0",
+		"@emotion/styled": "^11.13.0",
+		"@wordpress/i18n": "^5.11.0",
+		"axios": "^1.2.1",
+		"bexio": "^3.1.1",
+		"date-fns": "^2.29.3",
+		"framer-motion": "^11.3.17",
+		"lodash": "^4.17.21"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^28.6.0"
+	}
 }

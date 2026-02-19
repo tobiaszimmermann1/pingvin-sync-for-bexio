@@ -1,14 +1,16 @@
 <?php
 /**
  * Plugin Name:     Pingvin Bexio Sync
- * Plugin URI:      https://pingvin.digital/pingvin-bexio-sync
+ * Plugin URI:      https://pingvin.digital
  * Description:     Connects WooCommerce to Bexio and syncs products
  * Author:          Tobias Zimmermann
- * Author URI:      https://pingvin.digital/pingvin-bexio-sync
+ * Author URI:      https://pingvin.digital
  * Text Domain:     pingvin-bexio-sync
  * Domain Path:     /languages
  * Requires Plugins: woocommerce
- * Version:         0.1.2
+ * Version:         0.5.0
+ * License:         GPL-2.0-or-later
+ * License URI:     https://www.gnu.org/licenses/gpl-2.0.html
  *
  * @package         Pingvin Bexio Sync
  */
@@ -53,10 +55,10 @@ class Pingvin_Bexio_ProductSync {
    * Define plugin constants.
    */
   private function define_constants() {
-    define( 'PV_PLUGIN_URL', plugin_dir_url( __FILE__ ) ); 
-    define( 'PV_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+    define( 'PV_PLUGIN_URL',      plugin_dir_url( __FILE__ ) );
+    define( 'PV_PLUGIN_PATH',     plugin_dir_path( __FILE__ ) );
     define( 'PV_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-
+    define( 'PV_PLUGIN_VERSION',  '0.5.0' );
   }
 
   /**
@@ -64,7 +66,6 @@ class Pingvin_Bexio_ProductSync {
    */
   private function includes() {
     $required_files = [
-      'libraries/action-scheduler/action-scheduler.php',
       'vendor/autoload.php',
       'inc/pingvin-call.php',
       'inc/pingvin-logger-class.php',
@@ -85,8 +86,6 @@ class Pingvin_Bexio_ProductSync {
       $path = PV_PLUGIN_PATH . $file;
       if ( file_exists( $path ) ) {
         require_once $path;
-      } else {
-        error_log( "Missing file: $path" );
       }
     }
   }
@@ -98,7 +97,6 @@ class Pingvin_Bexio_ProductSync {
     add_action( 'before_woocommerce_init', [ $this, 'declare_woocommerce_compatibility' ] );
     register_deactivation_hook( __FILE__, [ $this, 'on_deactivation' ] );
     add_action( 'admin_enqueue_scripts', [ $this, 'admin_load_scripts' ] );
-    add_action( 'init', [ $this, 'plugin_init' ] );
     add_action( 'woocommerce_checkout_order_created', function( $order ) {
       PvOrderPushWorker::enqueue( $order->get_id() );
     } );
@@ -130,19 +128,12 @@ class Pingvin_Bexio_ProductSync {
    */
   public function admin_load_scripts($screen) {
     if("toplevel_page_pingvin-bexio-sync" !== $screen) return;
-    wp_register_style( 'pv_dashboard_style', PV_PLUGIN_URL . 'styles/styles.css?version=0.1.0', false, '0.1.0' );
+    wp_register_style( 'pv_dashboard_style', PV_PLUGIN_URL . 'styles/styles.css', false, PV_PLUGIN_VERSION );
     wp_enqueue_style( 'pv_dashboard_style' );
 
     // Google Font
-    wp_enqueue_style('pv_google_font', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap', false);
+    wp_enqueue_style('pv_google_font', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap', false, null);
     wp_enqueue_style( 'pv_google_font' );
-  }
-
-  /**
-   * Plugin initialization.
-   */
-  public function plugin_init() {
-      load_plugin_textdomain( 'pingvin-bexio-sync', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
   }
 
   /**
@@ -163,38 +154,3 @@ class Pingvin_Bexio_ProductSync {
 
 // Initialize the plugin.
 Pingvin_Bexio_ProductSync::get_instance();
-
-// Freemius integration
-if ( ! function_exists( 'pbs_fs' ) ) {
-  // Create a helper function for easy SDK access.
-  function pbs_fs() {
-      global $pbs_fs;
-
-      if ( ! isset( $pbs_fs ) ) {
-          // Include Freemius SDK.
-          require_once dirname(__FILE__) . '/freemius/start.php';
-
-          $pbs_fs = fs_dynamic_init( array(
-              'id'                  => '17516',
-              'slug'                => 'pingvin-bexio-sync',
-              'type'                => 'plugin',
-              'public_key'          => 'pk_c416996f4ed85c1a1f8b334a1b580',
-              'is_premium'          => false,
-              'has_addons'          => false,
-              'has_paid_plans'      => false,
-              'menu'                => array(
-                  'slug'           => 'pingvin-bexio-sync',
-                  'contact'        => false,
-                  'support'        => false,
-              ),
-          ) );
-      }
-
-      return $pbs_fs;
-  }
-
-  // Init Freemius.
-  pbs_fs();
-  // Signal that SDK was initiated.
-  do_action( 'pbs_fs_loaded' );
-}

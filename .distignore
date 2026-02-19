@@ -1,0 +1,13 @@
+libraries/
+node_modules/
+src/
+.git
+.distignore
+phpcs.xml
+webpack.config.js
+package.json
+package-lock.json
+composer.json
+composer.lock
+README.md
+assets/README.md

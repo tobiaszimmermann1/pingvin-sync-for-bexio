@@ -9,14 +9,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * PvProductSyncWorker
  *
  * Handles one batch of BATCH_SIZE products per Action Scheduler run.
- *
- * Flow:
- *   1. Receives $offset from Action Scheduler.
- *   2. Fetches articles [offset … offset+BATCH_SIZE) from Bexio API.
- *   3. Upserts each product in WooCommerce.
- *   4. Writes next_offset + last_worker_at into sync state.
- *   5. If the batch was full (BATCH_SIZE items) → enqueues the next worker.
- *      If the batch was short (< BATCH_SIZE items) → marks the cycle complete.
  */
 class PvProductSyncWorker {
 
@@ -33,10 +25,6 @@ class PvProductSyncWorker {
       self::$hooked = true;
     }
   }
-
-  // ---------------------------------------------------------------
-  // Main entry point (called by Action Scheduler)
-  // ---------------------------------------------------------------
 
   /**
    * @param int $offset  Zero-based product offset within the full Bexio catalog.
@@ -66,6 +54,8 @@ class PvProductSyncWorker {
       'next_offset'    => $offset + self::BATCH_SIZE,
     ] );
 
+    $cycle_token = (string) ( $state['started_at'] ?? 0 );
+
     // ---------------------------------------------------------------
     // 1. Fetch batch from Bexio
     // ---------------------------------------------------------------
@@ -76,7 +66,7 @@ class PvProductSyncWorker {
       // throw so AS marks this action as failed and schedules a retry.
       $error_msg = "[ProductWorker] Bexio API call failed at offset $offset. AS will retry.";
       $engine->set_state( [ 'last_error' => $error_msg ] );
-      throw new \RuntimeException( $error_msg );
+      throw new \RuntimeException( esc_html( $error_msg ) );
     }
 
     $count = count( $products );
@@ -97,7 +87,7 @@ class PvProductSyncWorker {
     $failed  = 0;
     foreach ( $products as $bexio_product ) {
       try {
-        $result = $this->upsert_product( $bexio_product, $tax_map, $plugin_opts );
+        $result = $this->upsert_product( $bexio_product, $tax_map, $plugin_opts, $cycle_token );
         switch ( $result ) {
           case 'created': $created++; break;
           case 'updated': $updated++; break;
@@ -106,7 +96,6 @@ class PvProductSyncWorker {
         }
       } catch ( \Throwable $e ) {
         $failed++;
-        // Log but never let one bad product kill the whole batch.
         PingvinLogger::log(
           'error',
           "[ProductWorker] Exception processing product #{$bexio_product->id} "
@@ -120,12 +109,8 @@ class PvProductSyncWorker {
     // ---------------------------------------------------------------
     // 4. Update state + decide whether to continue
     // ---------------------------------------------------------------
-    $this->finish_batch( $engine, $offset, $count, $created + $updated, $skipped, $failed );
+    $this->finish_batch( $engine, $offset, $count, $created + $updated, $skipped, $failed, $cycle_token, $plugin_opts );
   }
-
-  // ---------------------------------------------------------------
-  // Post-batch bookkeeping
-  // ---------------------------------------------------------------
 
   /**
    * Updates sync state and enqueues the next worker if the batch was full.
@@ -143,7 +128,9 @@ class PvProductSyncWorker {
     int $fetched,
     int $upserted,
     int $skipped,
-    int $failed
+    int $failed,
+    string $cycle_token,
+    array $plugin_opts
   ): void {
     $state         = $engine->get_state();
     $completed     = (int) $state['completed_batches'] + 1;
@@ -152,11 +139,9 @@ class PvProductSyncWorker {
     $total_failed  = (int) ( $state['failed_count']    ?? 0 ) + $failed;
     $next          = $offset + self::BATCH_SIZE;
 
-    // Last batch = Bexio returned fewer items than the page size.
     $is_last_batch = ( $fetched < self::BATCH_SIZE );
 
     if ( $is_last_batch ) {
-      // Cycle complete.
       PingvinLogger::log(
         'info',
         "[ProductWorker] Last batch reached (fetched: $fetched). Cycle complete — "
@@ -173,8 +158,12 @@ class PvProductSyncWorker {
         'last_completed_at' => time(),
         'last_error'        => null,
       ] );
+
+      if ( ( $plugin_opts['pv_productsync_missing_products'] ?? '' ) === 'false' ) {
+        $deleted = $this->delete_missing_products( $cycle_token );
+        PingvinLogger::log( 'info', "[ProductWorker] Missing-product cleanup: trashed {$deleted} WC product(s) not found in Bexio." );
+      }
     } else {
-      // More batches to go — enqueue the next worker.
       PingvinLogger::log(
         'info',
         "[ProductWorker] Batch done (fetched: $fetched, upserted: $upserted, skipped: $skipped, failed: $failed). Enqueueing next at offset $next."
@@ -190,10 +179,6 @@ class PvProductSyncWorker {
       self::enqueue_worker( $next );
     }
   }
-
-  // ---------------------------------------------------------------
-  // Worker enqueueing helper (shared by coordinator and workers)
-  // ---------------------------------------------------------------
 
   /**
    * Enqueues a worker action for the given offset.
@@ -216,7 +201,6 @@ class PvProductSyncWorker {
     );
 
     if ( ! $action_id ) {
-      // AS returned 0 — log clearly so it is visible in the log.
       PingvinLogger::log(
         'error',
         "[ProductWorker] as_schedule_single_action returned 0 for offset $offset "
@@ -228,10 +212,6 @@ class PvProductSyncWorker {
 
     PingvinLogger::log( 'info', "[ProductWorker] Worker enqueued (id: $action_id, offset: $offset)." );
   }
-
-  // ---------------------------------------------------------------
-  // Bexio API fetch
-  // ---------------------------------------------------------------
 
   /**
    * Fetches one page of articles from Bexio.
@@ -268,10 +248,6 @@ class PvProductSyncWorker {
     return $items;
   }
 
-  // ---------------------------------------------------------------
-  // Tax map builder
-  // ---------------------------------------------------------------
-
   /**
    * Builds a map of [ bexio_tax_id => wc_tax_class ] from the Bexio
    * taxes endpoint combined with the plugin settings.
@@ -307,10 +283,6 @@ class PvProductSyncWorker {
     return $map;
   }
 
-  // ---------------------------------------------------------------
-  // WooCommerce upsert
-  // ---------------------------------------------------------------
-
   /**
    * Creates or updates a single WooCommerce product from a Bexio article.
    *
@@ -323,7 +295,7 @@ class PvProductSyncWorker {
    * @param array  $plugin_opts Plugin options array.
    * @return string  'created' | 'updated' | 'skipped' | 'failed'
    */
-  private function upsert_product( object $p, array $tax_map, array $plugin_opts ): string {
+  private function upsert_product( object $p, array $tax_map, array $plugin_opts, string $cycle_token ): string {
     $is_new    = false;
     $wc_id     = wc_get_product_id_by_sku( $p->intern_code );
 
@@ -336,8 +308,12 @@ class PvProductSyncWorker {
 
       // Skip-if-unchanged: if the Bexio payload hasn't changed since the last
       // sync there is nothing to write — skip all DB work entirely.
+      // Still stamp the cycle token so this product is not mistaken for a
+      // deleted Bexio article at end-of-cycle cleanup.
       $incoming_hash = md5( wp_json_encode( $p ) );
       if ( $product->get_meta( '_bexio_hash', true ) === $incoming_hash ) {
+        $product->update_meta_data( '_bexio_sync_cycle', $cycle_token );
+        $product->save_meta_data();
         return 'skipped';
       }
     } else {
@@ -345,30 +321,25 @@ class PvProductSyncWorker {
       $product = new \WC_Product_Simple();
     }
 
-    // --- Core fields ------------------------------------------------
     $product->set_name( (string) ( $p->intern_name        ?? '' ) );
     $product->set_description( (string) ( $p->intern_description ?? '' ) );
     $product->set_sku( (string) $p->intern_code );
     $product->set_status( 'publish' );
 
-    // --- Price ------------------------------------------------------
     $sale_price = (float) ( $p->sale_price ?? 0 );
     $product->set_regular_price( (string) $sale_price );
 
-    // --- Weight (Bexio stores in grams) -----------------------------
     $weight = (float) ( $p->weight ?? 0 );
     if ( $weight > 0 ) {
       $product->set_weight( (string) $this->convert_weight( $weight, get_option( 'woocommerce_weight_unit', 'kg' ) ) );
     }
 
-    // --- Dimensions (Bexio stores in mm) ----------------------------
     $wc_dim = get_option( 'woocommerce_dimension_unit', 'cm' );
     $width  = (float) ( $p->width  ?? 0 );
     $height = (float) ( $p->height ?? 0 );
     if ( $width  > 0 ) $product->set_width(  (string) $this->convert_dimension( $width,  $wc_dim ) );
     if ( $height > 0 ) $product->set_height( (string) $this->convert_dimension( $height, $wc_dim ) );
 
-    // --- Stock ------------------------------------------------------
     if ( ! empty( $p->is_stock ) ) {
       $stock_qty = (int) round( (float) ( $p->stock_available_nr ?? 0 ) );
       $product->set_manage_stock( true );
@@ -382,7 +353,6 @@ class PvProductSyncWorker {
       $product->set_stock_status( 'instock' );
     }
 
-    // --- Tax --------------------------------------------------------
     if (
       get_option( 'woocommerce_calc_taxes' ) === 'yes'
       && ! empty( $tax_map )
@@ -400,7 +370,6 @@ class PvProductSyncWorker {
       }
     }
 
-    // --- Meta: individual Bexio fields ------------------------------
     $product->update_meta_data( '_bexio_id',            $p->id                    ?? null );
     $product->update_meta_data( '_user_id',             $p->user_id               ?? null );
     $product->update_meta_data( '_article_type_id',     $p->article_type_id       ?? null );
@@ -429,14 +398,13 @@ class PvProductSyncWorker {
     $product->update_meta_data( '_delivery_price',      $p->delivery_price        ?? null );
     $product->update_meta_data( '_article_group_id',    $p->article_group_id      ?? null );
 
-    // --- Meta: hash (staleness guard) + full JSON cache -------------
+    $product->update_meta_data( '_bexio_sync_cycle', $cycle_token );
     $product->update_meta_data( '_bexio_hash', md5( wp_json_encode( $p ) ) );
     $product->update_meta_data( '_bexio_data', wp_json_encode( [
       'last_sync' => current_time( 'Y-m-d H:i:s' ),
       'data'      => $p,
     ] ) );
 
-    // --- Save -------------------------------------------------------
     $saved_id = $product->save();
 
     if ( is_wp_error( $saved_id ) || ! $saved_id ) {
@@ -455,10 +423,6 @@ class PvProductSyncWorker {
 
     return $is_new ? 'created' : 'updated';
   }
-
-  // ---------------------------------------------------------------
-  // Unit conversion helpers
-  // ---------------------------------------------------------------
 
   /**
    * Converts grams (Bexio unit) to the WooCommerce weight unit.
@@ -487,10 +451,6 @@ class PvProductSyncWorker {
     }
   }
 
-  // ---------------------------------------------------------------
-  // Tax price helper
-  // ---------------------------------------------------------------
-
   /**
    * Adds the tax amount to a net price using the actual WC tax rates
    * for the given tax class — no hardcoded percentages.
@@ -512,5 +472,48 @@ class PvProductSyncWorker {
     }
 
     return $net_price * ( 1 + $total_rate / 100 );
+  }
+
+  /**
+   * Moves to trash any WC product that was previously synced from Bexio
+   * (has `_bexio_id` meta) but was not touched during the current cycle
+   * (its `_bexio_sync_cycle` differs from $cycle_token).
+   *
+   * Called only when the "missing products" setting is set to "delete".
+   * Uses trash rather than permanent deletion so shop owners can recover
+   * products that were removed from Bexio by mistake.
+   *
+   * @param string $cycle_token  The started_at timestamp of the completed cycle.
+   * @return int  Number of products trashed.
+   */
+  private function delete_missing_products( string $cycle_token ): int {
+    $product_ids = wc_get_products( [
+      'limit'      => -1,
+      'return'     => 'ids',
+      'meta_query' => [
+        [
+          'key'     => '_bexio_id',
+          'compare' => 'EXISTS',
+        ],
+      ],
+    ] );
+
+    $deleted = 0;
+    foreach ( $product_ids as $product_id ) {
+      $product = wc_get_product( $product_id );
+      if ( ! $product ) {
+        continue;
+      }
+      if ( $product->get_meta( '_bexio_sync_cycle', true ) !== $cycle_token ) {
+        PingvinLogger::log(
+          'info',
+          "[ProductWorker] Trashing WC product id={$product_id} (SKU: {$product->get_sku()}) — not present in Bexio this cycle."
+        );
+        $product->delete( false );
+        $deleted++;
+      }
+    }
+
+    return $deleted;
   }
 }

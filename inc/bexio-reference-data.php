@@ -20,13 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Refresh is scheduled once per day via Action Scheduler.
  * It can also be triggered on-demand via the REST endpoint
  * POST /pingvin/v1/refreshReferenceData.
- *
- * Option keys
- * -----------
- * pv_bexio_taxes_cache   — JSON array of tax objects from Bexio
- * pv_bexio_users_cache   — JSON array of user objects from Bexio
- * pv_bexio_taxes_stale   — '1' when the taxes list changed since last user save
- * pv_bexio_users_stale   — '1' when the users list changed since last user save
  */
 class PvBexioReferenceData {
 
@@ -71,10 +64,6 @@ class PvBexioReferenceData {
   public static function is_scheduled(): bool {
     return (bool) \as_has_scheduled_action( self::AS_HOOK );
   }
-
-  // ---------------------------------------------------------------
-  // Public API
-  // ---------------------------------------------------------------
 
   /**
    * Fetches fresh data from Bexio, updates the cache, and sets stale flags
@@ -134,10 +123,6 @@ class PvBexioReferenceData {
     delete_option( 'pv_bexio_users_stale' );
   }
 
-  // ---------------------------------------------------------------
-  // Private helpers
-  // ---------------------------------------------------------------
-
   /**
    * Fetches sales taxes from Bexio and updates the cache.
    *
@@ -160,17 +145,15 @@ class PvBexioReferenceData {
       return false;
     }
 
-    // Normalise to plain arrays for consistent JSON encoding.
     $normalised = json_encode( $items );
     $stored     = get_option( 'pv_bexio_taxes_cache', '' );
 
     if ( $normalised === $stored ) {
-      return false; // Nothing changed.
+      return false;
     }
 
     update_option( 'pv_bexio_taxes_cache', $normalised );
 
-    // Only flag stale if there was already a stored value (i.e. first-run is not stale).
     if ( $stored !== '' && $stored !== false ) {
       update_option( 'pv_bexio_taxes_stale', '1' );
       PingvinLogger::log( 'warning', self::LOG_PREFIX . ' Bexio tax list changed — stale flag set.' );

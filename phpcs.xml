@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset name="Pingvin Bexio Sync">
+    <description>PHPCS configuration for Pingvin Bexio Sync. Excludes bundled third-party libraries.</description>
+
+    <!-- Scan only the plugin's own source files -->
+    <file>.</file>
+
+    <!-- Exclude third-party libraries from scanning -->
+    <exclude-pattern>libraries/*</exclude-pattern>
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>node_modules/*</exclude-pattern>
+    <exclude-pattern>build/*</exclude-pattern>
+
+    <rule ref="WordPress-Core"/>
+    <rule ref="WordPress-Docs"/>
+</ruleset>

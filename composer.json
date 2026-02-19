@@ -1,27 +1,27 @@
 {
-  "name": "tobiaszimmermann/bx-plugin",
-  "description": "Bexio product sync plugin",
-  "type": "wordpress-plugin",
-  "license": "MIT",
-  "require": {
-    "jumbojett/openid-connect-php": "v1.0.2",
-    "monolog/monolog": "2.10.0",
-    "paragonie/constant_time_encoding": "v3.0.0",
-    "paragonie/random_compat": "v9.99.100",
-    "phpseclib/phpseclib": "3.0.42",
-    "psr/log": "2.0.0"
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true,
-  "autoload": {
-    "psr-4": {
-      "Monolog\\": "vendor/monolog/monolog/src/Monolog",
-      "ParagonIE\\ConstantTime\\": "vendor/paragonie/constant_time_encoding/src/",
-      "phpseclib3\\": "vendor/phpseclib/phpseclib/phpseclib/",
-      "Psr\\Log\\": "vendor/psr/log/src"
-    },
-    "classmap": [
-      "vendor/jumbojett/openid-connect-php/src/"
-    ]
-  }
+	"name": "tobiaszimmermann/bx-plugin",
+	"description": "Bexio product sync plugin",
+	"type": "wordpress-plugin",
+	"license": "GPLv2 or later",
+	"require": {
+		"jumbojett/openid-connect-php": "v1.0.2",
+		"monolog/monolog": "2.10.0",
+		"paragonie/constant_time_encoding": "v3.0.0",
+		"paragonie/random_compat": "v9.99.100",
+		"phpseclib/phpseclib": "3.0.42",
+		"psr/log": "2.0.0"
+	},
+	"minimum-stability": "stable",
+	"prefer-stable": true,
+	"autoload": {
+		"psr-4": {
+			"Monolog\\": "vendor/monolog/monolog/src/Monolog",
+			"ParagonIE\\ConstantTime\\": "vendor/paragonie/constant_time_encoding/src/",
+			"phpseclib3\\": "vendor/phpseclib/phpseclib/phpseclib/",
+			"Psr\\Log\\": "vendor/psr/log/src"
+		},
+		"classmap": [
+			"vendor/jumbojett/openid-connect-php/src/"
+		]
+	}
 }

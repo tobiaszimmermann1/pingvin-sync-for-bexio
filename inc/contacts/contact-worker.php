@@ -20,11 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Contacts without a `mail` field are skipped — a WP user account
  * requires an e-mail address.
- *
- * Step 3 (current): Full upsert — type-aware name mapping (company vs person),
- *                   WC billing + shipping meta, email-conflict guard, nr meta.
- *                   Country mapping deferred (requires Bexio countries endpoint).
- * Step 4 (current): Hash-based skip-if-unchanged (_bexio_hash in user meta).
  */
 class PvContactSyncWorker {
 
@@ -47,10 +42,6 @@ class PvContactSyncWorker {
       self::$hooked = true;
     }
   }
-
-  // ---------------------------------------------------------------
-  // Main entry point (called by Action Scheduler)
-  // ---------------------------------------------------------------
 
   /**
    * @param int $offset  Zero-based contact offset within the full Bexio list.
@@ -85,7 +76,7 @@ class PvContactSyncWorker {
     if ( $contacts === null ) {
       $error_msg = "[ContactWorker] Bexio API call failed at offset $offset. AS will retry.";
       $engine->set_state( [ 'last_error' => $error_msg ] );
-      throw new \RuntimeException( $error_msg );
+      throw new \RuntimeException( esc_html( $error_msg ) );
     }
 
     $count = count( $contacts );
@@ -127,10 +118,6 @@ class PvContactSyncWorker {
     // ---------------------------------------------------------------
     $this->finish_batch( $engine, $offset, $count, $created + $updated, $skipped, $failed );
   }
-
-  // ---------------------------------------------------------------
-  // Post-batch bookkeeping
-  // ---------------------------------------------------------------
 
   /**
    * Updates sync state and enqueues the next worker if the batch was full.
@@ -193,10 +180,6 @@ class PvContactSyncWorker {
     }
   }
 
-  // ---------------------------------------------------------------
-  // Bexio API fetch
-  // ---------------------------------------------------------------
-
   /**
    * Fetches one page of contacts from Bexio.
    *
@@ -232,10 +215,6 @@ class PvContactSyncWorker {
     return $items;
   }
 
-  // ---------------------------------------------------------------
-  // WP user upsert
-  // ---------------------------------------------------------------
-
   /**
    * Creates or updates a single WordPress user from a Bexio contact.
    *
@@ -267,7 +246,6 @@ class PvContactSyncWorker {
       return 'skipped';
     }
 
-    // --- Name resolution ------------------------------------------------
     // contact_type_id 1 = company, 2 = person.
     $is_company   = ( (int) ( $c->contact_type_id ?? 2 ) === 1 );
     $first_name   = '';
@@ -286,7 +264,6 @@ class PvContactSyncWorker {
       ? $company_name
       : ( trim( "$first_name $last_name" ) ?: $email );
 
-    // --- Address --------------------------------------------------------
     // Prefer the split fields; fall back to the pre-combined `address` field.
     $street    = trim( (string) ( $c->street_name  ?? '' ) );
     $house_nr  = trim( (string) ( $c->house_number ?? '' ) );
@@ -298,13 +275,11 @@ class PvContactSyncWorker {
     $postcode  = trim( (string) ( $c->postcode ?? '' ) );
     // country_id → ISO 2-letter code: deferred — requires Bexio /countries endpoint.
 
-    // --- Phone (prefer mobile, fall back to fixed) ----------------------
     $phone = trim( (string) ( $c->phone_mobile ?? '' ) );
     if ( $phone === '' ) {
       $phone = trim( (string) ( $c->phone_fixed ?? '' ) );
     }
 
-    // --- Hash for skip-if-unchanged (Step 4) ----------------------------
     // Hash only the fields we actually sync, NOT the full raw object.
     // Bexio responses contain volatile fields (e.g. updated_at) that differ
     // between API calls even when no user-visible data changed — hashing the
@@ -324,11 +299,9 @@ class PvContactSyncWorker {
       'phone'           => $phone,
     ] ) );
 
-    // --- Find existing WP user ------------------------------------------
     $wp_user_id = null;
     $is_new     = false;
 
-    // 1. Persistent link via _bexio_contact_id user meta.
     $by_meta = get_users( [
       'meta_key'   => '_bexio_contact_id',
       'meta_value' => (int) $c->id,
@@ -339,7 +312,6 @@ class PvContactSyncWorker {
       $wp_user_id = (int) $by_meta[0];
     }
 
-    // 2. Email match (first-time encounter).
     if ( $wp_user_id === null ) {
       $by_email = get_user_by( 'email', $email );
       if ( $by_email ) {
@@ -363,18 +335,15 @@ class PvContactSyncWorker {
       }
     }
 
-    // --- Skip if data is unchanged (existing user, same hash) ----------
     if ( $wp_user_id !== null && get_user_meta( $wp_user_id, '_bexio_hash', true ) === $hash ) {
       return 'skipped';
     }
 
-    // --- Build WP user data ---------------------------------------------
     $user_data = [
       'user_email'   => $email,
       'first_name'   => $first_name,
       'last_name'    => $last_name,
       'display_name' => $display_name,
-      'role'         => 'customer',
     ];
 
     if ( $wp_user_id !== null ) {
@@ -402,7 +371,6 @@ class PvContactSyncWorker {
 
     $wp_user_id = (int) $result;
 
-    // --- WooCommerce billing meta ---------------------------------------
     update_user_meta( $wp_user_id, 'billing_first_name', $first_name );
     update_user_meta( $wp_user_id, 'billing_last_name',  $last_name );
     update_user_meta( $wp_user_id, 'billing_company',    $company_name );
@@ -414,7 +382,6 @@ class PvContactSyncWorker {
     update_user_meta( $wp_user_id, 'billing_phone',      $phone );
     // billing_country: deferred — country_id needs mapping to ISO 2-letter code.
 
-    // --- WooCommerce shipping meta (mirrors billing) --------------------
     update_user_meta( $wp_user_id, 'shipping_first_name', $first_name );
     update_user_meta( $wp_user_id, 'shipping_last_name',  $last_name );
     update_user_meta( $wp_user_id, 'shipping_company',    $company_name );
@@ -424,7 +391,6 @@ class PvContactSyncWorker {
     update_user_meta( $wp_user_id, 'shipping_postcode',   $postcode );
     // shipping_country: deferred — same reason.
 
-    // --- Bexio-specific meta -------------------------------------------
     update_user_meta( $wp_user_id, '_bexio_hash',       $hash );
     update_user_meta( $wp_user_id, '_bexio_contact_id', (int) $c->id );
     update_user_meta( $wp_user_id, '_bexio_contact_nr', $c->nr ?? null );  // Bexio contact number
@@ -441,10 +407,6 @@ class PvContactSyncWorker {
 
     return $is_new ? 'created' : 'updated';
   }
-
-  // ---------------------------------------------------------------
-  // Worker enqueueing helper (shared by coordinator and workers)
-  // ---------------------------------------------------------------
 
   /**
    * Enqueues a worker action for the given offset.

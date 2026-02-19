@@ -1,8 +1,7 @@
-const defaultConfig = require("./node_modules/@wordpress/scripts/config/webpack.config.js")
-const path = require("path")
+const defaultConfig = require( './node_modules/@wordpress/scripts/config/webpack.config.js' );
 
 module.exports = {
-  ...defaultConfig,
-  ...{},
-  entry: { index: "./src/admin.js" }
-}
+	...defaultConfig,
+	...{},
+	entry: { index: './src/admin.js' },
+};
