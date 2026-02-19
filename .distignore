@@ -11,3 +11,4 @@ composer.json
 composer.lock
 README.md
 assets/README.md
+build-phar.sh

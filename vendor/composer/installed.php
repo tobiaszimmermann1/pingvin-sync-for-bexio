@@ -3,11 +3,11 @@
         'name' => 'tobiaszimmermann/bx-plugin',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '50fc1242894d45335fb4ea906e7aae6944ce371c',
+        'reference' => '0389e06dd864457a175505397e8801086558b605',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'jumbojett/openid-connect-php' => array(
@@ -73,7 +73,7 @@
         'tobiaszimmermann/bx-plugin' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '50fc1242894d45335fb4ea906e7aae6944ce371c',
+            'reference' => '0389e06dd864457a175505397e8801086558b605',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

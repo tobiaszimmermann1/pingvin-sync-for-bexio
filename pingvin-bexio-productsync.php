@@ -130,10 +130,6 @@ class Pingvin_Bexio_ProductSync {
     if("toplevel_page_pingvin-bexio-sync" !== $screen) return;
     wp_register_style( 'pv_dashboard_style', PV_PLUGIN_URL . 'styles/styles.css', false, PV_PLUGIN_VERSION );
     wp_enqueue_style( 'pv_dashboard_style' );
-
-    // Google Font
-    wp_enqueue_style('pv_google_font', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap', false, null);
-    wp_enqueue_style( 'pv_google_font' );
   }
 
   /**
