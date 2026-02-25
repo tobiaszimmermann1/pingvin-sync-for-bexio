@@ -78,7 +78,12 @@ class Pingvin_Bexio_ProductSync_Settings {
     
     if (!$auth->has_auth_token()) {
       if ( isset( $_GET['auth'] ) && $_GET['auth'] === 'true' ) {
-        check_admin_referer( 'pv_bexio_auth' );
+        // Only verify the nonce on the initial "connect" click.
+        // When Bexio redirects back after OIDC, $_GET['code'] is present and
+        // _wpnonce is absent — the OIDC 'state' parameter covers CSRF there.
+        if ( ! isset( $_GET['code'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+          check_admin_referer( 'pv_bexio_auth' );
+        }
         $token = $auth->pv_authenticate();
         if ($token) {
           wp_safe_redirect( admin_url( 'admin.php?page=pingvin-bexio-sync' ) );

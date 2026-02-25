@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name:     Pingvin Bexio Sync
- * Plugin URI:      https://pingvin.digital
  * Description:     Connects WooCommerce to Bexio and syncs products
  * Author:          Tobias Zimmermann
  * Author URI:      https://pingvin.digital
