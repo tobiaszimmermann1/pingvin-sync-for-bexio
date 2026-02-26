@@ -12,11 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class PvContactSyncEngine extends PvAbstractSyncEngine {
 
-  const STATE_KEY        = 'pv_sync_state_contacts';
-  const COORDINATOR_HOOK = 'pv_sync_coordinator_contacts';
-  const WORKER_HOOK      = 'pv_sync_worker_contacts';
-  const SETTINGS_KEY     = 'pv_bexio_contactsync_action_settings';
-  const NEXT_TRANSIENT   = 'pv_bexio_contact_next';
+  const STATE_KEY        = 'pvbexio_sync_state_contacts';
+  const COORDINATOR_HOOK = 'pvbexio_sync_coordinator_contacts';
+  const WORKER_HOOK      = 'pvbexio_sync_worker_contacts';
+  const SETTINGS_KEY     = 'pvbexio_contactsync_action_settings';
+  const NEXT_TRANSIENT   = 'pvbexio_contact_next';
   const LOG_PREFIX       = '[ContactEngine]';
 
   protected function enqueue_first_worker(): void {

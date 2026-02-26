@@ -26,7 +26,7 @@ class Pingvin_Bexio_ProductSync_Auth {
    * @return bool
    */
   public function has_auth_token() {
-    $option = get_option( 'pv_bexio_api_key' ); 
+    $option = get_option( 'pvbexio_api_key' ); 
     if ($option) {
       return true;
     } else {
@@ -42,17 +42,17 @@ class Pingvin_Bexio_ProductSync_Auth {
    * @return string|null
    */
   public function bexio_authenticate() {
-    $bexio_general_options = get_option( 'pv_bexio_general_options' );
+    $bexio_general_options = get_option( 'pvbexio_general_options' );
     if (!$bexio_general_options) {
       PingvinLogger::log('error', 'Bexio general options not found');
       return null;
     }
-    if (empty($bexio_general_options['pv_bexio_client_id']) || empty($bexio_general_options['pv_bexio_client_secret'])) {
+    if (empty($bexio_general_options['pvbexio_client_id']) || empty($bexio_general_options['pvbexio_client_secret'])) {
       PingvinLogger::log('error', 'Client ID or Client Secret is missing');
       return null;
     }
     try {
-      $oidc = new OpenIDConnectClient("https://auth.bexio.com/realms/bexio",  $bexio_general_options['pv_bexio_client_id'] , $bexio_general_options['pv_bexio_client_secret'] );
+      $oidc = new OpenIDConnectClient("https://auth.bexio.com/realms/bexio",  $bexio_general_options['pvbexio_client_id'] , $bexio_general_options['pvbexio_client_secret'] );
       $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-sync&auth=true'));
       $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit", "kb_order_show", "kb_order_edit", "kb_delivery_show", "kb_delivery_edit", "kb_invoice_show", "kb_invoice_edit", "contact_show", "contact_edit"));
       
@@ -88,15 +88,15 @@ class Pingvin_Bexio_ProductSync_Auth {
    * 
    * @return bool
    */
-  public function pv_authenticate() {
+  public function pvbexio_authenticate() {
     $tokens = $this->bexio_authenticate();
     
     if ($tokens && isset($tokens['api_token']) && isset($tokens['refresh_token'])) {
       $expiry_time = time() + 3600;
-      $update_result_api = update_option( 'pv_bexio_api_key', $tokens['api_token'] );
-      $update_result_expiry = update_option('pv_bexio_token_expiry', $expiry_time);
+      $update_result_api = update_option( 'pvbexio_api_key', $tokens['api_token'] );
+      $update_result_expiry = update_option('pvbexio_token_expiry', $expiry_time);
       PingvinLogger::log('info', 'Bexio API Token saved.');
-      $update_result_refresh = update_option( 'pv_bexio_refresh_token', $tokens['refresh_token'] );
+      $update_result_refresh = update_option( 'pvbexio_refresh_token', $tokens['refresh_token'] );
       PingvinLogger::log('info', 'Bexio Refresh Token saved.');
       return true;
     } else {
@@ -113,8 +113,8 @@ class Pingvin_Bexio_ProductSync_Auth {
    * @return bool
    */
   public function has_bexio_app() {
-    $client_secret = isset(get_option( "pv_bexio_general_options" )['pv_bexio_client_secret']);
-    $client_id = isset(get_option( "pv_bexio_general_options" )['pv_bexio_client_id']);
+    $client_secret = isset(get_option( "pvbexio_general_options" )['pvbexio_client_secret']);
+    $client_id = isset(get_option( "pvbexio_general_options" )['pvbexio_client_id']);
 
     if ( $client_secret && $client_id ) {
       return true;
@@ -129,32 +129,32 @@ class Pingvin_Bexio_ProductSync_Auth {
    * Checks if the API token is still valid
    */
   public function get_valid_api_token() {
-    $api_token    = get_option('pv_bexio_api_key');
-    $refresh_token = get_option('pv_bexio_refresh_token');
-    $token_expiry  = get_option('pv_bexio_token_expiry');
+    $api_token    = get_option('pvbexio_api_key');
+    $refresh_token = get_option('pvbexio_refresh_token');
+    $token_expiry  = get_option('pvbexio_token_expiry');
 
     if (time() >= $token_expiry || !$api_token || !$refresh_token || !$token_expiry) {
 
       // --- Mutex: prevent concurrent refreshes burning the single-use refresh token ---
       // If another AS worker already holds the lock, wait up to 15s for it to finish
       // and then re-read the freshly stored token instead of refreshing again.
-      if ( get_transient( 'pv_token_refresh_lock' ) ) {
+      if ( get_transient( 'pvbexio_token_refresh_lock' ) ) {
         PingvinLogger::log( 'info', 'Token refresh already in progress by another worker — waiting.' );
         $waited = 0;
-        while ( get_transient( 'pv_token_refresh_lock' ) && $waited < 15 ) {
+        while ( get_transient( 'pvbexio_token_refresh_lock' ) && $waited < 15 ) {
           sleep( 1 );
           $waited++;
         }
         // Return whatever token the other worker stored — should be fresh now.
-        return get_option( 'pv_bexio_api_key' );
+        return get_option( 'pvbexio_api_key' );
       }
 
-      set_transient( 'pv_token_refresh_lock', 1, 30 ); // hold for max 30s
+      set_transient( 'pvbexio_token_refresh_lock', 1, 30 ); // hold for max 30s
 
       PingvinLogger::log('info', 'Invalid or expired tokens, attempting to use refresh token to get new tokens');
       $new_tokens = $this->refresh_api_token($refresh_token);
 
-      delete_transient( 'pv_token_refresh_lock' );
+      delete_transient( 'pvbexio_token_refresh_lock' );
 
       if ($new_tokens && isset($new_tokens['api_token'])) {
         $api_token = $new_tokens['api_token'];
@@ -176,14 +176,14 @@ class Pingvin_Bexio_ProductSync_Auth {
    * @return array|null
    */
   public function refresh_api_token($refresh_token) {
-    $bexio_general_options = get_option('pv_bexio_general_options');
+    $bexio_general_options = get_option('pvbexio_general_options');
     if (!$bexio_general_options) {
         PingvinLogger::log('error', 'Bexio general options not found');
         return null;
     }
 
     try {
-        $oidc = new OpenIDConnectClient("https://auth.bexio.com/realms/bexio", $bexio_general_options['pv_bexio_client_id'], $bexio_general_options['pv_bexio_client_secret']);
+        $oidc = new OpenIDConnectClient("https://auth.bexio.com/realms/bexio", $bexio_general_options['pvbexio_client_id'], $bexio_general_options['pvbexio_client_secret']);
         $oidc->setRedirectURL(admin_url('admin.php?page=pingvin-bexio-sync&auth=true'));
         $oidc->addScope(array("openid", "company_profile", "email", "offline_access", "profile", "article_show", "article_edit", "stock_edit", "kb_order_show", "kb_order_edit", "kb_delivery_show", "kb_delivery_edit", "kb_invoice_show", "kb_invoice_edit", "contact_show", "contact_edit"));
         $oidc->refreshToken($refresh_token);
@@ -193,9 +193,9 @@ class Pingvin_Bexio_ProductSync_Auth {
         $new_expiry_time = time() + 3600;
 
         if ($new_api_token) {
-          update_option('pv_bexio_api_key', $new_api_token);
-          update_option('pv_bexio_refresh_token', $new_refresh_token);
-          update_option('pv_bexio_token_expiry', $new_expiry_time);
+          update_option('pvbexio_api_key', $new_api_token);
+          update_option('pvbexio_refresh_token', $new_refresh_token);
+          update_option('pvbexio_token_expiry', $new_expiry_time);
           PingvinLogger::log('info', 'Bexio API Token and Refresh Token refreshed.');
           return array('api_token' => $new_api_token, 'refresh_token' => $new_refresh_token);
         } else {

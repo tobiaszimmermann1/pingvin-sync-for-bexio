@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class PvProductSyncWorker {
 
   /** Mirrors the WORKER_HOOK constant in PvProductSyncEngine for convenience. */
-  const HOOK       = 'pv_sync_worker_products';
+  const HOOK       = 'pvbexio_sync_worker_products';
   const BATCH_SIZE = 10;
 
   /** Prevents registering add_action more than once across all instances. */
@@ -75,7 +75,7 @@ class PvProductSyncWorker {
     // ---------------------------------------------------------------
     // 2. Build tax map (once per batch — cheap, always fresh)
     // ---------------------------------------------------------------
-    $plugin_opts = get_option( 'pv_bexio_productsync_options', [] );
+    $plugin_opts = get_option( 'pvbexio_productsync_options', [] );
     $tax_map     = $this->build_tax_map( $plugin_opts );
 
     // ---------------------------------------------------------------
@@ -223,7 +223,7 @@ class PvProductSyncWorker {
    */
   private function fetch_bexio_batch( int $offset ): ?array {
     $endpoint = '2.0/article?offset=' . $offset . '&limit=' . self::BATCH_SIZE;
-    $res      = pv_api_call( 'GET', $endpoint );
+    $res      = pvbexio_api_call( 'GET', $endpoint );
 
     if ( empty( $res ) || ! isset( $res['status'] ) ) {
       PingvinLogger::log( 'error', "[ProductWorker] No response from Bexio API (offset: $offset)." );
@@ -258,15 +258,15 @@ class PvProductSyncWorker {
    * @return array
    */
   private function build_tax_map( array $plugin_opts ): array {
-    $standard_bexio = $plugin_opts['pv_productsync_tax_rate_standard_bexio'] ?? null;
-    $reduced_bexio  = $plugin_opts['pv_productsync_tax_rate_reduced_bexio']  ?? null;
-    $special_bexio  = $plugin_opts['pv_productsync_tax_rate_special_bexio']  ?? null;
+    $standard_bexio = $plugin_opts['pvbexio_productsync_tax_rate_standard_bexio'] ?? null;
+    $reduced_bexio  = $plugin_opts['pvbexio_productsync_tax_rate_reduced_bexio']  ?? null;
+    $special_bexio  = $plugin_opts['pvbexio_productsync_tax_rate_special_bexio']  ?? null;
 
-    $standard_woo   = $plugin_opts['pv_productsync_tax_rate_standard_woo']   ?? '';
-    $reduced_woo    = $plugin_opts['pv_productsync_tax_rate_reduced_woo']    ?? '';
-    $special_woo    = $plugin_opts['pv_productsync_tax_rate_special_woo']    ?? '';
+    $standard_woo   = $plugin_opts['pvbexio_productsync_tax_rate_standard_woo']   ?? '';
+    $reduced_woo    = $plugin_opts['pvbexio_productsync_tax_rate_reduced_woo']    ?? '';
+    $special_woo    = $plugin_opts['pvbexio_productsync_tax_rate_special_woo']    ?? '';
 
-    $res = pv_api_call( 'GET', '3.0/taxes' );
+    $res = pvbexio_api_call( 'GET', '3.0/taxes' );
     if ( empty( $res['result'] ) || ! is_array( $res['result'] ) ) {
       PingvinLogger::log( 'warning', '[ProductWorker] Could not fetch Bexio tax rates — tax classes will be skipped.' );
       return [];
@@ -311,8 +311,8 @@ class PvProductSyncWorker {
       // Still stamp the cycle token so this product is not mistaken for a
       // deleted Bexio article at end-of-cycle cleanup.
       $incoming_hash = md5( wp_json_encode( $p ) );
-      if ( $product->get_meta( '_bexio_hash', true ) === $incoming_hash ) {
-        $product->update_meta_data( '_bexio_sync_cycle', $cycle_token );
+      if ( $product->get_meta( '_pvbexio_hash', true ) === $incoming_hash ) {
+        $product->update_meta_data( '_pvbexio_sync_cycle', $cycle_token );
         $product->save_meta_data();
         return 'skipped';
       }
@@ -370,37 +370,37 @@ class PvProductSyncWorker {
       }
     }
 
-    $product->update_meta_data( '_bexio_id',            $p->id                    ?? null );
-    $product->update_meta_data( '_user_id',             $p->user_id               ?? null );
-    $product->update_meta_data( '_article_type_id',     $p->article_type_id       ?? null );
-    $product->update_meta_data( '_contact_id',          $p->contact_id            ?? null );
-    $product->update_meta_data( '_deliverer_code',      $p->deliverer_code        ?? null );
-    $product->update_meta_data( '_deliverer_name',      $p->deliverer_name        ?? null );
-    $product->update_meta_data( '_deliverer_description', $p->deliverer_description ?? null );
-    $product->update_meta_data( '_purchase_price',      $p->purchase_price        ?? null );
-    $product->update_meta_data( '_purchase_total',      $p->purchase_total        ?? null );
-    $product->update_meta_data( '_sale_total',          $p->sale_total            ?? null );
-    $product->update_meta_data( '_currency_id',         $p->currency_id           ?? null );
-    $product->update_meta_data( '_tax_income_id',       $p->tax_income_id         ?? null );
-    $product->update_meta_data( '_tax_id',              $p->tax_id                ?? null );
-    $product->update_meta_data( '_tax_expense_id',      $p->tax_expense_id        ?? null );
-    $product->update_meta_data( '_unit_id',             $p->unit_id               ?? null );
-    $product->update_meta_data( '_stock_id',            $p->stock_id              ?? null );
-    $product->update_meta_data( '_stock_place_id',      $p->stock_place_id        ?? null );
-    $product->update_meta_data( '_stock_nr',            $p->stock_nr              ?? null );
-    $product->update_meta_data( '_stock_min_nr',        $p->stock_min_nr          ?? null );
-    $product->update_meta_data( '_stock_reserved_nr',   $p->stock_reserved_nr     ?? null );
-    $product->update_meta_data( '_stock_picked_nr',     $p->stock_picked_nr       ?? null );
-    $product->update_meta_data( '_stock_disposed_nr',   $p->stock_disposed_nr     ?? null );
-    $product->update_meta_data( '_stock_ordered_nr',    $p->stock_ordered_nr      ?? null );
-    $product->update_meta_data( '_volume',              $p->volume                ?? null );
-    $product->update_meta_data( '_remarks',             $p->remarks               ?? null );
-    $product->update_meta_data( '_delivery_price',      $p->delivery_price        ?? null );
-    $product->update_meta_data( '_article_group_id',    $p->article_group_id      ?? null );
+    $product->update_meta_data( '_pvbexio_id',            $p->id                    ?? null );
+    $product->update_meta_data( '_pvbexio_user_id',        $p->user_id               ?? null );
+    $product->update_meta_data( '_pvbexio_article_type_id', $p->article_type_id      ?? null );
+    $product->update_meta_data( '_pvbexio_contact_id',     $p->contact_id            ?? null );
+    $product->update_meta_data( '_pvbexio_deliverer_code', $p->deliverer_code        ?? null );
+    $product->update_meta_data( '_pvbexio_deliverer_name', $p->deliverer_name        ?? null );
+    $product->update_meta_data( '_pvbexio_deliverer_description', $p->deliverer_description ?? null );
+    $product->update_meta_data( '_pvbexio_purchase_price', $p->purchase_price        ?? null );
+    $product->update_meta_data( '_pvbexio_purchase_total', $p->purchase_total        ?? null );
+    $product->update_meta_data( '_pvbexio_sale_total',     $p->sale_total            ?? null );
+    $product->update_meta_data( '_pvbexio_currency_id',    $p->currency_id           ?? null );
+    $product->update_meta_data( '_pvbexio_tax_income_id',  $p->tax_income_id         ?? null );
+    $product->update_meta_data( '_pvbexio_tax_id',         $p->tax_id                ?? null );
+    $product->update_meta_data( '_pvbexio_tax_expense_id', $p->tax_expense_id        ?? null );
+    $product->update_meta_data( '_pvbexio_unit_id',        $p->unit_id               ?? null );
+    $product->update_meta_data( '_pvbexio_stock_id',       $p->stock_id              ?? null );
+    $product->update_meta_data( '_pvbexio_stock_place_id', $p->stock_place_id        ?? null );
+    $product->update_meta_data( '_pvbexio_stock_nr',       $p->stock_nr              ?? null );
+    $product->update_meta_data( '_pvbexio_stock_min_nr',   $p->stock_min_nr          ?? null );
+    $product->update_meta_data( '_pvbexio_stock_reserved_nr', $p->stock_reserved_nr  ?? null );
+    $product->update_meta_data( '_pvbexio_stock_picked_nr',   $p->stock_picked_nr    ?? null );
+    $product->update_meta_data( '_pvbexio_stock_disposed_nr', $p->stock_disposed_nr  ?? null );
+    $product->update_meta_data( '_pvbexio_stock_ordered_nr',  $p->stock_ordered_nr   ?? null );
+    $product->update_meta_data( '_pvbexio_volume',         $p->volume                ?? null );
+    $product->update_meta_data( '_pvbexio_remarks',        $p->remarks               ?? null );
+    $product->update_meta_data( '_pvbexio_delivery_price', $p->delivery_price        ?? null );
+    $product->update_meta_data( '_pvbexio_article_group_id', $p->article_group_id    ?? null );
 
-    $product->update_meta_data( '_bexio_sync_cycle', $cycle_token );
-    $product->update_meta_data( '_bexio_hash', md5( wp_json_encode( $p ) ) );
-    $product->update_meta_data( '_bexio_data', wp_json_encode( [
+    $product->update_meta_data( '_pvbexio_sync_cycle', $cycle_token );
+    $product->update_meta_data( '_pvbexio_hash', md5( wp_json_encode( $p ) ) );
+    $product->update_meta_data( '_pvbexio_data', wp_json_encode( [
       'last_sync' => current_time( 'Y-m-d H:i:s' ),
       'data'      => $p,
     ] ) );

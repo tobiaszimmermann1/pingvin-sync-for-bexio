@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit; // Exit if accessed directly.
 }
 
-function pv_api_call( string $method, string $endpoint, ?string $payload = null ): array {
+function pvbexio_api_call( string $method, string $endpoint, ?string $payload = null ): array {
   $auth      = Pingvin_Bexio_ProductSync_Auth::get_instance();
   $api_token = $auth->get_valid_api_token();
   $url       = 'https://api.bexio.com/' . ltrim( $endpoint, '/' );

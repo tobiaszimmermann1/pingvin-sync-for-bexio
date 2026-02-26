@@ -1,4 +1,4 @@
-=== Pingvin Bexio Sync ===
+=== Pingvin Sync for Bexio ===
 Contributors: pingvindigital
 Tags: bexio, buchhaltung, schweiz, synchronisierung
 Requires at least: 6.7
@@ -7,15 +7,16 @@ Stable tag: 0.5.0
 Requires PHP: 8.2.12
 Requires Plugins: woocommerce
 License: GPLv2 or later
-License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0
 
 Synchronizes products, contacts, and orders between Bexio and WooCommerce. No additional subscription is required. No third party data access.
 
 == Description ==
-Currently Pingvin Bexio Sync synchronizes products and contacts from Bexio to WooCommerce. Furthermore it will create a Bexio order for every WooCommerce order that has been created. The plugin is intended to eliminate the most frustrating copy and paste tasks when running a WooCommerce store and using Bexio for handling invoicing, stock management and bookkeeping. Important: You do not need any third-party subscription and noone but you will be able to access your data. Synchronisation happens directly between WooCommerce and Bexio.
+Currently Pingvin Sync for Bexio synchronizes products and contacts from Bexio to WooCommerce. Furthermore it will create a Bexio order for every WooCommerce order that has been created. The plugin is intended to eliminate the most frustrating copy and paste tasks when running a WooCommerce store and using Bexio for handling invoicing, stock management and bookkeeping. Important: You do not need any third-party subscription and noone but you will be able to access your data. Synchronisation happens directly between WooCommerce and Bexio.
 
 This plugin is not intended to sync every single detail between Bexio and WooCommerce. If you are missing a feature, need support or need custom feature, feel free to reach out to me: tobias@pingvin.digital
+
+The use of Bexio and the Bexio API is subject to Bexios terms of service and privacy policy. More information can be found here: https://www.bexio.com/en-CH/policies
 
 == Installation ==
 Copy the unzipped folder into your plugins folder. Activate the plugin via the Plugins admin page. Requires WooCommerce
@@ -41,6 +42,9 @@ Feel free to reach out: tobias@pingvin.digital
 
 1. Plugin settings page.
 2. WooCommerce order list showing Bexio sync status.
+
+== Code ==
+https://github.com/tobiaszimmermann1/pingvin-sync-for-bexio
 
 == Changelog ==
 

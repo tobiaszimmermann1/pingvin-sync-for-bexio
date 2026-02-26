@@ -113,14 +113,14 @@ class PvBexioRestRoutes {
   }
 
   function get_articles($request) {
-    $result = pv_api_call('GET', '2.0/article');
+    $result = pvbexio_api_call('GET', '2.0/article');
     return $result;
   }
 
   function sync_settings($request) {
     $type_map = [
-      'products' => 'pv_bexio_productsync_action_settings',
-      'contacts' => 'pv_bexio_contactsync_action_settings',
+      'products' => 'pvbexio_productsync_action_settings',
+      'contacts' => 'pvbexio_contactsync_action_settings',
     ];
 
     $type = $request->get_param('type') ?? 'products';
@@ -156,8 +156,8 @@ class PvBexioRestRoutes {
   }
 
   function transient() {
-    $transient_status = get_transient('pv_bexio_connector_status');
-    $transient_next = get_transient('pv_bexio_connector_next');
+    $transient_status = get_transient('pvbexio_connector_status');
+    $transient_next = get_transient('pvbexio_connector_next');
 
     return array(
       'status' => $transient_status,
@@ -167,8 +167,8 @@ class PvBexioRestRoutes {
 
   function sync_state( $request ) {
     $type_map = [
-      'products' => 'pv_sync_state_products',
-      'contacts' => 'pv_sync_state_contacts',
+      'products' => 'pvbexio_sync_state_products',
+      'contacts' => 'pvbexio_sync_state_contacts',
     ];
 
     $type = $request->get_param( 'type' ) ?? 'products';
@@ -218,12 +218,12 @@ class PvBexioRestRoutes {
       $items = array();
       if (!empty($users)) {
         foreach ($users as $u) {
-          $meta = get_user_meta($u->ID, '_bexio_data', true);
+          $meta = get_user_meta($u->ID, '_pvbexio_data', true);
           $items[] = array(
             'ID' => $u->ID,
             'display_name' => $u->display_name,
             'user_email' => $u->user_email,
-            'pv_bexio_sync' => json_decode($meta, true),
+            'pvbexio_sync' => json_decode($meta, true),
           );
         }
       }
@@ -262,12 +262,12 @@ class PvBexioRestRoutes {
       $items = array();
       if (!empty($products)) {
         foreach ($products as $p) {
-          $meta = $p->get_meta('_bexio_data', true);
+          $meta = $p->get_meta('_pvbexio_data', true);
           $items[] = array(
             'ID' => $p->get_id(),
             'name' => $p->get_name(),
             'sku' => $p->get_sku(),
-            'pv_bexio_sync' => json_decode($meta, true),
+            'pvbexio_sync' => json_decode($meta, true),
           );
         }
       }
@@ -313,10 +313,10 @@ class PvBexioRestRoutes {
       $items = array();
       if (!empty($orders)) {
         foreach ($orders as $o) {
-          $meta = $o->get_meta('pv_bexio_sync');
-          $bexio_order_nr = $o->get_meta('_bexio_order_nr', true);
-          $bexio_order_id = $o->get_meta('_bexio_order_id', true);
-          $bexio_order_status_raw = $o->get_meta('_bexio_order_status', true);
+          $meta = $o->get_meta('pvbexio_sync');
+          $bexio_order_nr = $o->get_meta('_pvbexio_order_nr', true);
+          $bexio_order_id = $o->get_meta('_pvbexio_order_id', true);
+          $bexio_order_status_raw = $o->get_meta('_pvbexio_order_status', true);
           $bexio_order_status = $bexio_order_status_map[ (int) $bexio_order_status_raw ] ?? 'unknown';
           
           $items[] = array(
@@ -325,7 +325,7 @@ class PvBexioRestRoutes {
             'customer' => $o->get_billing_first_name() . ' ' . $o->get_billing_last_name(),
             'price' => $o->get_total(),
             'status' => $o->get_status(),
-            'pv_bexio_sync' => $meta,
+            'pvbexio_sync' => $meta,
             'bexio_order_nr' => $bexio_order_nr,
             'bexio_order_id' => $bexio_order_id,
             'bexio_order_status' => $bexio_order_status,
@@ -347,15 +347,15 @@ class PvBexioRestRoutes {
 
   function logs($request) {
     $upload_dir = wp_upload_dir();
-    $log_dir    = trailingslashit( $upload_dir['basedir'] ) . 'pv-bexio';
-    $log_url    = trailingslashit( $upload_dir['baseurl']  ) . 'pv-bexio';
+    $log_dir    = trailingslashit( $upload_dir['basedir'] ) . 'pvbexio';
+    $log_url    = trailingslashit( $upload_dir['baseurl']  ) . 'pvbexio';
 
     $file_param = $request->get_param('file');
 
     if ( $file_param ) {
       // Security: only allow simple log filenames, no path traversal.
       $filename = basename( $file_param );
-      if ( ! preg_match( '/^pv-bexio[\w\-]*\.log$/', $filename ) ) {
+      if ( ! preg_match( '/^pvbexio[\w\-]*\.log$/', $filename ) ) {
         return new \WP_REST_Response( ['message' => 'Invalid file name'], 400 );
       }
 
@@ -385,7 +385,7 @@ class PvBexioRestRoutes {
       return new \WP_REST_Response( ['files' => []], 200 );
     }
 
-    $files = glob( $log_dir . '/pv-bexio*.log' ) ?: [];
+    $files = glob( $log_dir . '/pvbexio*.log' ) ?: [];
     rsort( $files );
 
     return new \WP_REST_Response( [
@@ -403,7 +403,7 @@ class PvBexioRestRoutes {
 
   function bexio_taxes( $request ) {
     $data  = PvBexioReferenceData::get_taxes();
-    $stale = (bool) get_option( 'pv_bexio_taxes_stale', false );
+    $stale = (bool) get_option( 'pvbexio_taxes_stale', false );
     return new \WP_REST_Response( [
       'data'      => $data,
       'stale'     => $stale,
@@ -413,7 +413,7 @@ class PvBexioRestRoutes {
 
   function bexio_users( $request ) {
     $data  = PvBexioReferenceData::get_users();
-    $stale = (bool) get_option( 'pv_bexio_users_stale', false );
+    $stale = (bool) get_option( 'pvbexio_users_stale', false );
     return new \WP_REST_Response( [
       'data'      => $data,
       'stale'     => $stale,

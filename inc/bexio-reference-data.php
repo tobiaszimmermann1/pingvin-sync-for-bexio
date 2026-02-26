@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class PvBexioReferenceData {
 
-  const AS_HOOK    = 'pv_refresh_bexio_reference_data';
+  const AS_HOOK    = 'pvbexio_refresh_bexio_reference_data';
   const INTERVAL   = DAY_IN_SECONDS;
   const LOG_PREFIX = '[ReferenceData]';
 
@@ -51,7 +51,7 @@ class PvBexioReferenceData {
         self::INTERVAL,
         self::AS_HOOK,
         [],
-        'pv_sync',
+        'pvbexio_sync',
         true
       );
       PingvinLogger::log( 'info', self::LOG_PREFIX . ' Daily refresh scheduled.' );
@@ -95,7 +95,7 @@ class PvBexioReferenceData {
    * @return array|null
    */
   public static function get_taxes(): ?array {
-    $raw = get_option( 'pv_bexio_taxes_cache' );
+    $raw = get_option( 'pvbexio_taxes_cache' );
     return $raw ? json_decode( $raw, true ) : null;
   }
 
@@ -105,7 +105,7 @@ class PvBexioReferenceData {
    * @return array|null
    */
   public static function get_users(): ?array {
-    $raw = get_option( 'pv_bexio_users_cache' );
+    $raw = get_option( 'pvbexio_users_cache' );
     return $raw ? json_decode( $raw, true ) : null;
   }
 
@@ -113,14 +113,14 @@ class PvBexioReferenceData {
    * Clears the stale flag for taxes (call after user has reviewed + saved mapping).
    */
   public static function clear_taxes_stale(): void {
-    delete_option( 'pv_bexio_taxes_stale' );
+    delete_option( 'pvbexio_taxes_stale' );
   }
 
   /**
    * Clears the stale flag for users (call after user has reviewed + saved selection).
    */
   public static function clear_users_stale(): void {
-    delete_option( 'pv_bexio_users_stale' );
+    delete_option( 'pvbexio_users_stale' );
   }
 
   /**
@@ -129,7 +129,7 @@ class PvBexioReferenceData {
    * @return bool  True if the data changed.
    */
   private function refresh_taxes(): bool {
-    $res = pv_api_call( 'GET', '3.0/taxes?types=sales_tax&scope=active' );
+    $res = pvbexio_api_call( 'GET', '3.0/taxes?types=sales_tax&scope=active' );
 
     if ( empty( $res ) || (int) ( $res['status'] ?? 0 ) !== 200 ) {
       PingvinLogger::log(
@@ -146,16 +146,16 @@ class PvBexioReferenceData {
     }
 
     $normalised = json_encode( $items );
-    $stored     = get_option( 'pv_bexio_taxes_cache', '' );
+    $stored     = get_option( 'pvbexio_taxes_cache', '' );
 
     if ( $normalised === $stored ) {
       return false;
     }
 
-    update_option( 'pv_bexio_taxes_cache', $normalised );
+    update_option( 'pvbexio_taxes_cache', $normalised );
 
     if ( $stored !== '' && $stored !== false ) {
-      update_option( 'pv_bexio_taxes_stale', '1' );
+      update_option( 'pvbexio_taxes_stale', '1' );
       PingvinLogger::log( 'warning', self::LOG_PREFIX . ' Bexio tax list changed — stale flag set.' );
     }
 
@@ -168,7 +168,7 @@ class PvBexioReferenceData {
    * @return bool  True if the data changed.
    */
   private function refresh_users(): bool {
-    $res = pv_api_call( 'GET', '3.0/users' );
+    $res = pvbexio_api_call( 'GET', '3.0/users' );
 
     if ( empty( $res ) || (int) ( $res['status'] ?? 0 ) !== 200 ) {
       PingvinLogger::log(
@@ -185,16 +185,16 @@ class PvBexioReferenceData {
     }
 
     $normalised = json_encode( $items );
-    $stored     = get_option( 'pv_bexio_users_cache', '' );
+    $stored     = get_option( 'pvbexio_users_cache', '' );
 
     if ( $normalised === $stored ) {
       return false;
     }
 
-    update_option( 'pv_bexio_users_cache', $normalised );
+    update_option( 'pvbexio_users_cache', $normalised );
 
     if ( $stored !== '' && $stored !== false ) {
-      update_option( 'pv_bexio_users_stale', '1' );
+      update_option( 'pvbexio_users_stale', '1' );
       PingvinLogger::log( 'warning', self::LOG_PREFIX . ' Bexio user list changed — stale flag set.' );
     }
 

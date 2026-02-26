@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * with WooCommerce customer billing meta.
  *
  * Bexio endpoint: GET 2.0/contact?offset={n}&limit={BATCH_SIZE}
- * WP link meta:   _bexio_contact_id  (stored on the WP user)
+ * WP link meta:   _pvbexio_contact_id  (stored on the WP user)
  * Match strategy: 1. user meta _bexio_contact_id  (persistent link)
  *                 2. user_email match             (first-time link)
  *                 3. create new WP user           (never seen before)
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class PvContactSyncWorker {
 
   /** Mirrors the constant in PvContactSyncEngine for convenience. */
-  const HOOK = 'pv_sync_worker_contacts';
+  const HOOK = 'pvbexio_sync_worker_contacts';
 
   /**
    * Contacts are lighter than products — use a larger batch so each
@@ -190,7 +190,7 @@ class PvContactSyncWorker {
    */
   private function fetch_bexio_batch( int $offset ): ?array {
     $endpoint = '2.0/contact?offset=' . $offset . '&limit=' . self::BATCH_SIZE;
-    $res      = pv_api_call( 'GET', $endpoint );
+    $res      = pvbexio_api_call( 'GET', $endpoint );
 
     if ( empty( $res ) || ! isset( $res['status'] ) ) {
       PingvinLogger::log( 'error', "[ContactWorker] No response from Bexio API (offset: $offset)." );
@@ -303,7 +303,7 @@ class PvContactSyncWorker {
     $is_new     = false;
 
     $by_meta = get_users( [
-      'meta_key'   => '_bexio_contact_id',
+      'meta_key'   => '_pvbexio_contact_id',
       'meta_value' => (int) $c->id,
       'number'     => 1,
       'fields'     => 'ID',
@@ -315,7 +315,7 @@ class PvContactSyncWorker {
     if ( $wp_user_id === null ) {
       $by_email = get_user_by( 'email', $email );
       if ( $by_email ) {
-        $existing_bexio_id = get_user_meta( (int) $by_email->ID, '_bexio_contact_id', true );
+        $existing_bexio_id = get_user_meta( (int) $by_email->ID, '_pvbexio_contact_id', true );
 
         if ( $existing_bexio_id !== '' && (int) $existing_bexio_id !== (int) $c->id ) {
           // This email already belongs to a WP user linked to a DIFFERENT Bexio contact.
@@ -335,7 +335,7 @@ class PvContactSyncWorker {
       }
     }
 
-    if ( $wp_user_id !== null && get_user_meta( $wp_user_id, '_bexio_hash', true ) === $hash ) {
+    if ( $wp_user_id !== null && get_user_meta( $wp_user_id, '_pvbexio_hash', true ) === $hash ) {
       return 'skipped';
     }
 
@@ -343,10 +343,22 @@ class PvContactSyncWorker {
       'user_email'   => $email,
       'first_name'   => $first_name,
       'last_name'    => $last_name,
-      'display_name' => $display_name,
+      'display_name' => $display_name
     ];
 
     if ( $wp_user_id !== null ) {
+      // Security: never let the sync overwrite an administrator, editor, or any
+      // other privileged account that could exist with the same email address.
+      // Only customer / subscriber level accounts are safe to update automatically.
+      $existing = get_userdata( $wp_user_id );
+      if ( $existing && ( user_can( $existing, 'manage_options' ) || user_can( $existing, 'edit_posts' ) ) ) {
+        PingvinLogger::log(
+          'warning',
+          "[ContactWorker] Skipping update for privileged user #{$wp_user_id} ({$email}) — Bexio contact #{$c->id}."
+        );
+        return 'skipped';
+      }
+
       $user_data['ID'] = $wp_user_id;
       $result = wp_update_user( $user_data );
     } else {
@@ -357,6 +369,9 @@ class PvContactSyncWorker {
       }
       $user_data['user_login'] = $login;
       $user_data['user_pass']  = wp_generate_password( 24, true, true );
+      // Explicitly set role to 'customer' regardless of the site's default user role
+      // setting, so this sync can never accidentally create a privileged account.
+      $user_data['role'] = 'customer';
       $result = wp_insert_user( $user_data );
     }
 
@@ -391,10 +406,10 @@ class PvContactSyncWorker {
     update_user_meta( $wp_user_id, 'shipping_postcode',   $postcode );
     // shipping_country: deferred — same reason.
 
-    update_user_meta( $wp_user_id, '_bexio_hash',       $hash );
-    update_user_meta( $wp_user_id, '_bexio_contact_id', (int) $c->id );
-    update_user_meta( $wp_user_id, '_bexio_contact_nr', $c->nr ?? null );  // Bexio contact number
-    update_user_meta( $wp_user_id, '_bexio_data', wp_json_encode( [
+    update_user_meta( $wp_user_id, '_pvbexio_hash',       $hash );
+    update_user_meta( $wp_user_id, '_pvbexio_contact_id', (int) $c->id );
+    update_user_meta( $wp_user_id, '_pvbexio_contact_nr', $c->nr ?? null );  // Bexio contact number
+    update_user_meta( $wp_user_id, '_pvbexio_data', wp_json_encode( [
       'last_sync' => current_time( 'Y-m-d H:i:s' ),
       'data'      => $c,
     ] ) );
@@ -423,7 +438,7 @@ class PvContactSyncWorker {
       time(),
       self::HOOK,
       [ 'offset' => $offset ],
-      'pv_sync',
+      'pvbexio_sync',
       $unique
     );
 

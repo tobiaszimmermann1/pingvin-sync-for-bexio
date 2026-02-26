@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Pingvin Bexio Sync">
-    <description>PHPCS configuration for Pingvin Bexio Sync. Excludes bundled third-party libraries.</description>
+<ruleset name="Pingvin Sync for Bexio">
+    <description>PHPCS configuration for Pingvin Sync for Bexio. Excludes bundled third-party libraries.</description>
 
     <!-- Scan only the plugin's own source files -->
     <file>.</file>

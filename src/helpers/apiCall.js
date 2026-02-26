@@ -1,15 +1,15 @@
 import axios from 'axios';
 
-/* global pvProductSyncAppLocalizer */
+/* global pvbexioAppLocalizer */
 
 const apiCall = async ( method, endpoint, params = null ) => {
 	try {
 		if ( method === 'GET' ) {
 			const response = await axios.get(
-				`${ pvProductSyncAppLocalizer.bexioApiUrl }/${ endpoint }`,
+				`${ pvbexioAppLocalizer.bexioApiUrl }/${ endpoint }`,
 				{
 					headers: {
-						'X-WP-Nonce': pvProductSyncAppLocalizer.nonce,
+						'X-WP-Nonce': pvbexioAppLocalizer.nonce,
 					},
 					params: params || undefined,
 				}
@@ -20,11 +20,11 @@ const apiCall = async ( method, endpoint, params = null ) => {
 
 		if ( method === 'POST' ) {
 			const response = await axios.post(
-				`${ pvProductSyncAppLocalizer.bexioApiUrl }/${ endpoint }`,
+				`${ pvbexioAppLocalizer.bexioApiUrl }/${ endpoint }`,
 				params,
 				{
 					headers: {
-						'X-WP-Nonce': pvProductSyncAppLocalizer.nonce,
+						'X-WP-Nonce': pvbexioAppLocalizer.nonce,
 					},
 				}
 			);

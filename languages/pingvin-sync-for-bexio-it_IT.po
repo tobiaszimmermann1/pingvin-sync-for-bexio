@@ -1,0 +1,499 @@
+# Copyright (C) 2026 Tobias Zimmermann
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Pingvin Sync for Bexio 0.5.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pingvin-sync-for-bexio\n"
+"Last-Translator: GitHub Copilot\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-26T08:47:44+01:00\n"
+"PO-Revision-Date: 2026-02-26T00:00:00+01:00\n"
+"X-Generator: GitHub Copilot\n"
+"X-Domain: pingvin-sync-for-bexio\n"
+
+#. Plugin Name of the plugin
+#: pingvin-bexio-productsync.php
+msgid "Pingvin Sync for Bexio"
+msgstr "Pingvin Sync for Bexio"
+
+#. Description of the plugin
+#: pingvin-bexio-productsync.php
+msgid "Connects WooCommerce to Bexio and syncs data between the two systems."
+msgstr "Collega WooCommerce a Bexio e sincronizza i dati tra i due sistemi."
+
+#. Author of the plugin
+#: pingvin-bexio-productsync.php
+msgid "Tobias Zimmermann"
+msgstr "Tobias Zimmermann"
+
+#. Author URI of the plugin
+#: pingvin-bexio-productsync.php
+msgid "https://pingvin.digital"
+msgstr "https://pingvin.digital"
+
+#: inc/orders/order-push-worker.php:258
+msgid "Gebühr"
+msgstr "Commissione"
+
+#: inc/orders/order-push-worker.php:269
+msgid "Versand"
+msgstr "Spedizione"
+
+#: inc/orders/order-push-worker.php:320
+msgid "Bestellung"
+msgstr "Ordine"
+
+#: inc/pingvin-connector-settings-class.php:102
+msgid "Verbinde WooCommerce mit deinem Bexio Konto"
+msgstr "Collega WooCommerce al tuo account Bexio"
+
+#: inc/pingvin-connector-settings-class.php:107
+msgid "Pingvin Sync for Bexio verwendet verwendet die Bexio API, um WooCommerce direkt mit deinem Bexio Konto zu verbinden."
+msgstr "Pingvin Sync for Bexio utilizza le API Bexio per collegare WooCommerce direttamente al tuo account Bexio."
+
+#: inc/pingvin-connector-settings-class.php:107
+msgid "Es wird kein Server dazwischen geschalten und du brauchst keine weiteren Accounts oder Abos."
+msgstr "Non viene interposto alcun server e non hai bisogno di altri account o abbonamenti."
+
+#: inc/pingvin-connector-settings-class.php:107
+msgid "Dies benötigt einmalig etwas Aufwand und einige Einstellungen in deinem Bexio Konto."
+msgstr "Questo richiede un po' di lavoro una tantum e alcune impostazioni nel tuo account Bexio."
+
+#: inc/pingvin-connector-settings-class.php:112
+msgid "Logge dich mit deinem Bexio Konto beim Bexio Developer Portal ein:"
+msgstr "Accedi con il tuo account Bexio sul portale sviluppatori Bexio:"
+
+#: inc/pingvin-connector-settings-class.php:113
+msgid "Erstelle eine neue Bexio App und konfiguriere sie mit den folgenden Einstellungen."
+msgstr "Crea una nuova app Bexio e configurala con le seguenti impostazioni."
+
+#: inc/pingvin-connector-settings-class.php:123
+msgid "Kopiere die"
+msgstr "Copia il"
+
+#: inc/pingvin-connector-settings-class.php:123
+msgid "und das"
+msgstr "e il"
+
+#: inc/pingvin-connector-settings-class.php:123
+msgid "(zu finden unter \"App Details\") in die vorgesehenen Felder unten"
+msgstr "(disponibile in \"Dettagli app\") nei campi appositi qui sotto"
+
+#: inc/pingvin-connector-settings-class.php:124
+msgid "Klicke auf \"Einstellungen speichern\""
+msgstr "Fai clic su \"Salva impostazioni\""
+
+#: inc/pingvin-connector-settings-class.php:129
+msgid "Bexio App Einstellungen:"
+msgstr "Impostazioni app Bexio:"
+
+#: inc/pingvin-connector-settings-class.php:136
+msgid "Funktioniert es nicht?"
+msgstr "Non funziona?"
+
+#: inc/pingvin-connector-settings-class.php:137
+msgid "Hier findest du Hilfe:"
+msgstr "Qui trovi aiuto:"
+
+#: inc/pingvin-connector-settings-class.php:137
+msgid "Dokumentation & Support"
+msgstr "Documentazione & Supporto"
+
+#: inc/pingvin-connector-settings-class.php:142
+msgid "Alles ist bereit, um WooCommerce mit Bexio zu verbinden."
+msgstr "Tutto è pronto per collegare WooCommerce a Bexio."
+
+#: inc/pingvin-connector-settings-class.php:143
+msgid "Jetzt mit Bexio verbinden"
+msgstr "Collega ora con Bexio"
+
+#: inc/pingvin-connector-settings-class.php:144
+#: inc/pingvin-connector-settings-class.php:226
+msgid "Bexio Authentifizierungseinstellungen zurücksetzen"
+msgstr "Reimposta le impostazioni di autenticazione Bexio"
+
+#: inc/pingvin-connector-settings-class.php:175
+msgid "Synchronisierung"
+msgstr "Sincronizzazione"
+
+#: inc/pingvin-connector-settings-class.php:176
+#: build/index.js:3795
+#: src/SyncSettings.js:76
+#: build/index.js:3171
+msgid "Produkte"
+msgstr "Prodotti"
+
+#: inc/pingvin-connector-settings-class.php:177
+#: build/index.js:3868
+#: src/SyncSettings.js:128
+#: build/index.js:3223
+msgid "Kontakte"
+msgstr "Contatti"
+
+#: inc/pingvin-connector-settings-class.php:178
+msgid "Bestellungen"
+msgstr "Ordini"
+
+#: inc/pingvin-connector-settings-class.php:179
+msgid "Einstellungen"
+msgstr "Impostazioni"
+
+#: inc/pingvin-connector-settings-class.php:196
+msgid "Referenzdaten wurden erfolgreich aktualisiert."
+msgstr "I dati di riferimento sono stati aggiornati con successo."
+
+#: inc/pingvin-connector-settings-class.php:202
+msgid "Referenzdaten fehlen"
+msgstr "Dati di riferimento mancanti"
+
+#: inc/pingvin-connector-settings-class.php:203
+msgid "Steuerliste hat sich geändert"
+msgstr "L'elenco delle imposte è cambiato"
+
+#: inc/pingvin-connector-settings-class.php:204
+msgid "Benutzerliste hat sich geändert"
+msgstr "L'elenco degli utenti è cambiato"
+
+#: inc/pingvin-connector-settings-class.php:211
+msgid "Achtung:"
+msgstr "Attenzione:"
+
+#: inc/pingvin-connector-settings-class.php:215
+msgid "Jetzt aktualisieren"
+msgstr "Aggiorna ora"
+
+#: inc/pingvin-connector-settings-class.php:281
+msgid "Client ID deiner Bexio App"
+msgstr "Client ID della tua app Bexio"
+
+#: inc/pingvin-connector-settings-class.php:289
+msgid "Client Secret deiner Bexio App"
+msgstr "Client Secret della tua app Bexio"
+
+#: inc/pingvin-connector-settings-class.php:297
+msgid "Synchronisierungs-Richtung <p><small style=\"font-weight:400;\">Wähle die Quelle und das Ziel der Synchronisierung.</small></p>"
+msgstr "Direzione di sincronizzazione <p><small style=\"font-weight:400;\">Seleziona la sorgente e la destinazione della sincronizzazione.</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:305
+msgid "Fehlende Produkte Workflow <p><small style=\"font-weight:400;\">Was soll mit Produkten getan werden, die im Ziel vorhanden sind, aber in der Quelle fehlen?</small></p>"
+msgstr "Flusso di lavoro dei prodotti mancanti <p><small style=\"font-weight:400;\">Cosa fare con i prodotti presenti nella destinazione ma assenti nell'origine?</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:313
+msgid "Normalsteuersatz in Bexio <p><small style=\"font-weight:400;\">MWST Code</small></p>"
+msgstr "Aliquota fiscale normale in Bexio <p><small style=\"font-weight:400;\">Codice IVA</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:331
+msgid "Normalsteuersatz in WooCommerce <p><small style=\"font-weight:400;\">Steuerklasse</small></p>"
+msgstr "Aliquota fiscale normale in WooCommerce <p><small style=\"font-weight:400;\">Classe fiscale</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:339
+msgid "Reduzierter Steuersatz in Bexio <p><small style=\"font-weight:400;\">MWST Code</small></p>"
+msgstr "Aliquota fiscale ridotta in Bexio <p><small style=\"font-weight:400;\">Codice IVA</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:357
+msgid "Reduzierter Steuersatz in WooCommerce <p><small style=\"font-weight:400;\">Steuerklasse</small></p>"
+msgstr "Aliquota fiscale ridotta in WooCommerce <p><small style=\"font-weight:400;\">Classe fiscale</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:365
+msgid "Sondersatz für Beherbergung in Bexio <p><small style=\"font-weight:400;\">MWST Code</small></p>"
+msgstr "Aliquota speciale per l'alloggio in Bexio <p><small style=\"font-weight:400;\">Codice IVA</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:383
+msgid "Sondersatz für Beherbergung in WooCommerce <p><small style=\"font-weight:400;\">Steuerklasse</small></p>"
+msgstr "Aliquota speciale per l'alloggio in WooCommerce <p><small style=\"font-weight:400;\">Classe fiscale</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:391
+msgid "Standard Bexio Benutzer <p><small style=\"font-weight:400;\">Wird für neue Bestellungen in Bexio verwendet.</small></p>"
+msgstr "Utente Bexio predefinito <p><small style=\"font-weight:400;\">Utilizzato per i nuovi ordini in Bexio.</small></p>"
+
+#: inc/pingvin-connector-settings-class.php:520
+#: inc/pingvin-connector-settings-class.php:539
+#: inc/pingvin-connector-settings-class.php:564
+#: inc/pingvin-connector-settings-class.php:590
+#: inc/pingvin-connector-settings-class.php:616
+#: inc/pingvin-connector-settings-class.php:631
+msgid "Wähle eine Option"
+msgstr "Scegli un'opzione"
+
+#: inc/pingvin-connector-settings-class.php:521
+msgid "Behalte die Produkte im Ziel"
+msgstr "Mantieni i prodotti nella destinazione"
+
+#: inc/pingvin-connector-settings-class.php:522
+msgid "Lösche die Produkte im Ziel"
+msgstr "Elimina i prodotti nella destinazione"
+
+#: inc/pingvin-connector-settings-class.php:540
+msgid "Von Bexio (Quelle) zu WooCommerce (Ziel)"
+msgstr "Da Bexio (sorgente) a WooCommerce (destinazione)"
+
+#: inc/pingvin-connector-settings-class.php:641
+#: inc/pingvin-connector-settings-class.php:667
+msgid "Keine Daten – zuerst Referenzdaten laden"
+msgstr "Nessun dato – carica prima i dati di riferimento"
+
+#: inc/pingvin-connector-settings-class.php:656
+msgid "Wähle einen Benutzer"
+msgstr "Scegli un utente"
+
+#: build/index.js:3113
+#: build/index.js:3311
+#: build/index.js:4330
+#: src/contacts/ContactsTable.js:75
+#: src/Orders.js:83
+#: src/Products.js:79
+#: build/index.js:2720
+#: build/index.js:2853
+#: build/index.js:3519
+msgid "Zuletzt synchronisiert am"
+msgstr "Ultima sincronizzazione il"
+
+#: build/index.js:3113
+#: build/index.js:3311
+#: build/index.js:4330
+#: src/contacts/ContactsTable.js:75
+#: src/Orders.js:83
+#: src/Products.js:79
+#: build/index.js:2720
+#: build/index.js:2853
+#: build/index.js:3519
+msgid "Unbekannt"
+msgstr "Sconosciuto"
+
+#: build/index.js:3129
+#: src/Orders.js:90
+#: build/index.js:2727
+msgid "Bexio Auftrag:"
+msgstr "Ordine Bexio:"
+
+#: build/index.js:3129
+#: src/Orders.js:90
+#: build/index.js:2727
+msgid "Kein Bexio Auftrag"
+msgstr "Nessun ordine Bexio"
+
+#: build/index.js:3151
+#: build/index.js:3332
+#: build/index.js:4351
+#: src/contacts/ContactsTable.js:93
+#: src/Orders.js:117
+#: src/Products.js:97
+#: build/index.js:2754
+#: build/index.js:2871
+#: build/index.js:3537
+msgid "Zurück"
+msgstr "Precedente"
+
+#: build/index.js:3156
+#: build/index.js:3337
+#: build/index.js:4356
+#: src/contacts/ContactsTable.js:96
+#: src/Orders.js:120
+#: src/Products.js:100
+#: build/index.js:2757
+#: build/index.js:2874
+#: build/index.js:3540
+msgid "Weiter"
+msgstr "Successivo"
+
+#: build/index.js:3164
+#: build/index.js:3345
+#: build/index.js:4364
+#: src/contacts/ContactsTable.js:102
+#: src/Orders.js:126
+#: src/Products.js:106
+#: build/index.js:2763
+#: build/index.js:2880
+#: build/index.js:3546
+msgid "Seite"
+msgstr "Pagina"
+
+#: build/index.js:3468
+#: src/Settings.js:79
+#: build/index.js:2970
+msgid "Bexio API Verbindung prüfen"
+msgstr "Verifica la connessione API Bexio"
+
+#: build/index.js:3485
+#: src/Settings.js:101
+#: build/index.js:2992
+msgid "Verbindung prüfen"
+msgstr "Verifica connessione"
+
+#: build/index.js:3502
+#: build/index.js:3539
+#: src/Settings.js:112
+#: src/Settings.js:131
+#: build/index.js:3003
+#: build/index.js:3022
+msgid "Bexio API Verbindung"
+msgstr "Connessione API Bexio"
+
+#: build/index.js:3518
+#: src/Settings.js:118
+#: build/index.js:3009
+msgid "Erfolgreiche Verbindung zur Bexio API"
+msgstr "Connessione riuscita all'API Bexio"
+
+#: build/index.js:3523
+#: src/Settings.js:121
+#: build/index.js:3012
+msgid "Das heisst, dass die Authentifizierung funktioniert und WooCommerce eine Verbindung zur Bexio API herstellen kann."
+msgstr "Ciò significa che l'autenticazione funziona e WooCommerce può stabilire una connessione all'API Bexio."
+
+#: build/index.js:3558
+#: src/Settings.js:139
+#: build/index.js:3030
+msgid "Keine Verbindung zur Bexio API möglich"
+msgstr "Impossibile connettersi all'API Bexio"
+
+#: build/index.js:3563
+#: src/Settings.js:142
+#: build/index.js:3033
+msgid "Setze die Authentifizierungseinstellungen zurück und verbinde WooCommerce neu mit Bexio."
+msgstr "Reimposta le impostazioni di autenticazione e ricollega WooCommerce a Bexio."
+
+#: build/index.js:3567
+#: build/index.js:4093
+#: src/Settings.js:146
+#: src/SyncStatus.js:85
+#: build/index.js:3037
+#: build/index.js:3359
+msgid "Fehler:"
+msgstr "Errore:"
+
+#: build/index.js:3590
+#: src/Settings.js:161
+#: build/index.js:3052
+msgid "Logs"
+msgstr "Log"
+
+#: build/index.js:3653
+#: src/Settings.js:194
+#: build/index.js:3085
+msgid "Download"
+msgstr "Scarica"
+
+#: build/index.js:3749
+#: src/SyncSettings.js:45
+#: build/index.js:3140
+msgid "Settings successfully updated."
+msgstr "Impostazioni aggiornate con successo."
+
+#: build/index.js:3749
+#: src/SyncSettings.js:45
+#: build/index.js:3140
+msgid "An error occurred"
+msgstr "Si è verificato un errore"
+
+#: build/index.js:3808
+#: build/index.js:3881
+#: src/SyncSettings.js:81
+#: src/SyncSettings.js:133
+#: build/index.js:3176
+#: build/index.js:3228
+msgid "Synchronisierung aktivieren:"
+msgstr "Attiva sincronizzazione:"
+
+#: build/index.js:3825
+#: build/index.js:3897
+#: src/SyncSettings.js:98
+#: src/SyncSettings.js:149
+#: build/index.js:3193
+#: build/index.js:3244
+msgid "Wenn du die Synchronisierung deaktivierst, werden alle geplanten Synchronisierungen abgebrochen."
+msgstr "Se disattivi la sincronizzazione, tutte le sincronizzazioni pianificate verranno annullate."
+
+#: build/index.js:3835
+#: build/index.js:3907
+#: src/SyncSettings.js:103
+#: src/SyncSettings.js:154
+#: build/index.js:3198
+#: build/index.js:3249
+msgid "Synchronisierungs-Intervall:"
+msgstr "Intervallo di sincronizzazione:"
+
+#: build/index.js:3849
+#: build/index.js:3921
+#: src/SyncSettings.js:118
+#: src/SyncSettings.js:169
+#: build/index.js:3213
+#: build/index.js:3264
+msgid "Wenn du das Intervall änderst, wird die nächste Synchronisierung abgebrochen und entsprechend dem gewählten Intervall neu geplant."
+msgstr "Se modifichi l'intervallo, la prossima sincronizzazione verrà annullata e ripianificata in base all'intervallo scelto."
+
+#: build/index.js:3972
+#: src/SyncStatus.js:8
+#: build/index.js:3282
+msgid "Abgeschlossen"
+msgstr "Completato"
+
+#: build/index.js:3973
+#: src/SyncStatus.js:9
+#: build/index.js:3283
+msgid "Läuft"
+msgstr "In esecuzione"
+
+#: build/index.js:3974
+#: src/SyncStatus.js:10
+#: build/index.js:3284
+msgid "Fehler"
+msgstr "Errore"
+
+#: build/index.js:4012
+#: src/SyncStatus.js:30
+#: build/index.js:3304
+msgid "Keine Daten"
+msgstr "Nessun dato"
+
+#: build/index.js:4023
+#: src/SyncStatus.js:38
+#: build/index.js:3312
+msgid "Status:"
+msgstr "Stato:"
+
+#: build/index.js:4042
+#: src/SyncStatus.js:49
+#: build/index.js:3323
+msgid "Abgeschlossen:"
+msgstr "Completato:"
+
+#: build/index.js:4059
+#: src/SyncStatus.js:61
+#: build/index.js:3335
+msgid "Aktualisiert:"
+msgstr "Aggiornato:"
+
+#: build/index.js:4076
+#: src/SyncStatus.js:73
+#: build/index.js:3347
+msgid "Übersprungen:"
+msgstr "Ignorato:"
+
+#: build/index.js:4111
+#: src/SyncStatus.js:98
+#: build/index.js:3372
+msgid "Meldung:"
+msgstr "Messaggio:"
+
+#: build/index.js:4180
+#: src/SyncStatus.js:149
+#: build/index.js:3423
+msgid "Status"
+msgstr "Stato"
+
+#: build/index.js:4194
+#: src/SyncStatus.js:160
+#: build/index.js:3434
+msgid "Produkte — Letzte Synchronisierung"
+msgstr "Prodotti — Ultima sincronizzazione"
+
+#: build/index.js:4197
+#: src/SyncStatus.js:161
+#: build/index.js:3435
+msgid "Kontakte — Letzte Synchronisierung"
+msgstr "Contatti — Ultima sincronizzazione"

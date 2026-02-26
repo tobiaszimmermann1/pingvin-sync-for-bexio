@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Resolution order
  * ----------------
- * 1. WP user meta `_bexio_contact_id`   → instant return (already linked)
+ * 1. WP user meta `_pvbexio_contact_id`   → instant return (already linked)
  * 2. POST 2.0/contact/search by email   → link + return if found in Bexio
  * 3. POST 2.0/contact                   → create in Bexio, link, return ID
  * 4. Returns null on any API failure — order push should be aborted.
@@ -37,7 +37,7 @@ class PvContactPushHelper {
     $billing_email = trim( (string) $order->get_billing_email() );
 
     if ( $user_id > 0 ) {
-      $cached = get_user_meta( $user_id, '_bexio_contact_id', true );
+      $cached = get_user_meta( $user_id, '_pvbexio_contact_id', true );
       if ( ! empty( $cached ) ) {
         PingvinLogger::log(
           'info',
@@ -67,9 +67,9 @@ class PvContactPushHelper {
 
     if ( $found_id !== null ) {
       if ( $user_id > 0 ) {
-        update_user_meta( $user_id, '_bexio_contact_id', $found_id );
+        update_user_meta( $user_id, '_pvbexio_contact_id', $found_id );
       }
-      $order->update_meta_data( '_bexio_contact_id', $found_id );
+      $order->update_meta_data( '_pvbexio_contact_id', $found_id );
       $order->save_meta_data();
       PingvinLogger::log(
         'info',
@@ -82,9 +82,9 @@ class PvContactPushHelper {
 
     if ( $created_id !== null ) {
       if ( $user_id > 0 ) {
-        update_user_meta( $user_id, '_bexio_contact_id', $created_id );
+        update_user_meta( $user_id, '_pvbexio_contact_id', $created_id );
       }
-      $order->update_meta_data( '_bexio_contact_id', $created_id );
+      $order->update_meta_data( '_pvbexio_contact_id', $created_id );
       $order->save_meta_data();
       PingvinLogger::log(
         'info',
@@ -111,7 +111,7 @@ class PvContactPushHelper {
       [ 'field' => 'mail', 'value' => $email, 'criteria' => '=' ],
     ] );
 
-    $res = pv_api_call( 'POST', '2.0/contact/search', $payload );
+    $res = pvbexio_api_call( 'POST', '2.0/contact/search', $payload );
 
     if ( empty( $res ) || (int) ( $res['status'] ?? 0 ) !== 200 ) {
       $http = $res['status'] ?? '?';
@@ -161,8 +161,8 @@ class PvContactPushHelper {
 
     $is_company = $company !== '';
 
-    $opts           = get_option( 'pv_bexio_productsync_options', [] );
-    $default_user   = (int) ( $opts['pv_bexio_default_user_id'] ?? 0 );
+    $opts           = get_option( 'pvbexio_productsync_options', [] );
+    $default_user   = (int) ( $opts['pvbexio_default_user_id'] ?? 0 );
 
     $contact = [
       'contact_type_id' => $is_company ? 1 : 2,
@@ -196,7 +196,7 @@ class PvContactPushHelper {
     if ( $postcode !== '' )  $contact['postcode']         = $postcode;
     if ( $city !== '' )      $contact['city']             = $city;
 
-    $res = pv_api_call( 'POST', '2.0/contact', wp_json_encode( $contact ) );
+    $res = pvbexio_api_call( 'POST', '2.0/contact', wp_json_encode( $contact ) );
 
     if ( empty( $res ) || (int) ( $res['status'] ?? 0 ) !== 201 ) {
       PingvinLogger::log(

@@ -1,17 +1,17 @@
 <?php
 /**
- * Plugin Name:     Pingvin Bexio Sync
- * Description:     Connects WooCommerce to Bexio and syncs products
+ * Plugin Name:     Pingvin Sync for Bexio
+ * Description:     Connects WooCommerce to Bexio and syncs data between the two systems.
  * Author:          Tobias Zimmermann
  * Author URI:      https://pingvin.digital
- * Text Domain:     pingvin-bexio-sync
+ * Text Domain:     pingvin-sync-for-bexio
  * Domain Path:     /languages
  * Requires Plugins: woocommerce
  * Version:         0.5.0
  * License:         GPL-2.0-or-later
  * License URI:     https://www.gnu.org/licenses/gpl-2.0.html
  *
- * @package         Pingvin Bexio Sync
+ * @package         Pingvin Sync for Bexio
  */
 
 namespace Pingvin;
@@ -54,10 +54,10 @@ class Pingvin_Bexio_ProductSync {
    * Define plugin constants.
    */
   private function define_constants() {
-    define( 'PV_PLUGIN_URL',      plugin_dir_url( __FILE__ ) );
-    define( 'PV_PLUGIN_PATH',     plugin_dir_path( __FILE__ ) );
-    define( 'PV_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-    define( 'PV_PLUGIN_VERSION',  '0.5.0' );
+    define( 'PVBEXIO_PLUGIN_URL',      plugin_dir_url( __FILE__ ) );
+    define( 'PVBEXIO_PLUGIN_PATH',     plugin_dir_path( __FILE__ ) );
+    define( 'PVBEXIO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+    define( 'PVBEXIO_PLUGIN_VERSION',  '0.5.0' );
   }
 
   /**
@@ -82,7 +82,7 @@ class Pingvin_Bexio_ProductSync {
     ];
 
     foreach ( $required_files as $file ) {
-      $path = PV_PLUGIN_PATH . $file;
+      $path = PVBEXIO_PLUGIN_PATH . $file;
       if ( file_exists( $path ) ) {
         require_once $path;
       }
@@ -96,8 +96,22 @@ class Pingvin_Bexio_ProductSync {
     add_action( 'before_woocommerce_init', [ $this, 'declare_woocommerce_compatibility' ] );
     register_deactivation_hook( __FILE__, [ $this, 'on_deactivation' ] );
     add_action( 'admin_enqueue_scripts', [ $this, 'admin_load_scripts' ] );
+
+    // Classic checkout — fires when the order row is first inserted.
     add_action( 'woocommerce_checkout_order_created', function( $order ) {
       PvOrderPushWorker::enqueue( $order->get_id() );
+    } );
+
+    // Block / Store-API checkout (WooCommerce Blocks) — fires after the
+    // StoreAPI checkout controller processes the order.
+    add_action( 'woocommerce_store_api_checkout_order_processed', function( $order ) {
+      PvOrderPushWorker::enqueue( $order->get_id() );
+    } );
+
+    // Catch-all: payment confirmed (covers admin orders, REST-API orders,
+    // subscription renewals, off-site redirects, etc.).
+    add_action( 'woocommerce_payment_complete', function( $order_id ) {
+      PvOrderPushWorker::enqueue( (int) $order_id );
     } );
 
     // Initialize other classes.
@@ -118,8 +132,8 @@ class Pingvin_Bexio_ProductSync {
    */
   public function on_deactivation() {
       flush_rewrite_rules();
-      delete_transient( 'pv_bexio_connector_status' );
-      delete_transient( 'pv_bexio_connector_next' );
+      delete_transient( 'pvbexio_connector_status' );
+      delete_transient( 'pvbexio_connector_next' );
   }
 
   /**
@@ -127,8 +141,8 @@ class Pingvin_Bexio_ProductSync {
    */
   public function admin_load_scripts($screen) {
     if("toplevel_page_pingvin-bexio-sync" !== $screen) return;
-    wp_register_style( 'pv_dashboard_style', PV_PLUGIN_URL . 'styles/styles.css', false, PV_PLUGIN_VERSION );
-    wp_enqueue_style( 'pv_dashboard_style' );
+    wp_register_style( 'pvbexio_dashboard_style', PVBEXIO_PLUGIN_URL . 'styles/styles.css', false, PVBEXIO_PLUGIN_VERSION );
+    wp_enqueue_style( 'pvbexio_dashboard_style' );
   }
 
   /**
