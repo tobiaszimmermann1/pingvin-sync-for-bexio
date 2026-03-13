@@ -3,7 +3,7 @@ Contributors: pingvindigital
 Tags: bexio, buchhaltung, schweiz, synchronisierung
 Requires at least: 6.7
 Tested up to: 6.9
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 Requires PHP: 8.1
 Requires Plugins: woocommerce
 License: GPLv2 or later
@@ -47,6 +47,9 @@ Feel free to reach out: tobias@pingvin.digital
 https://github.com/tobiaszimmermann1/pingvin-sync-for-bexio
 
 == Changelog ==
+
+= 0.5.1 =
+- Bugfix
 
 = 0.5.0 =
 * Initial public release.

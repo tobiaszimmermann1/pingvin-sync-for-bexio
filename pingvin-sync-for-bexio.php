@@ -7,7 +7,7 @@
  * Text Domain:     pingvin-sync-for-bexio
  * Domain Path:     /languages
  * Requires Plugins: woocommerce
- * Version:         0.5.0
+ * Version:         0.5.1
  * License:         GPL-2.0-or-later
  * License URI:     https://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -57,7 +57,7 @@ class Pingvin_Bexio_ProductSync {
     define( 'PVBEXIO_PLUGIN_URL',      plugin_dir_url( __FILE__ ) );
     define( 'PVBEXIO_PLUGIN_PATH',     plugin_dir_path( __FILE__ ) );
     define( 'PVBEXIO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-    define( 'PVBEXIO_PLUGIN_VERSION',  '0.5.0' );
+    define( 'PVBEXIO_PLUGIN_VERSION',  '0.5.1' );
   }
 
   /**

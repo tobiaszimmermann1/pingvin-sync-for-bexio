@@ -324,7 +324,9 @@ class PvProductSyncWorker {
     $product->set_name( (string) ( $p->intern_name        ?? '' ) );
     $product->set_description( (string) ( $p->intern_description ?? '' ) );
     $product->set_sku( (string) $p->intern_code );
-    $product->set_status( 'publish' );
+    if ( $is_new ) {
+      $product->set_status( 'draft' );
+    }
 
     $sale_price = (float) ( $p->sale_price ?? 0 );
     $product->set_regular_price( (string) $sale_price );
@@ -492,7 +494,7 @@ class PvProductSyncWorker {
       'return'     => 'ids',
       'meta_query' => [
         [
-          'key'     => '_bexio_id',
+          'key'     => '_pvbexio_id',
           'compare' => 'EXISTS',
         ],
       ],
@@ -504,7 +506,7 @@ class PvProductSyncWorker {
       if ( ! $product ) {
         continue;
       }
-      if ( $product->get_meta( '_bexio_sync_cycle', true ) !== $cycle_token ) {
+      if ( $product->get_meta( '_pvbexio_sync_cycle', true ) !== $cycle_token ) {
         PingvinLogger::log(
           'info',
           "[ProductWorker] Trashing WC product id={$product_id} (SKU: {$product->get_sku()}) — not present in Bexio this cycle."
