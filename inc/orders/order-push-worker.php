@@ -17,10 +17,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  * 2. Action Scheduler runs `run(int $order_id)`:
  *    a. Idempotency guard — skip if `_bexio_order_id` already saved on the order.
  *    b. Settings guard — abort if no default Bexio user configured.
- *    c. Contact resolution — PvContactPushHelper::ensure_bexio_contact().
+ *    c. Contact resolution — PvContactPushHelper::ensure_bexio_contact()
+ *       (updates the Bexio contact billing address when it differs).
  *    d. Position mapping — WC line items → KbPositionArticle / KbPositionCustom.
- *    e. POST 2.0/kb_order with minimal payload.
+ *    e. POST 2.0/kb_order with billing + delivery addresses and positions.
  *    f. Save `_bexio_order_id` and `_bexio_order_nr` as WC order meta.
+ *
+ * Address handling
+ * ----------------
+ * Billing: lives on the Bexio contact (updated by PvContactPushHelper when
+ * the WC billing address differs). The kb_order document inherits the
+ * contact's invoice address unless `contact_address_manual` is set — we do
+ * NOT set it, so the (possibly just updated) contact address applies.
+ * Delivery: sent per-order via `delivery_address_type=1` +
+ * `delivery_address_manual` built from the WC shipping address (falling back
+ * to billing when shipping is empty). Never stored on the contact.
  *
  * Tax mapping
  * -----------
@@ -119,12 +130,14 @@ class PvOrderPushWorker {
     //   so our unit_prices are always net — Bexio must add tax on top.
     $taxes_enabled = wc_tax_enabled();
     $payload = [
-      'title'       => $this->build_title( $order ),
-      'contact_id'  => $contact_id,
-      'user_id'     => $default_user,
-      'mwst_type'   => $taxes_enabled ? 0 : 2,
-      'mwst_is_net' => true,
-      'positions'   => $positions,
+      'title'                 => $this->build_title( $order ),
+      'contact_id'            => $contact_id,
+      'user_id'               => $default_user,
+      'mwst_type'             => $taxes_enabled ? 0 : 2,
+      'mwst_is_net'           => true,
+      'delivery_address_type' => 1,
+      'delivery_address_manual' => $this->build_delivery_address( $order ),
+      'positions'             => $positions,
     ];
 
     $res = pvbexio_api_call( 'POST', '2.0/kb_order', wp_json_encode( $payload ) );
@@ -318,6 +331,56 @@ class PvOrderPushWorker {
   private function build_title( \WC_Order $order ): string {
     $nr = $order->get_order_number();
     return __( 'Bestellung', 'pingvin-sync-for-bexio' ) . ' #' . ( $nr ?: $order->get_id() );
+  }
+
+  /**
+   * Builds the per-order delivery address string for `delivery_address_manual`.
+   *
+   * Source: WC shipping address, falling back to billing when shipping is
+   * empty (e.g. virtual-only orders). Format mirrors the Bexio example:
+   * "Name\nStreet Nr\nPostcode City" with optional company / address_2 lines.
+   * Never stored on the contact — only sent on the kb_order document with
+   * `delivery_address_type=1`.
+   */
+  private function build_delivery_address( \WC_Order $order ): string {
+    $has_shipping = trim( (string) $order->get_shipping_address_1() . $order->get_shipping_city() . $order->get_shipping_postcode() ) !== '';
+    $prefix = $has_shipping ? 'shipping' : 'billing';
+
+    $getter = function ( string $field ) use ( $order, $prefix ): string {
+      $method = 'get_' . $prefix . '_' . $field;
+      return trim( (string) $order->{$method}() );
+    };
+
+    $company   = $getter( 'company' );
+    $first     = $getter( 'first_name' );
+    $last      = $getter( 'last_name' );
+    $addr_1    = $getter( 'address_1' );
+    $addr_2    = $getter( 'address_2' );
+    $postcode  = $getter( 'postcode' );
+    $city      = $getter( 'city' );
+
+    $lines = [];
+    $name_line = trim( $first . ' ' . $last );
+    if ( $company !== '' ) {
+      $lines[] = $company;
+      if ( $name_line !== '' ) {
+        $lines[] = $name_line;
+      }
+    } elseif ( $name_line !== '' ) {
+      $lines[] = $name_line;
+    }
+    if ( $addr_1 !== '' ) {
+      $lines[] = $addr_1;
+    }
+    if ( $addr_2 !== '' ) {
+      $lines[] = $addr_2;
+    }
+    $city_line = trim( $postcode . ' ' . $city );
+    if ( $city_line !== '' ) {
+      $lines[] = $city_line;
+    }
+
+    return implode( "\n", $lines );
   }
 
   /**
